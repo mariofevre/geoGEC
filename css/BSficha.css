@@ -1,0 +1,208 @@
+/*
+* basesonido.css
+*
+* estilos generales dise�ads para TReCC Base de Sonido
+* 
+* @package    	TReCC(tm) Procesos Participativos Urbanos.
+* @subpackage 	estilos
+* @author     	TReCC SA
+* @author     	<mario@trecc.com.ar> <trecc@trecc.com.ar>
+* @author    	www.trecc.com.ar  
+* @copyright	2013 2014 TReCC SA
+* @license    	http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 (GPL-3.0)
+* Este archivo es parte de TReCC(tm) paneldecontrol y de sus proyectos hermanos: baseobra(tm), TReCC(tm) intraTReCC  y TReCC(tm) Procesos Participativos Urbanos.
+* Este archivo es software libre: tu puedes redistriburlo 
+* y/o modificarlo bajo los t�rminos de la "GNU General Public License" 
+* publicada por la Free Software Foundation, version 3
+* 
+* Este archivo es distribuido por si mismo y dentro de sus proyectos 
+* con el objetivo de ser �til, eficiente, predecible y transparente
+* pero SIN NIGUNA GARANT�A; sin siquiera la garant�a impl�cita de
+* CAPACIDAD DE MERCANTILIZACI�N o utilidad para un prop�sito particular.
+* Consulte la "GNU General Public License" para m�s detalles.
+* 
+* Si usted no cuenta con una copia de dicha licencia puede encontrarla aqu�: <http://www.gnu.org/licenses/>.
+*/
+
+h1{
+	border-bottom:1px solid #333;
+	margin-bottom:0px;
+	margin-top:5px;
+}
+h1>span, h2>span, h3>span{
+	font-size:12px;
+	font-weight:normal;
+}
+
+h1>span.idloc{
+	font-size:30px;
+	font-weight:bold;
+	border:2px solid rgba(200, 0, 0, 1.0);
+	background-color:rgba(200,50,50,0.5);
+	line-height: 24px;
+	display: inline-block;
+}
+
+h2{
+	margin-top: 0;
+}
+.ficha{
+	border: 2px solid #333;
+	margin-bottom:5px;
+	width:auto;
+	page-break-inside: avoid;
+}
+
+.ficha > div{
+	display:inline-block;
+}
+.ficha > .localizacion{
+	margin-left:5px;
+	border-right:0px solid #333;
+	width:350px;
+	vertical-align:top;
+}
+.mapa {
+    background-color: #fff;
+    border: 1px solid #000;
+    height: 348px;
+    left: 0px;
+    position: relative;
+    width: 348px;
+}
+
+p{
+	margin-bottom:3px;
+	margin-top:3px;
+}
+span.dist{
+	display:block;
+	margin-left:10px;
+	color:#888;
+	font-size:11px;
+}
+
+.ficha > .mediciones{
+	margin-left:5px;
+	width:650px;
+	 border-left: 1px solid #000;
+	 vertical-align:top;
+}
+
+.ficha .medicion{
+	vertical-align:top;
+	border-top: 2px solid;
+	min-height:0px;
+	text-align:center;
+}
+.medicion.diurno{
+	vertical-align:top;
+	border-color: #eecc99;
+}
+.medicion.nocturno{
+	vertical-align:top;
+	border-color: #bbbbdd;
+}
+
+.medicion.diurno > .datos > h2 {
+	background-color:#eecc99;
+}
+.medicion.nocturno > .datos > h2 {
+	background-color:#bbbbdd;
+}
+
+.medicion > .datos{
+	width:250px;
+	display:inline-block;
+	font-size:11px;
+	vertical-align:top;
+}
+.medicion > .datos p{
+	font-size:12px;
+}
+.medicion > .grafico{
+	width:400px;
+	height:200px;
+	display:inline-block;
+	vertical-align:top;
+	position: relative;
+}
+
+.jqplot-xaxis-label{
+	margin-top:-5px !important;
+}
+.jqplot-xaxis {
+  /*margin-top:1px !important;*/
+}
+.jqplot-yaxis {
+  margin-right:1px !important;*/
+ text-align:right;
+}
+
+div.portafoto {
+    background-color: #fff;
+    left: 0;
+    height: 130px;
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    width: 240px;
+    border: 1px solid #999;
+    margin: 2px;
+    margin-top: 8px;
+   }
+   
+  div.portafoto > img{
+  	margin-left: 2px;
+  	margin-right: 2px;
+  	max-width:114px;
+  	max-height:128px;
+  	vertical-align:middle;
+  }
+   
+div.leyendagraf{
+	z-index:5;
+	position:absolute;
+	font-size:11px;
+	bottom:40px;
+	left:52px;
+}
+div#modleyendagraf{
+	display:none;
+}
+
+div.leyendagraf > div{
+	display:inline-block;
+	height:10px;
+	width:10px;
+	margin-left:10px;
+}
+div.leyendagraf > span{
+	display:inline-block;
+	width:90px;
+	text-align:left;
+}
+div.leyendagraf > div.LMc1{
+		background-color:#55bbff;	
+}
+div.leyendagraf > div.LMc2{
+		background-color:#ff7733;	
+}
+div.leyendagraf > div.LMc3{
+		background-color:#33ffaa;	
+}
+div.leyendagraf > div.LMc4{
+		background-color:#ff6633;	
+}
+div.elqr{
+    position: absolute;
+    right: 13px;
+    bottom: 38px;
+    width: 90px;
+    font-size:11px;
+}
+div.elqr > img{
+   height: 90px;
+    width: 90px;
+}
+

@@ -1,0 +1,102 @@
+/*
+* treccppu.css
+*
+* estilos generales dise�ads para TReCC Procesos Participativos Urbanos 
+* 
+* @package    	TReCC(tm) Procesos Participativos Urbanos.
+* @subpackage 	estilos
+* @author     	TReCC SA
+* @author     	<mario@trecc.com.ar> <trecc@trecc.com.ar>
+* @author    	www.trecc.com.ar  
+* @copyright	2013 2014 TReCC SA
+* @license    	http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 (GPL-3.0)
+* Este archivo es parte de TReCC(tm) paneldecontrol y de sus proyectos hermanos: baseobra(tm), TReCC(tm) intraTReCC  y TReCC(tm) Procesos Participativos Urbanos.
+* Este archivo es software libre: tu puedes redistriburlo 
+* y/o modificarlo bajo los t�rminos de la "GNU General Public License" 
+* publicada por la Free Software Foundation, version 3
+* 
+* Este archivo es distribuido por si mismo y dentro de sus proyectos 
+* con el objetivo de ser �til, eficiente, predecible y transparente
+* pero SIN NIGUNA GARANT�A; sin siquiera la garant�a impl�cita de
+* CAPACIDAD DE MERCANTILIZACI�N o utilidad para un prop�sito particular.
+* Consulte la "GNU General Public License" para m�s detalles.
+* 
+* Si usted no cuenta con una copia de dicha licencia puede encontrarla aqu�: <http://www.gnu.org/licenses/>.
+*/
+
+@font-face {
+  font-family: 'Ropa Sans-local';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./ropa sans-2012-3.woff') format('woff'), local('Ropa Sans'), local('RopaSans-Regular');
+}
+
+body{
+	font-family: 'Ropa Sans-local', sans-serif;	
+	overflow-y:scroll;
+	background-attachment: fixed;
+	color: #f55;
+}
+
+h1{
+	font-size:18px;
+	margin-top:1px;
+	margin-bottom:5px;
+}
+
+h3{
+	margin-bottom:2px;
+}
+ul{
+	margin-bottom:1px;
+	margin-top:1px;
+}
+h4{
+	margin-bottom:1px;
+}
+
+
+p{
+	margin:0px;
+	margin-bottom:3px;
+	font-size:14px;
+}
+
+a{
+	color:#08afd9;
+	text-decoration: none;
+	display: inline;
+    font-size: 12px;
+    display:inline-block;
+}
+
+a.boton{
+	color:#08afd9;
+	border-top:1px #fff solid;
+	border-left:1px #fff solid;
+	border-right:1px gray solid;	
+	border-bottom:1px gray solid;	
+	margin: 3px;	
+	margin-bottom: 5px;
+    font-size: 13px;	
+	padding:3px;
+}
+
+
+a:visited{
+}	
+
+input[type='submit']:hover{
+	color:#dceff3;
+	background-color:#08afd9;
+}
+
+a:hover{
+	color:#dceff3;
+	background-color:#08afd9;
+	text-decoration: none;
+}
+
+a > img:hover{
+	background-color:#08afd9;
+}

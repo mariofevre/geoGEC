@@ -1,0 +1,312 @@
+/*
+* basesonido.css
+*
+* estilos generales dise�ads para TReCC Base de Sonido
+* 
+* @package    	TReCC(tm) Procesos Participativos Urbanos.
+* @subpackage 	estilos
+* @author     	TReCC SA
+* @author     	<mario@trecc.com.ar> <trecc@trecc.com.ar>
+* @author    	www.trecc.com.ar  
+* @copyright	2013 2014 TReCC SA
+* @license    	http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 (GPL-3.0)
+* Este archivo es parte de TReCC(tm) paneldecontrol y de sus proyectos hermanos: baseobra(tm), TReCC(tm) intraTReCC  y TReCC(tm) Procesos Participativos Urbanos.
+* Este archivo es software libre: tu puedes redistriburlo 
+* y/o modificarlo bajo los t�rminos de la "GNU General Public License" 
+* publicada por la Free Software Foundation, version 3
+* 
+* Este archivo es distribuido por si mismo y dentro de sus proyectos 
+* con el objetivo de ser �til, eficiente, predecible y transparente
+* pero SIN NIGUNA GARANT�A; sin siquiera la garant�a impl�cita de
+* CAPACIDAD DE MERCANTILIZACI�N o utilidad para un prop�sito particular.
+* Consulte la "GNU General Public License" para m�s detalles.
+* 
+* Si usted no cuenta con una copia de dicha licencia puede encontrarla aqu�: <http://www.gnu.org/licenses/>.
+*/
+
+
+a{
+	cursor:pointer;
+}
+.dato.fecha{
+		    width: 60px;
+		}
+		.dato.autor{
+		    width: 50px;
+		}
+		.dato.carga{
+		    width: 30px;
+		}				
+		.dato.descripcion{
+		    width: 210px;
+		}		
+		
+		.dato.localizaciones, .dato.imagenes{
+			font-size: 11px;
+		}
+		
+		.elemento {
+		    background-color: #ADD8E6;
+		    border: 2px solid #08AFD9;
+		    cursor: pointer;
+		    display: inline-block;
+		    font-size: 10px;
+		    height: 14px;
+		    overflow: hidden;
+		    padding: 2px 1px;
+		    position: relative;
+		    width: 16px;
+		 }
+		 
+		 .preliminar{
+		 	background-color:#ddd;
+		 	color:#444;
+		 }
+		 
+		 
+		 .resultado[estado='pendiente']{
+			  background-color: #8ae;
+			  color: #000;
+			  border: 1px solid #55a;				
+		}
+		
+		.serie{
+			border-bottom:3px solid #000;
+		}
+		.resultado[estado='cerrada']{
+			  background-color: #abf;
+			  color: #000;
+			  border: 1px solid #55f;
+		}
+		
+		.resultado[estado='activa']{
+		    background-color: #ffb;
+		    border: 1px solid #f55;
+		}
+		img.fotomuestra{
+		    border:1px solid #fff;
+		}
+		img.fotomuestra:hover{
+		    border:1px solid #08AFD9;
+		}
+		
+		h3{
+			margin-top:2px;
+		}
+		h2{
+			margin-bottom:2px;
+		}
+
+		div.portabotonlocaliza{
+			position:absolute;
+			left:2px;
+			top:85px;
+			overflow:visible;
+			z-index:1;
+		}
+				
+		a.botonlocaliza{
+			position:relative;
+			border:1px solid #08AFD9;
+			cursor:pointer;
+		}
+		a.botonlocaliza.elim{
+			margin-left:2px;
+			background-color:#fff;
+			color:red;
+		}
+		a.botonlocaliza.elim:hover{
+			
+			background-color:red;
+			color:#000;
+		}
+				
+		div.portareleva{
+			position:absolute;
+			left:400px;
+			top:15px;
+			overflow:visible;
+			
+		}
+		
+		div.portareleva>a{
+			border:1px solid #08AFD9;
+		}	
+		
+		div.medicion{
+			position:relative;
+			min-height: 390px;
+		}
+
+		div.portafoto{
+			position:absolute;
+			left:812px;
+			top:50px;
+			overflow:visible;
+			width:300px;
+			min-height:10px;
+			background-color:#fff;
+		}
+				
+		div.portabotonfotos{
+			position:absolute;
+			left:630px;
+			top:15px;
+			overflow:visible;
+		}
+		div.portabotonfotos>a{
+			border:1px solid #08AFD9;
+		}	
+				
+		label.upload{
+			height: 18px;
+			position: relative;
+			width: 170px;
+			display:inline-block;
+		}
+		
+		span.upload{
+			color:gray;
+			padding:2px;
+			display:block;
+			position:absolute;
+			top:0px;
+			left:0px;
+			width:170px;
+			height:20px;
+			text-align: center;
+			vertical-align:middle;
+			border:1px solid #000;
+			margin:0px;
+		}
+
+		.uploadinput{		
+			display:block;
+			position:absolute;
+			top:0px;
+			left:0px;
+			opacity:0;
+			width:172px;
+			height:20px;
+			vertical-align:middle;
+			border:1px solid #000;
+			margin:1px;
+		}
+		
+		#portamapa{
+			width:300px;
+			position:absolute;
+			left:-350px;
+			top:-10px;
+		}		
+		#modmapa{
+			width:300px;
+			height:300px;
+			background-color:#fff;
+		}
+		.mapa{
+			width:300px;
+			height:300px;
+			background-color:#fff;
+			 background-color: #fff;
+		    height: 300px;
+		    left: -330px;
+		    position: absolute;
+		    width: 300px;
+		    border:1px solid #000;
+		}
+
+		.datafoto{
+		    border: 1px solid #08afd9;
+		    left: 180px;
+		    position: absolute;
+		    top: 0;
+		}
+		.datafoto>form{
+		    margin:0px;
+		}		
+		
+		.dataloc{
+		    background-color: #fff;
+		    border: 1px solid #08afd9;
+		    left: 0;
+		    position: absolute;
+		    top: 17px;
+		    width: 245px;
+		}
+		
+		.dataloc>span{
+			font-size:11px;
+			display:inline-block;
+		}
+		
+		.dataloc>span.b{
+			border-bottom:1px solid #08AFD9;
+			min-width:25px;
+			min-height:12px;
+		}
+
+		.dataloc>span.b>input{
+			border: medium none;
+			height: 15px;
+		    margin: 0;
+		    width: 70px;
+		    color: #08AFD9;
+		}
+
+		.dataloc>span#b2{
+			width: 178px;
+		}
+				
+		.datarel>span{
+			font-size:11px;
+			display:inline-block;
+		}
+		
+		.datarel>span.d{
+			border-bottom:1px solid #08AFD9;
+			min-width:25px;
+			min-height:12px;
+		}
+
+		.datarel>span.d>input{
+			border: medium none;
+			height: 15px;
+		    margin: 0;
+		    width: 30px;
+		    color: #08AFD9;
+		}
+
+		.datarel>span#b2{
+			width: 150px;
+		}
+			
+		#moddatarel, #moddataloc, #modcarga{
+			display:none;
+		}				
+		
+		iframe.fotoform{
+			width:800px;
+			height:400px;
+			position:fixed;
+			top:50px;
+			z-index:10;
+		}
+	
+				
+		@media print{
+			a.botonlocaliza{
+				display:none;
+			}
+			#carga{
+				display:none;
+			}
+			#page{
+				
+			}
+			.serie{page-break-inside: avoid;}
+			
+			div.menunav{
+				display:none;
+			}
+		}

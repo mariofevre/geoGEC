@@ -1,0 +1,68 @@
+/*
+* basesonido.css
+*
+* estilos generales dise�ads para TReCC Base de Sonido
+* 
+* @package    	TReCC(tm) Procesos Participativos Urbanos.
+* @subpackage 	estilos
+* @author     	TReCC SA
+* @author     	<mario@trecc.com.ar> <trecc@trecc.com.ar>
+* @author    	www.trecc.com.ar  
+* @copyright	2013 2014 TReCC SA
+* @license    	http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 (GPL-3.0)
+* Este archivo es parte de TReCC(tm) paneldecontrol y de sus proyectos hermanos: baseobra(tm), TReCC(tm) intraTReCC  y TReCC(tm) Procesos Participativos Urbanos.
+* Este archivo es software libre: tu puedes redistriburlo 
+* y/o modificarlo bajo los t�rminos de la "GNU General Public License" 
+* publicada por la Free Software Foundation, version 3
+* 
+* Este archivo es distribuido por si mismo y dentro de sus proyectos 
+* con el objetivo de ser �til, eficiente, predecible y transparente
+* pero SIN NIGUNA GARANT�A; sin siquiera la garant�a impl�cita de
+* CAPACIDAD DE MERCANTILIZACI�N o utilidad para un prop�sito particular.
+* Consulte la "GNU General Public License" para m�s detalles.
+* 
+* Si usted no cuenta con una copia de dicha licencia puede encontrarla aqu�: <http://www.gnu.org/licenses/>.
+*/
+
+
+div.menunav{
+    width: 175px;
+    height:auto;
+   
+    text-align:center;
+    position:fixed;
+    top:2px;
+    left:4px;
+    border:1px solid #08AFD9;
+    background-color: #fff;
+    z-index:20;
+}
+		
+div.menunav a{
+	display: block;
+	margin:4px;
+	background-color: lightblue;
+	color:#000;	
+	vertical-align:middle;
+	padding-top:3px;
+	padding-bottom:3px;
+	border:1px solid 	#08AFD9;
+}	
+
+div.menunav a[disabled="disabled"]{
+   pointer-events: none;
+   cursor: default;
+   color:#888;
+}
+
+div.menunav a.general{
+	background-color: #def;
+	
+}	
+	
+div.menunav a.activo{
+	background-color: #08AFD9;
+}
+div.menunav a:hover{
+	background-color: red;
+}		

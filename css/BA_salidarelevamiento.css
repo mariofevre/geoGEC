@@ -1,0 +1,173 @@
+/*
+* basesonido.css
+*
+* estilos generales dise�ads para TReCC Base de Sonido
+* 
+* @package    	TReCC(tm) Procesos Participativos Urbanos.
+* @subpackage 	estilos
+* @author     	TReCC SA
+* @author     	<mario@trecc.com.ar> <trecc@trecc.com.ar>
+* @author    	www.trecc.com.ar  
+* @copyright	2013 2014 TReCC SA
+* @license    	http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 (GPL-3.0)
+* Este archivo es parte de TReCC(tm) paneldecontrol y de sus proyectos hermanos: baseobra(tm), TReCC(tm) intraTReCC  y TReCC(tm) Procesos Participativos Urbanos.
+* Este archivo es software libre: tu puedes redistriburlo 
+* y/o modificarlo bajo los t�rminos de la "GNU General Public License" 
+* publicada por la Free Software Foundation, version 3
+* 
+* Este archivo es distribuido por si mismo y dentro de sus proyectos 
+* con el objetivo de ser �til, eficiente, predecible y transparente
+* pero SIN NIGUNA GARANT�A; sin siquiera la garant�a impl�cita de
+* CAPACIDAD DE MERCANTILIZACI�N o utilidad para un prop�sito particular.
+* Consulte la "GNU General Public License" para m�s detalles.
+* 
+* Si usted no cuenta con una copia de dicha licencia puede encontrarla aqu�: <http://www.gnu.org/licenses/>.
+*/
+
+#pageborde {
+			    background-color: #000000;
+			    background-repeat: no-repeat;
+			    border-bottom: 1px solid;
+			    border-top: 1px solid;
+			    clear: both;
+			    height: auto;
+			    margin: 5px auto;
+			    position: relative;
+			    width: 1030px;
+			    z-index: 2;
+			}
+			
+			#page {
+			    background-color: #ffffff;
+			    background-image: none;
+			    background-repeat: no-repeat;
+			    border-top: 1px solid #ffffff;
+			    font-size: 15px;
+			    height: auto;
+			    margin: 8px;
+			    min-height: 465px;
+			    position: relative;
+			    width: 1015px;
+			    z-index: 2;
+			   }
+			   
+			.carganombre{
+				position:absolute;
+				left:-80px;
+				top:0px;
+				width:50px;	
+			}	
+				
+			#portamapa {
+				top:0px;
+				left:0px;
+			    position: relative;
+			    width: auto;
+			    height: auto;
+			}	
+			
+			.modelo{
+				display:none;
+			}	
+			
+			#modmapa {
+			    position: relative;
+			    width: 400px;
+			    height: 600px;
+			}
+			
+			#modformubic{
+				display:none;
+				position:absolute;
+				left:-200px;
+				width: 150px;
+				height: 90px;
+				border:4px solid #08afd9;
+				background-color:#fff;
+				border-radius: 10px;	
+				padding:10px;
+				top: -15;
+			}
+			
+			#modformubic > .desel{
+				position:absolute;
+				bottom:10px;
+				right: 10px;
+			}
+			#modformubic > #mapin{
+				border:1px solid #08afd9;
+				position:absolute;
+				bottom:10px;
+				left: 10px;
+				width:80px;
+				min-height:0;
+				height:55px;
+				display:block;
+			}
+			
+			div.tablarel > div.contenido > div.comun > div.arrastrar{
+				border-top:1px solid #000;
+				width: 100%;
+			}
+			
+			div.tablarel > div.contenido > div.comun {
+			    min-height: 72px;
+			}
+			
+			@media print{
+				div.id > a{
+					color:000;
+				}
+			}
+				
+			form.adjuntador{
+				margin:0;
+			}
+			form.adjuntador:hover{
+				background-color:lightblue;
+			}
+			
+			label.upload {
+			    display: inline-block;
+			    height: 40px;
+			    position: relative;
+			    width: 148px;
+			    border:none;
+			}
+			
+			span.upload {
+			    border: 0px solid #000;
+			    color: gray;
+			    display: block;
+			    height: 40px;
+			    left: 0;
+			    margin: 0;
+			    padding: 2px;
+			    position: absolute;
+			    text-align: center;
+			    top: 0;
+			    vertical-align: middle;
+			    width: 148px;
+			}	
+			
+			.uploadinput {
+			    border: 0px solid #000;
+			    display: block;
+			    height: 40px;
+			    left: 0;
+			    margin: 1px;
+			    opacity: 0;
+			    position: absolute;
+			    top: 0;
+			    vertical-align: middle;
+			    width: 150px;
+			}
+			
+		
+			iframe.locform{
+				width:800px;
+				height:400px;
+				position:fixed;
+				top:50px;
+				z-index:10;
+			}
