@@ -1,0 +1,44 @@
+#pieagpl{
+	width: 76px;
+	height: 25px;
+	display:block;
+	position:absolute;
+	bottom:2px;
+	right:2px;
+	background-color:#fff;
+	border:1px solid #08afd9;
+	box-shadow:2px 2px 4px #000;
+	z-index:5;
+	overflow:hidden;
+	cursor:pointer;
+	line-height: 19px;
+	text-align: center;
+}
+#pieagpl:hover{
+	background-color:#08afd9;	
+}
+#pieagpl:hover h2{
+	color:#000;	
+}
+
+
+#pieagpl h2{
+		margin-top:4px;
+	margin-left:5px;
+	font-size:15px;
+	color:#08afd9;
+}
+#pieagpl h3{
+	margin-left:5px;
+	font-size:13px;
+}
+	
+#pieagpl[estado='abierto']{
+	width:500px;
+	height:auto;
+}
+
+
+#pieagpl[estado='cerrado'] a{
+	display:none;
+}

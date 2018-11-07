@@ -1,0 +1,269 @@
+.item #max{
+    float:left;
+    margin-right:2px;
+}		
+.item h1{
+    display:inline-block;
+    margin-right:2px;
+}
+.item #resp{
+    display:inline-block;
+
+}
+.item #resp > .pack{
+    width:18px;
+    display:inline-block;		
+}
+.item #resp > .pack > a{
+    background-image:url('../img/usu.png');
+    width:14px;
+    height:16px;
+    color:#000;
+    text-align:center;
+    margin:2px;
+}
+.item #resp > .pack > a.vacio{
+    background-image:url('../img/usu_no.png');
+}	
+.item #resp > .pack > a.vos{
+    background-image:url('../img/usu_vos.png');
+}
+.item #resp > .estadoActividad{
+    width:100%;
+    display:inline-block;		
+}
+.barraProgresoPropio{
+    color:#000!important;
+    background-color:#f1f1f1!important;
+    font-size:10px!important;
+}
+.barraProgresoHerencia{
+    color:#000!important;
+    background-color:#f1f1f1!important;
+    font-size:10px!important;
+}
+.barraProgresoPropioBar{
+    color:#fff!important;
+    background-color:#4CAF50!important;
+}
+.barraProgresoHerenciaBar{
+    color:#fff!important;
+    background-color:#4CAF50!important;
+}
+.progressbar-container:after,.progressbar-container:before{
+    content:"";
+    display:table;
+    clear:both;
+}
+
+#editorresp #botoncierra {
+    position: absolute;
+    width: auto;
+    text-align: right;
+    right: 1vw;
+    top: 1vh;
+}
+#editorresp {
+    display: none;
+    position: fixed;
+    top: 20vh;
+    height: 60vh;
+    min-height: calc(10vh + 125px);
+    left: calc((100vw - 790px) / 2);
+    width: 790px;
+    background-color: #fff;
+    border: 1px solid #08afd9;
+    z-index: 20;
+    box-shadow: 10px 10px 40px rgba(0,0,0,0.8);
+}
+#editorresp > div{
+    display:inline-block;
+    width:240px;
+    border: 1px dashed #08afd9;
+    margin:5px;
+    margin-bottom:1px;
+    margin-top:1px;	
+    background-color:#fff;
+    font-size: 14px;
+    text-align:center;
+    vertical-align: top;
+}
+#editorresp > div#incluidos{
+    width:486px;
+}
+#editorresp > div#excluidos, #editorresp > div#incluidos{
+    min-height:100px;
+}
+#editorresp > div#tituloincluidos{
+    margin-right:0;
+}
+#editorresp > div#tituloresponsabilidad{
+    margin-left:0;
+}
+#editorresp > div#excluidos div{
+    color:#666;
+    cursor:pointer;
+}
+#editorresp > div#excluidos div:hover{
+    color:#000;
+    background-color:#08afd9;
+}
+#editorresp > div#excluidos input{
+    display:none;
+}
+#editorresp > div#incluidos div{
+    cursor:pointer;
+}
+#editorresp > div#incluidos div:hover{
+    color:#000;
+    background-color:#08afd9;
+}	
+#editorresp > div#incluidos div span{
+    display:inline-block;
+    width:220px;
+}		
+#editorresp > div#incluidos div input{
+    margin:0px;
+    width:220px;
+}	
+#editorresp > div#incluidos div input[estado='guardando']{
+    color:#d90;
+    background-color:#fc9;
+}
+#editorresp > div#incluidos div input[estado='editando']{
+    color:#d00;
+    background-color:#f99;
+}				
+#editorresp > div#incluidos div[estado="excluido"]{
+    display:none;
+}
+#editorresp > div#excluidos div[estado="incluido"]{
+    display:none;
+}	
+
+#editorresp > div > div span#log{
+    font-size: 70%;
+    font-weight:bold;
+    width:auto;
+}
+
+#editorlistadocs #botoncierra {
+    position: absolute;
+    width: auto;
+    text-align: right;
+    right: 1vw;
+    top: 1vh;
+}
+#editorlistadocs {
+    display: none;
+    position: fixed;
+    top: 20vh;
+    height: 60vh;
+    min-height: calc(10vh + 125px);
+    left: calc((100vw - 80vw) / 2);
+    width: 80vw;
+    background-color: #fff;
+    border: 1px solid #08afd9;
+    z-index: 20;
+    box-shadow: 10px 10px 40px rgba(0,0,0,0.8);
+}
+#editorlistadocs > div{
+    display:inline-block;
+    width: 25vw;
+    border: 1px dashed #08afd9;
+    margin:5px;
+    margin-bottom:1px;
+    margin-top:1px;	
+    background-color:#fff;
+    font-size: 14px;
+    text-align:center;
+    vertical-align: top;
+}
+#editorlistadocs > div#incluidos{
+    width: 50vw;
+    height: 50vh;
+}
+#editorlistadocs > div#excluidos{
+    height: 50vh;
+}
+
+#editorlistadocs > div#excluidos, #editorlistadocs > div#incluidos{
+    min-height:100px;
+    overflow-y: scroll;
+}
+#editorlistadocs > div#tituloincluidos{
+    margin-right:0;
+}
+#editorlistadocs > div#documentocomentario{
+    margin-left:0;
+}
+#editorlistadocs > div#excluidos div{
+    color:#666;
+    cursor:pointer;
+}
+#editorlistadocs > div#excluidos div:hover{
+    color:#000;
+    background-color:#08afd9;
+}
+#editorlistadocs > div#excluidos input{
+    display:none;
+}
+#editorlistadocs > div#incluidos div{
+    cursor:pointer;
+}
+#editorlistadocs > div#incluidos div:hover{
+    color:#000;
+    background-color:#08afd9;
+}	
+#editorlistadocs > div#incluidos div span{
+    display:inline-block;
+    width:50%;
+}		
+#editorlistadocs > div#incluidos div input{
+    margin:0px;
+    width:47%;
+}	
+#editorlistadocs > div#incluidos div input[estado='guardando']{
+    color:#d90;
+    background-color:#fc9;
+}
+#editorlistadocs > div#incluidos div input[estado='editando']{
+    color:#d00;
+    background-color:#f99;
+}				
+#editorlistadocs > div#incluidos div[estado="excluido"]{
+    display:none;
+}
+#editorlistadocs > div#excluidos div[estado="incluido"]{
+    display:none;
+}	
+
+#editorlistadocs > div > div span#log{
+    font-size: 70%;
+    font-weight:bold;
+    width:auto;
+}
+
+#contenidoextenso {
+    width: 1000px;
+    margin-top: 10px;
+    height: calc( 100vh - 155px);
+    overflow-y: scroll;
+}
+
+.CarpetaDocs{
+    font-size: 70%;
+    font-weight:bold;
+    width:100%;
+    cursor: default;
+}
+
+.CarpetaDocs:hover{ 
+}
+
+#menuacciones{
+	position:absolute;
+	top:0px;
+	right:0px;
+}
+
