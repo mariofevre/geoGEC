@@ -23,6 +23,10 @@
 * 
 * Si usted no cuenta con una copia de dicha licencia puede encontrarla aqu�: <http://www.gnu.org/licenses/>.
 */
+h2{
+margin-top: 4px;
+margin-bottom: 0px;
+}
 #page{
 	border:none;
 }
@@ -42,9 +46,17 @@
 #cuadrovalores{
 	display:inline-block;
 	vertical-align:top;
-	width:40%
+	width:40%;
+	position: relative;
 }
-	
+#encabezado{
+   font-size: 12px;
+
+}
+#encabezado p{
+   font-size: 12px;
+
+}
 .celda{
 	display:inline-block;
 	width:180px;
@@ -85,7 +97,7 @@ div.nombre[estado='activo']:hover{
 }	
 	
 #titulomapa b p{
-	background-color:rgba(255,155,155,0.5);
+	background-color:rgba(255,102,0,1);
 	border:1px solid #ff3333;
 	display:inline-block;
 	border-radius:8px;
@@ -130,7 +142,7 @@ div.nombre[estado="activo"][selecto='si']{
 }
 
 #shp select{
-	width: 100%;
+	width: 99%;
 }
 
 .cerrar{
@@ -138,7 +150,12 @@ div.nombre[estado="activo"][selecto='si']{
 	right:0px;
 	top:0px;
 }
-	
+
+#menutablas #lista{
+	max-height:160px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
 #menutablas #lista a{
 	vertical-align:middle;
 	margin-left:3px;
@@ -152,8 +169,61 @@ div.nombre[estado="activo"][selecto='si']{
 	width:300px;
 	text-align:left;
 }
+#menuelementos{
+	display:none;
+}
+#menuelementos #lista{
+	max-height:135px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+#menuelementos #lista a:hover{
+    background-color:#ff6600;
+}
+#menuelementos #lista a[estado='selecto']{
+    background-color:#ff6600;
+}
+#menuelementos #lista a{
+	vertical-align:middle;
+	margin-left:3px;
+	width:396px;
+	text-align:left;
+    background-color: rgba(255, 102, 0, 0.2);
+    border: 1px solid #ff6600;
+    height: 15px;
+    color:#000;
+    margin-bottom:1px;
+}
+#menuelementos #lista a span.nom{
+	margin-left:3px;
+	display:inline-block;
+	width:286px;
+	overflow:hidden;
+	text-align:left;
+	height:15px;
+}
+#menuelementos #lista a span.cod{
+	
+	display:inline-block;
+	font-size:11px;
+	width:100px;
+	overflow:hidden;
+	text-align:left;
+}
 #menuacciones{
 	display:none;
+}
+#menuacciones #lista a{
+	margin-left:5px;
+}
+#menuacciones #lista a:hover{
+	background-color:#e41937;
+}
+#menuacciones #lista a > img:hover{
+		background-color:#e41937;
+}
+#menuelementos #lista a[cargado='si']{
+    background-color: rgba(228,25,55,1);
 }
 #menudatos{
 	display:none;
@@ -312,3 +382,4 @@ select{
 	box-shadow:10px 10px 5px rgba(50, 50, 50, 0.5);
 	z-index:2000;
 }
+
