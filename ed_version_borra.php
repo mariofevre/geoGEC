@@ -36,19 +36,20 @@
 // verificación de seguridad 
 //include('./includes/conexion.php');
 ini_set('display_errors', '1');
+$GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
 
-session_start();
+if(!isset($_SESSION)) { session_start(); }
 
 // funciones frecuentes
 // funciones frecuentes
 // funciones frecuentes
-include("./includes/fechas.php");
-include("./includes/cadenas.php");
-include("./includes/pgqonect.php");
-include("./usu_validacion.php");
+include($GeoGecPath."/includes/fechas.php");
+include($GeoGecPath."/includes/cadenas.php");
+include($GeoGecPath."/includes/pgqonect.php");
+include($GeoGecPath."/usuarios/usu_validacion.php");
 $Usu= validarUsuario();
 
-require_once('./classes/php-shapefile/src/ShapeFileAutoloader.php');
+require_once($GeoGecPath.'/classes/php-shapefile/src/ShapeFileAutoloader.php');
 \ShapeFile\ShapeFileAutoloader::register();
 // Import classes
 use \ShapeFile\ShapeFile; 
@@ -109,7 +110,7 @@ SELECT
   	AND 
   		id = '".$_POST['id']."'
   	AND
-  		usu_autor = '".$Usu['datos']['id']."'
+  		usu_autor = '".$_SESSION["geogec"]["usuario"]['id']."'
  ";
 $ConsultaVer = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -142,9 +143,6 @@ if($f['zz_publicada']=='1'){
 }
 
 
-
-
-
 $query="
 UPDATE geogec.sis_versiones
    SET 
@@ -158,7 +156,7 @@ UPDATE geogec.sis_versiones
 	AND
 		zz_publicada = '0'
 	AND
-  		usu_autor = '".$Usu['datos']['id']."'
+  		usu_autor = '".$_SESSION["geogec"]["usuario"]['id']."'
 ";
 $ConsultaVer = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -171,7 +169,4 @@ if(pg_errormessage($ConecSIG)!=''){
 
 
 $Log['res']='exito';
-terminar($Log);		
-?>
-
-
+terminar($Log);

@@ -28,7 +28,7 @@ include ('./includes/encabezado.php');
 include('./includes/pgConect.php');	
 ini_set('display_errors', '1');
 
-include_once("./usu_validacion.php");
+include_once("./usuarios/usu_validacion.php");
 $Usu = validarUsuario(); // en ./usu_valudacion.php
 
 
@@ -73,7 +73,7 @@ SELECT
   	AND
  	 	zz_publicada = '0'
   	AND
-  		usu_autor = '".$Usu['datos']['id']."'
+  		usu_autor = '".$_SESSION["geogec"]["usuario"]['id']."'
  ";
 $ConsultaVer = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -101,9 +101,9 @@ if($fila['zz_publicada']=='1'){
 	$Log['res']='err';
 	terminar($Log);	
 }
-if($fila['usu_autor']!=$Usu['datos']['id']){
+if($fila['usu_autor']!=$_SESSION["geogec"]["usuario"]['id']){
 	$Log['tx'][]='query: '.$query;
-	$Log['mg'][]='usted no figura como el autor de esta versión: '.$Usu['datos']['id'];
+	$Log['mg'][]='usted no figura como el autor de esta versión: '.$_SESSION["geogec"]["usuario"]['id'];
 	$Log['res']='err';
 	terminar($Log);	
 }

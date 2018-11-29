@@ -33,7 +33,7 @@
 //include('./includes/conexion.php');
 ini_set('display_errors', '1');
 
-session_start();
+if(!isset($_SESSION)) { session_start(); }
 
 // funciones frecuentes
 include("./includes/fechas.php");
@@ -83,6 +83,7 @@ $query="
 	SELECT id, \"".$Conf['campo_id_humano']."\" nom, \"".$Conf['campo_id_geo']."\" cod, ST_AsText(ST_SnapToGrid(ST_Centroid(geo),1)) geo
 	FROM geogec.".$_POST['tabla']." 
 	WHERE zz_obsoleto = '0'
+	order by nom
 ";
 $ConsultaProy = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -98,9 +99,10 @@ if(pg_num_rows($ConsultaProy)<1){
 	$Log['res']='err';
 	terminar($Log);	
 }
-
+	$Log['data']['tabla']=$_POST['tabla'];
 while($fila=pg_fetch_assoc($ConsultaProy)){
 	$Log['data']['centroides'][$fila['id']]=$fila;
+	$Log['data']['centroidesOrden'][]=$fila['id'];
 	//$Log['data']['centroides'][$fila['id']]['nom']=utf8_encode($fila['nom']);
 }	
 

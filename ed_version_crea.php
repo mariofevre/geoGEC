@@ -31,17 +31,18 @@
 // verificación de seguridad 
 //include('./includes/conexion.php');
 ini_set('display_errors', true);
+$GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
 
-session_start();
+if(!isset($_SESSION)) { session_start(); }
 
 // funciones frecuentes
-include("./includes/fechas.php");
-include("./includes/cadenas.php");
-include("./includes/pgqonect.php");
-include_once("./usu_validacion.php");
+include($GeoGecPath."/includes/fechas.php");
+include($GeoGecPath."/includes/cadenas.php");
+include($GeoGecPath."/includes/pgqonect.php");
+include_once($GeoGecPath."/usuarios/usu_validacion.php");
 $Usu = validarUsuario(); // en ./usu_valudacion.php
 
-require_once('./classes/php-shapefile/src/ShapeFileAutoloader.php');
+require_once($GeoGecPath.'/classes/php-shapefile/src/ShapeFileAutoloader.php');
 \ShapeFile\ShapeFileAutoloader::register();
 // Import classes
 use \ShapeFile\ShapeFile; 
@@ -104,7 +105,7 @@ if(pg_num_rows($ConsultaProy)<1){
 }
 
 
-if($Usu['acc']['est']['gral']<3){
+if($Usu['acc']['general']['general']['general']<3){
 	$Log['tx'][]='query: '.$query;
 	$Log['mg'][]=utf8_encode('no cuenta con permisos para generar una nueva versión de una capa estructural de la plataforma geoGEC');
 	$Log['res']='err';
@@ -148,7 +149,7 @@ SELECT
   	AND
  	 	zz_publicada = '0'
   	AND
-  		usu_autor = '".$Usu['datos']['id']."'
+  		usu_autor = '".$_SESSION["geogec"]["usuario"]['id']."'
  ";
  
 	$Log['tx'][]='query: '.$query; 
@@ -168,7 +169,15 @@ if(pg_num_rows($ConsultaVer)>0){
 	$Log['data']['version']=pg_fetch_assoc($ConsultaVer);
 	
 	$carpeta='./documentos/subidas/ver/'.str_pad($Log['data']['version']['id'],8,"0",STR_PAD_LEFT);
-	$dir=scandir($carpeta);	
+	        
+        if(!file_exists($carpeta)){
+            $Log['tx'][]="creando carpeta $carpeta";
+            mkdir($carpeta, 0777, true);
+            chmod($carpeta, 0777);	
+        }
+
+        $dir=scandir($carpeta);
+        
 	$Log['data']['archivos']=array();
 	foreach($dir as $v){
 		if($v=='..'){continue;}
@@ -369,6 +378,7 @@ SELECT id, tabla, nombre, fechau, zz_borrada, zz_publicada,
   	AND
   	zz_obsoleto = '0'
  ";
+
 $ConsultaVer = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
 	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
@@ -428,7 +438,7 @@ $query="
     	VALUES (
     		'".$_POST['tabla']."', 
     		'".$Nombre."', 
-    		'".$Usu['datos']['id']."',
+    		'".$_SESSION["geogec"]["usuario"]['id']."',
     		'".time()."')
     	RETURNING id
 ";
@@ -460,7 +470,7 @@ SELECT
   	AND
  	 	zz_publicada = '0'
   	AND
-  		usu_autor = '".$Usu['datos']['id']."'
+  		usu_autor = '".$_SESSION["geogec"]["usuario"]['id']."'
   	AND
   		id ='".$Nid."'
  ";
@@ -509,4 +519,3 @@ $Log['data']['shp']['mg']='';
 	
 $Log['res']='exito';
 terminar($Log);		
-?>

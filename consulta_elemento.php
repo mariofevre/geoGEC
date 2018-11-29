@@ -31,7 +31,7 @@
 //include('./includes/conexion.php');
 ini_set('display_errors', '1');
 
-session_start();
+if(!isset($_SESSION)) { session_start(); }
 
 // funciones frecuentes
 include("./includes/fechas.php");
@@ -68,9 +68,28 @@ if(!isset($_POST['id'])&&!isset($_POST['cod'])){
 if(!isset($_POST['id'])){$_POST['id']=0;}
 if($_POST['id']==''){$_POST['id']=0;}
 
+
+$Acc=0;
+if(isset($_SESSION["geogec"]["usuario"]['id'])){
+
+	include_once('./usuarios/usu_validacion.php');
+	global $ConecSIG;
+	$Usu =validarUsuario();//en include_once("./usuarios/usu_validacion.php");
+	
+	if(isset($Usu['acc']['general']['general']['general'])){
+		$Acc=$Usu['acc']['general']['general']['general'];
+	}
+	if(isset($Usu['acc'][$_POST['tabla']]['general']['general'])){
+		$Acc=$Usu['acc'][$_POST['tabla']]['general']['general'];
+	}
+}
+
 $query="
-	SELECT id, campo_id_geo, campo_id_humano, tabla, nombre_humano, descripcion, 
-	       resumen, tipo_geometria, crs, categoria_tabla_geogec
+	SELECT 		
+		id, 
+		campo_id_geo, campo_id_humano, campo_desc_humano,
+		tabla, nombre_humano, descripcion, 
+	    resumen, tipo_geometria, crs, categoria_tabla_geogec
 	  FROM geogec.sis_tablas_config
 	  WHERE
 	  tabla = '".$_POST['tabla']."'
@@ -85,7 +104,7 @@ $query="
 	if(pg_num_rows($ConsultaProy)<1){
 		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
 		$Log['tx'][]='query: '.$query;
-		$Log['mg'][]='no se encontró el proyecto solicitado en la base de datos';
+		$Log['mg'][]=utf8_encode('no se encontró el proyecto solicitado en la base de datos');
 		$Log['res']='err';
 		terminar($Log);	
 	}
@@ -98,8 +117,15 @@ $query="
 	}	
 
 	$query="
-	SELECT id, tabla, accion
-	  FROM geogec.sis_tablas_acciones
+	SELECT 
+		tabla, accion, resumen, accmin
+	  FROM 
+	  	geogec.sis_tablas_acciones,
+	  	geogec.sis_acciones
+	  WHERE 
+	  	tabla='".$_POST['tabla']."'
+	  	AND 
+	  	sis_acciones.codigo=sis_tablas_acciones.accion
 	";
 	$ConsultaProy = pg_query($ConecSIG, $query);
 	if(pg_errormessage($ConecSIG)!=''){
@@ -108,29 +134,29 @@ $query="
 		$Log['res']='err';
 		terminar($Log);
 	}
-	if(pg_num_rows($ConsultaProy)<1){
-		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-		$Log['tx'][]='query: '.$query;
-		$Log['mg'][]='no se encontró el proyecto solicitado en la base de datos';
-		$Log['res']='err';
-		terminar($Log);	
-	}
 	
 	while($fila=pg_fetch_assoc($ConsultaProy)){
-		$Log['data']['tablasConf']['acciones'][]=$fila['accion'];
+		$Log['data']['tablasConf']['acciones'][$fila['accion']]=$fila;
 		//if($fila=='categoria_tabla_geogec'){continue;}
 	}	
 
 		
 	$query="
 		SELECT 
-		*
+			*,
+			ST_AsText(geo) as geotx
 		FROM 
 			geogec.".$_POST['tabla']."
 		WHERE 
+		 zz_obsoleto = '0'
+		 AND
+		 (
 			\"".$Log['data']['tablasConf']['campo_id_geo']."\" = '".$_POST['cod']."'
 		OR			
 			id = '".$_POST['id']."'
+			)
+			
+			
 	";
 	$ConsultaProy = pg_query($ConecSIG, $query);
 	if(pg_errormessage($ConecSIG)!=''){
@@ -148,7 +174,29 @@ $query="
 	}
 	
 	while($fila=pg_fetch_assoc($ConsultaProy)){
+			
+		if(isset($Usu['acc'])){
+			if(isset($Usu['acc'][$_POST['tabla']][$_POST['cod']]['general'])){
+				$Acc=$Usu['acc'][$_POST['tabla']][$_POST['cod']]['general'];
+			}
+		}
+		
+		if(isset($fila['zz_accesolibre'])){
+			if($fila['zz_accesolibre']=='1'){
+				$Acc=max('2',$Acc);
+			}
+		}
+		
 		$Log['data']['elemento']=$fila;
+		$Log['data']['elemento']['acceso']=$Acc;
+		
+		foreach($Log['data']['tablasConf']['acciones'] as $accion => $accdata){
+			$accAccion=$Acc;
+			if(isset($Usu['acc'][$_POST['tabla']][$_POST['cod']][$accion])){
+				$accAccion=$Usu['acc'][$_POST['tabla']][$_POST['cod']][$accion];
+			}
+			$Log['data']['elemento']['accesoAccion'][$accion]=$Acc;
+		}
 	}	
 
 $Log['res']='exito';

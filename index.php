@@ -2,8 +2,8 @@
 /**index.php
 *
 * aplicacioón de presentación terriotrial de trabajos del GEC
- * 
- *  
+* 
+*  
 * @package    	geoGEC
 * @author     	GEC - Gestión de Espacios Costeros, Facultad de Arquitectura, Diseño y Urbanismo, Universidad de Buenos Aires.
 * @author     	<mario@trecc.com.ar>
@@ -29,7 +29,7 @@
 
 // verificación de seguridad 
 //include('./includes/conexion.php');
-session_start();
+if(!isset($_SESSION)) { session_start(); }
 
 // funciones frecuentes
 include("./includes/fechas.php");
@@ -45,6 +45,7 @@ $HOY = $Hoy_a."-".$Hoy_m."-".$Hoy_d;
 // medicion de rendimiento lamp 
 $starttime = microtime(true);
 ?>
+
 <head>
 	<title>GEC - Plataforma Geomática</title>
 	<?php include("./includes/meta.php");?>
@@ -55,10 +56,49 @@ $starttime = microtime(true);
 	<link rel="manifest" href="pantallahorizontal.json">
 	<link href="./css/BA_salidarelevamiento.css" rel="stylesheet" type="text/css">
 	<link href="./css/geogecindex.css" rel="stylesheet" type="text/css">
+
+	<link href="./usuarios/usuarios.css" rel="stylesheet" type="text/css">	
+	<link href="./js/ol4.2/ol.css" rel="stylesheet" type="text/css">
+		
+	<style type='text/css'>
+		#menudatos #descripcion{
+			font-size:14px;
+			text-align:justify;
+		}
+		
+		div#cuadrovalores div#encabezado > h1 a{
+			display:none;			
+		}	
+	</style>	
 	
+	<style id='elementoSeleccionado' type='text/css'>
 	
-	<style type='text/css'>					
-	
+		div#cuadrovalores[cargado='si'] div#encabezado > h1 a{
+			display:inline-block;
+		}	
+		
+		div#cuadrovalores[cargado='si'] div#encabezado > p, div#encabezado > ul{
+			display:none;
+		}
+		div#cuadrovalores[cargado='si'] div#elemento{
+			display:none;
+		}
+		
+		div#cuadrovalores[cargado='si'] div#menutablas{
+			display:none;
+		}		
+
+		
+		div#cuadrovalores[cargado='si'] div#menuelementos #titulo{
+			display:none;
+		}		
+		
+		div#cuadrovalores[cargado='si'] div#menuelementos #lista a[cargado='si']{
+			display:block;
+		}
+		div#cuadrovalores[cargado='si'] div#menuelementos #lista a{
+			display:none;
+		}				
 	</style>	
 </head>
 
@@ -72,6 +112,8 @@ $starttime = microtime(true);
 <div id="pageborde">
 	<div id="page">
 		
+		<?php include('./usuarios/usu_acceso.php');?>
+		
 		<div id='portamapa'>
 			<div id='titulomapa'><p id='tnombre'></p><h1 id='tnombre_humano'></h1><p id='tdescripcion'></p><b><p id='tseleccion'></p></b></div>
 			<div id='mapa'></div>
@@ -83,8 +125,8 @@ $starttime = microtime(true);
 		
 		<div id='cuadrovalores'>
 			<div class='fila' id='encabezado'>
-				<h1>geoGEC</h1>
-				<p>Plataforma Geomática del centro de Gestión de Espacios Costeros</p>
+				<h1>geoGEC<a href='./index.php'>volver al inicio</a></h1>
+				<p>Plataforma Geomática del centro <a target='blanck' href="http://www.municipioscosteros.org/nuestros-principios.aspx">Gestión de Espacios Costeros</a></p>
 				<p>En este espacio se incorporan datos estructurados para la visualización de las perspectivas de abordaje del GEC</p>
 				<p>Aquí proponemos tres niveles de información geográfica</p>
 				<ul>
@@ -103,16 +145,24 @@ $starttime = microtime(true);
 				<h2 id='titulo'>menu de capas estructurales</h2>
 				<div id='lista'></div>	
 			</div>	
+			<div id='menuelementos'>
+				<h2 id='titulo'>menu de elementos disponbiles</h2>
+				<div id='lista'></div>	
+			</div>	
 			<div id='menuacciones'>
 				<h3 id='titulo'>menu de acciones disponibles</h3>
 				<div id='lista'></div>	
 			</div>					
 			<div id='menudatos'>
 				<h3 id='titulo'>menu de datos cargados</h2>
+				<div id='descripcion'></div>	
 				<div id='lista'></div>	
 			</div>
+			
 		</div>
 
+		<?php include('./autorias.php');?>
+		
 	</div>	
 </div>	
 
@@ -180,8 +230,5 @@ $starttime = microtime(true);
 <script type="text/javascript" src="./index_consultas.js"></script> <!-- carga funciones consulta de datos-->
 <script type="text/javascript" src="./index_upload.js"></script> <!-- carga funciones de upload de SHP-->
 <script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
-
-
-
 
 </body>

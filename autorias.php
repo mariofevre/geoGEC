@@ -1,0 +1,63 @@
+<?php 
+/**
+* aplicación de visualización y gestion de documentos de trabajo. consulta carga y genera la interfaz de configuración de lo0s mismos.
+ * 
+ *  
+* @package    	geoGEC
+* @subpackage 	app_docs. Aplicacion para la gestión de documento
+* @author     	GEC - Gestión de Espacios Costeros, Facultad de Arquitectura, Diseño y Urbanismo, Universidad de Buenos Aires.
+* @author     	<mario@trecc.com.ar>
+* @author    	http://www.municipioscosteros.org
+* @author		based on TReCC SA Panel de control. https://github.com/mariofevre/TReCC---Panel-de-Control/
+* @copyright	2018 Universidad de Buenos Aires
+* @copyright	esta aplicación se desarrollo sobre una publicación GNU 2017 TReCC SA
+* @license    	http://www.gnu.org/licenses/gpl.html GNU AFFERO GENERAL PUBLIC LICENSE, version 3 (GPL-3.0)
+* Este archivo es software libre: tu puedes redistriburlo 
+* y/o modificarlo bajo los términos de la "GNU AFFERO GENERAL PUBLIC LICENSE" 
+* publicada por la Free Software Foundation, version 3
+* 
+* Este archivo es distribuido por si mismo y dentro de sus proyectos 
+* con el objetivo de ser útil, eficiente, predecible y transparente
+* pero SIN NIGUNA GARANTÍA; sin siquiera la garantía implícita de
+* CAPACIDAD DE MERCANTILIZACIÓN o utilidad para un propósito particular.
+* Consulte la "GNU General Public License" para más detalles.
+* 
+* Si usted no cuenta con una copia de dicha licencia puede encontrarla aquí: <http://www.gnu.org/licenses/>.
+* 
+*
+*/
+?>
+<script>
+	$('head').append('<link rel="stylesheet" type="text/css" href="./css/autorias.css?v=2">');
+</script>	
+
+<div id='pieagpl' estado='cerrado' onclick='abrecierra(this);'>
+	<h2>ver origen</h2>
+	<h3>Este proyecto fue desarrollado a partir de las siguientes tecnologías y proyectos</h3>
+	
+	<a target="_blank"  href="https://github.com/mariofevre/UNMgeo" class="tec" title="plataforma geomática de la Universidad Nacional de Moreno ">UNM(tm) UNMgeo</a>
+	<a target="_blank"  href="https://github.com/mariofevre/UNmapa/" class="tec" title="Herramienta pedágogica para la construccion colaborativa del territorio.">UNM(tm) UNmapa</a>
+	<a target="_blank"  href="https://github.com/mariofevre/TReCC---Panel-de-Control" class="tec" title="plataforma de seguimiento de sistemas de indicadores">TReCC(tm) Panel de Control</a>
+	<a target="_blank"  href="https://github.com/mariofevre/MAPAUBA/" class="tec" title="Proyecto Plataforma Colectiva de Información Territorial: UBATIC2014">UBA(tm) MAPAUBA</a>
+	<a target="_blank"  href="http://www.baseobra.com.ar/" class="tec" title="plataforma de construcción colectiva de conocimiento técnico">baseobra</a>
+	<a target="_blank"  href="http://www.trecc.com.ar/recursos/proyectoppu.htm" class="tec" title="plataforma para procesos urbano-territoriales participativos">TReCC(tm) PPU</a>
+
+
+</div>
+
+
+<script>
+
+	function abrecierra(_this){
+		if(_this.getAttribute('estado')=='cerrado'){
+			_this.setAttribute('estado','abierto');
+			_this.querySelector('h2').innerHTML='ocultar origen';
+			
+		}else if(_this.getAttribute('estado')=='abierto'){
+			_this.setAttribute('estado','cerrado');
+			_this.querySelector('h2').innerHTML='ver origen';
+		}
+	}
+	
+	
+</script>		

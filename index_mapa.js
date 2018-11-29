@@ -27,6 +27,7 @@
 //funciones para el control del mapa
 
 var _MapaCargado='no';
+var _mapaEstado='';
 var mapa={};
 var vectorLayer={};
 var _source={};
@@ -39,17 +40,36 @@ var	_ExtraBaseWmsSource = new ol.source.TileWMS();//variable source utilizada po
 var La_ExtraBaseWms = new ol.layer.Tile();
 
 //definicion de variables para el layer de centroides
-var _lyrCentSrc = new ol.source.Vector();
+var _lyrCentSrc = new ol.source.Vector(
+	{
+		attributions: [
+		    new ol.Attribution({
+		      html: 'contenidos: ' + '<a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>'
+		    })]
+  	}
+);
 var _lyrCent = new ol.layer.Vector({
 	name:'centroides'
 });   
-
+var _CentSelStyle = new ol.style.Style();
+var _CentStyle = new ol.style.Style();
 //definicion de variables para el layer de elemento consultado
-var _lyrElemSrc = new ol.source.Vector();
-var _lyrElem = new ol.layer.Vector({
-	name:'elemento consultado'
-});   
+var _lyrElemSrc = new ol.source.Vector(
+	{
+		attributions: [
+		    new ol.Attribution({
+		      html: 'contenidos: ' + '<a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>'
+		    })]
+  	}	
+);
 
+var _lyrElemStyle = new ol.style.Style();
+var _lyrElem = new ol.layer.Vector({
+	name:'elemento consultado',
+	source: _lyrElemSrc
+
+});   
+_lyrElem.setStyle(_CentSelStyle);
 
 function cargarMapa(){
 	
@@ -75,15 +95,15 @@ function cargarMapa(){
     
     var styleDef = new ol.style.Style({
 	     image:	new ol.style.Circle({
-				    radius: 5,
-				    fill: _yFill,
-				    stroke: _yStroke
-				})
+			    radius: 5,
+			    fill: _yFill,
+			    stroke: _yStroke
+			})
     });
     
 	_source = new ol.source.Vector({ 
 		wrapX: false,   
-    	projection: 'EPSG:3857'      
+    	projection: 'EPSG:3857' 
     }); 
     
     var styleArea = new ol.style.Style({
@@ -129,7 +149,7 @@ function cargarMapa(){
 	
     var sobrePunto = function(pixel) {      
 		//if(_Dibujando=='si'){return;}	
-    	
+    	if(_mapaEstado=='dibujando'){return;}   
         var feature = mapa.forEachFeatureAtPixel(pixel, function(feature, layer){
 	        if(layer.get('name')=='centroides'){	        	
 	          return feature;
@@ -138,16 +158,18 @@ function cargarMapa(){
 	        }
         });
        
-       
        if(_lyrCent.getSource()!=null){
+       	
 	        if(feature==undefined){
 	        	
-	        	 _features = _lyrCent.getSource().getFeatures();
+	        	_features = _lyrCent.getSource().getFeatures();
 	        	for(_nn in _features){        		
 	        		_features[_nn].setStyle(_CentStyle);        		
 		    		document.querySelector('#tseleccion').innerHTML='';
 		    		document.querySelector('#tseleccion').style.display='none';	    	
 		    		document.querySelector('#tseleccion').removeAttribute('cod');
+		    		
+		    		document.querySelector('#menuelementos #lista a[centid="'+_features[_nn].getId()+'"]').removeAttribute('estado');
 	    		}
 	    		return;
 	        }
@@ -157,20 +179,18 @@ function cargarMapa(){
 	        document.querySelector('#tseleccion').setAttribute('cod',_pp.cod);
 			document.querySelector('#tseleccion').innerHTML=_pp.nom;
 			document.querySelector('#tseleccion').style.display='inline-block';
-		}
-    	  
-		         
+			document.querySelector('#menuelementos #lista a[centid="'+feature.getId()+'"]').setAttribute('estado','selecto');
+		}   
     }
+    
  
 	var _cargado='no';
 
-		
 	vectorLayer = new ol.layer.Vector({
 		name: 'vectorLayer',
 		style: styleArea
 	    //source: _source
 	});
-	
 	
 	var resaltadoLayer = new ol.layer.Vector({
 		style: styleMapResalt,
@@ -195,13 +215,13 @@ function cargarMapa(){
 	
 	_view =	new ol.View({
       projection: 'EPSG:3857',
-      center: [-7000000,-5113000],
-      zoom: 4,
+      center: [-7000000,-4213000],
+      zoom: 5,
       minZoom:2,
       maxZoom:19	      
 	});
 
- var tablaRasLayer = new ol.layer.Image();
+	var tablaRasLayer = new ol.layer.Image();
  /*
 	 var tablaRasLayer = new ol.layer.Image({
 	    source: new ol.source.ImageWMS({
@@ -216,12 +236,25 @@ function cargarMapa(){
 	});
 	*/
 	//var _sourceBaseOSM=new ol.source.OSM();
-	var _sourceBaseOSM=new ol.source.Stamen({layer: 'toner'});
+	var _sourceBaseOSM=new ol.source.Stamen({
+		layer: 'toner'
+	});
+	
+	_sourceBaseOSM.setAttributions(
+		new ol.Attribution({
+		      html: 'base: ' + '<a href="http://stamen.com/">Stamen Design</a>' + ', '+ '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		    })
+	)
+
 	
 	var _sourceBaseBING=new ol.source.BingMaps({
-		 	key: 'CygH7Xqd2Fb2cPwxzhLe~qz3D2bzJlCViv4DxHJd7Iw~Am0HV9t9vbSPjMRR6ywsDPaGshDwwUSCno3tVELuob__1mx49l2QJRPbUBPfS8qN',
-		 	imagerySet:  'Aerial'
-		});
+	 	key: 'CygH7Xqd2Fb2cPwxzhLe~qz3D2bzJlCViv4DxHJd7Iw~Am0HV9t9vbSPjMRR6ywsDPaGshDwwUSCno3tVELuob__1mx49l2QJRPbUBPfS8qN',
+	 	imagerySet:  'Aerial'
+	});
+		
+	_sourceBaseBING.setAttributions(
+		['base satelital: ' + '<a target="blank" href="https://www.microsoft.com/en-us/maps/product"><img src="https://dev.virtualearth.net/Branding/logo_powered_by.png"> Microsoft</a>']
+	)
 	
 	var layerOSM = new ol.layer.Tile({
 		 
@@ -232,7 +265,7 @@ function cargarMapa(){
 	});	
 
 	 
-   	var _CentStyle = new ol.style.Style({
+   	_CentStyle = new ol.style.Style({
          image: new ol.style.Circle({
 		       fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
 		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5}),
@@ -242,24 +275,37 @@ function cargarMapa(){
 		 stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5})
      });
      
-   	var _CentSelStyle = new ol.style.Style({
+   	_CentSelStyle = new ol.style.Style({
          image: new ol.style.Circle({
-		       fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
+		       fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
 		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
 		       radius: 6
 		 }),
-		 fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
-		 stroke: new ol.style.Stroke({color: '#ff3333',width: 1.8})
+		 fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
+		 stroke: new ol.style.Stroke({color: '#ff3333',width: 1.8}),
+		 zIndex:100
      });
         
 	_lyrCent.setStyle(_CentStyle);
-
+   	_lyrElemStyle = new ol.style.Style({
+         image: new ol.style.Circle({
+		       fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
+		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
+		       radius: 6
+		 }),
+		 fill: new ol.style.Fill({color: 'rgba(228,25,55,0.5)'}),
+		 stroke: new ol.style.Stroke({color: 'rgba(228,25,55,0.8)',width: 2}),
+		 zIndex:1
+     });
+     
+     _lyrElem.setStyle(_lyrElemStyle);
     La_ExtraBaseWms = new ol.layer.Tile({
         visible: true,
         source: _ExtraBaseWmsSource
     });
     
-    	
+   	
+    
 	mapa = new ol.Map({
 	    layers: [
 			layerOSM,
@@ -301,8 +347,8 @@ function cargarMapa(){
         sobrePunto(pixel);
     });
 
-    mapa.on('click', function(evt){
-       consultaPunto(evt.pixel,evt);       
+    mapa.on('click', function(evt){    	
+      consultaPunto(evt.pixel,evt);       
     });
 
 	_view.on('change:resolution', function(evt){
@@ -325,7 +371,7 @@ function cargarMapa(){
 		
 	    if(_MapaCargado=='no'){return;}
 		_cod=document.querySelector('#titulomapa #tseleccion').getAttribute('cod');		
-		_tabla=document.querySelector('#titulomapa #tnombre').innerHTML;		
+		_tabla=document.querySelector('#titulomapa #tnombre').innerHTML;	
 		consultarElemento('0',_cod,_tabla);
 
 	}

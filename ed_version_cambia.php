@@ -25,19 +25,20 @@
 * 
 * Si usted no cuenta con una copia de dicha licencia puede encontrarla aquí: <http://www.gnu.org/licenses/>.
 */
-ini_set('display_errors', '1');
 
-session_start();
+ini_set('display_errors', 1);
+$GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
+
+if(!isset($_SESSION)) { session_start(); }
 
 // funciones frecuentes
-// funciones frecuentes
-include("./includes/fechas.php");
-include("./includes/cadenas.php");
-include("./includes/pgqonect.php");
-include_once("./usu_validacion.php");
+include($GeoGecPath."/includes/fechas.php");
+include($GeoGecPath."/includes/cadenas.php");
+include($GeoGecPath."/includes/pgqonect.php");
+include_once($GeoGecPath."/usuarios/usu_validacion.php");
 $Usu= validarUsuario();
 
-require_once('./classes/php-shapefile/src/ShapeFileAutoloader.php');
+require_once($GeoGecPath.'/classes/php-shapefile/src/ShapeFileAutoloader.php');
 \ShapeFile\ShapeFileAutoloader::register();
 // Import classes
 use \ShapeFile\ShapeFile; 
@@ -59,7 +60,6 @@ function terminar($Log){
 	exit;	
 }
 
-
 if(!isset($_POST['tabla'])){
 	$Log['mg'][]=utf8_encode('error en las variables enviadas para guardar una versión. Consulte al administrador');
 	$Log['tx'][]='error, no se recibió la variable tabla';
@@ -80,7 +80,6 @@ if(!isset($_POST['id'])){
 	$Log['res']='err';
 	terminar($Log);	
 }
-
 
 $query="
 	SELECT table_name FROM information_schema.tables 
@@ -110,20 +109,17 @@ if($Usu['acc']['est']['gral']<3){
 	terminar($Log);	
 }
 
-
-
 $query="
-SELECT 
-	*
-  FROM geogec.sis_versiones
-  WHERE 
+        SELECT  *
+        FROM    geogec.sis_versiones
+        WHERE 
   		tabla = '".$_POST['tabla']."' 
   	AND
  	 	zz_borrada = '0'
   	AND
  	 	zz_publicada = '0'
   	AND
-  		usu_autor = '".$Usu['datos']['id']."'
+  		usu_autor = '".$_SESSION["geogec"]["usuario"]['id']."'
   	AND
   		id = '".$_POST['id']."'
  ";
@@ -141,7 +137,6 @@ if(pg_num_rows($ConsultaVer)<0){
 	$Log['res']='err';
 	terminar($Log);	
 }
-
 
 $query="
 UPDATE geogec.sis_versiones
@@ -161,7 +156,4 @@ if(pg_errormessage($ConecSIG)!=''){
 
 
 $Log['res']='exito';
-terminar($Log);		
-?>
-
-
+terminar($Log);

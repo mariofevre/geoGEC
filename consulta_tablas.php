@@ -32,7 +32,7 @@
 //include('./includes/conexion.php');
 ini_set('display_errors', '1');
 
-session_start();
+if(!isset($_SESSION)) { session_start(); }
 
 // funciones frecuentes
 include("./includes/fechas.php");
@@ -57,6 +57,16 @@ function terminar($Log){
 	exit;	
 }
 
+$Acc=0;
+if(isset($_SESSION["geogec"]["usuario"]['id'])){
+	include('./usuarios/usu_validacion.php');
+	global $ConecSIG;
+	$Usu =validarUsuario();include_once("./usuarios/usu_validacion.php");
+	if(isset($Usu['acc']['general']['general']['general'])){
+		$Acc=$Usu['acc']['general']['general']['general'];
+	}
+}
+
 if(!isset($_POST['selecTabla'])){
 	$Log['tx'][]='no fue enviada la varaibla selecttabla indicando una tabla o un conjunto de estas';
 	$Log['res']='err';
@@ -66,9 +76,14 @@ if(!isset($_POST['selecTabla'])){
 
 		
 	$query="
-		SELECT table_name FROM information_schema.tables 
-		WHERE table_schema = 'geogec'
-		order by table_name
+		SELECT 
+			table_name 
+		FROM 
+			information_schema.tables 
+		WHERE 
+			table_schema = 'geogec'
+		order by 
+			table_name
 	";
 	$ConsultaProy = pg_query($ConecSIG, $query);
 	if(pg_errormessage($ConecSIG)!=''){
@@ -88,13 +103,18 @@ if(!isset($_POST['selecTabla'])){
 	while($fila=pg_fetch_assoc($ConsultaProy)){
 		$pre=substr($fila['table_name'],0,3);
 		if($pre=='sis'){continue;}
+
 		$Log['data']['tablas'][$pre][]=$fila['table_name'];
 		$Log['data']['tablasConf'][$fila['table_name']]=array();
+		
 	}	
 	
 	$query="
-	SELECT id, campo_id_geo, campo_id_humano, tabla, nombre_humano, descripcion, 
-	       resumen, tipo_geometria, crs, categoria_tabla_geogec
+	SELECT 
+		id, 
+		campo_id_geo, campo_id_humano, campo_desc_humano,
+		tabla, nombre_humano, descripcion, 
+	    resumen, tipo_geometria, crs, categoria_tabla_geogec
 	  FROM geogec.sis_tablas_config
 	";
 	$ConsultaProy = pg_query($ConecSIG, $query);
@@ -116,6 +136,12 @@ if(!isset($_POST['selecTabla'])){
 		//if($fila=='categoria_tabla_geogec'){continue;}
 		$Log['data']['tablasConf'][$fila['tabla']]=$fila;
 		$Log['data']['tablasConf'][$fila['tabla']]['acciones']=array();
+		
+		$Acct=$Acc;
+		if(isset($Usu['acc'][$fila['tabla']]['general']['general'])){
+			$Acct=$Usu['acc'][$fila['tabla']]['general']['general'];
+		}
+		$Log['data']['tablasConf'][$fila['tabla']]['acceso']=$Acct;
 	}	
 
 	$query="
