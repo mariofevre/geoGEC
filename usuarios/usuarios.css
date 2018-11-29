@@ -1,0 +1,55 @@
+#navegador{
+	width: auto;
+	height: 30px;
+	display:block;
+	position:absolute;
+	top:2px;
+	right:2px;
+	background-color:transparent;
+	border:none;
+
+	z-index:6;	
+}	
+#navegador div{
+	margin-left:2px;
+	width: auto;
+	height: 30px;
+	display:inline-block;
+	position:relative;
+	background-color:#fff;
+	border:1px solid #08afd9;
+	z-index:6;
+	vertical-align:middle;
+		box-shadow:2px 2px 4px #000;
+}	
+
+#acceso{
+	width: 70px;
+	height: 30px;
+	display:inline-block;
+	position:relative;
+	background-color:#fff;
+	border:1px solid #08afd9;
+	z-index:6;
+}
+#acceso #botonacceder{
+	display:block;
+}
+#acceso #botonsalir{
+	display:none;
+}
+
+#formacceso, #formconfig{
+	display:none;
+}
+#formacceso, #configuracion{
+	display:none;
+}
+
+#acceso #botonacceder img{
+	margin: 5px 1px;
+}
+
+#configuracion #botonconfig img{
+	margin: 8px 1px;
+}

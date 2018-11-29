@@ -1,0 +1,64 @@
+#formconfig{
+	width:70vw;
+	height:70vh;
+	display:block;
+	position:fixed;
+	top:15vh;
+	right:15vw;
+	background-color:#fff;
+	border:2px solid #08afd9;
+	box-shadow:5px 5px 10px #000;
+	z-index:6;
+	overflow-y:scroll;
+}
+
+#formconfig a{
+	border:2px solid #08afd9;
+	text-align:right;
+	width:auto;
+	box-shadow:2px 2px 4px #000;
+}
+#formconfig a:hover{
+	background-color:#08afd9;
+	border:2px solid #08afd9;
+	box-shadow:2px 2px 4px #000;
+}
+
+#formconfig input{
+	height:1vw;
+}
+#cerr{
+	display:block;
+	position:absolute;
+	right:10px;
+	top:1vw;
+	max-width:30%;
+}
+
+#encabezado div{
+	display:inline-block;
+	width:calc(70vw / 6);
+	
+}
+
+form#eliminarpermiso span{
+	display:inline-block;
+	width:calc(70vw / 6);
+	font-family:inherit;
+}
+form#eliminarpermiso [borrada='si']{
+	background-color:#ddd;
+	color:#999;
+}
+#datos select{
+	display:inline-block;
+	width:calc(70vw / 6);
+	font-family:inherit;
+}
+#datos select option{
+	font-family:inherit;
+}
+#datos select #log{
+	font-size:70%;
+	font-weight:bold;
+}
