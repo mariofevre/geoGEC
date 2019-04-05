@@ -83,6 +83,7 @@ function consultarTablas(){
 					_aaa.setAttribute('onclick','mostrartabla(this)');
 					_cont.appendChild(_aaa);
 					
+					
 					if(_TablasConf[_Tablas['est'][_nn]].acceso>=3){
 						//boton cargar version
 						_aaa=document.createElement('a');
@@ -91,7 +92,7 @@ function consultarTablas(){
 						_aaa.setAttribute('tabla',_Tablas['est'][_nn]);
 						_aaa.setAttribute('onclick','cargarAtabla(this)');
 						_cont.appendChild(_aaa);
-					}
+					}					
 					
 					if(_TablasConf[_Tablas['est'][_nn]].acceso>=3){
 						//boton configurar
@@ -126,6 +127,7 @@ function consultarTablas(){
 				}
 				
 			if(_Est!=null && _Est!=''){
+				console.log(_Est);
 				mostrartabla(document.querySelector('#lista > a.nombretabla[tabla="'+_Est+'"]'));
 			}
 		
@@ -133,7 +135,7 @@ function consultarTablas(){
 		}
 	});
 }
-consultarTablas();
+
 
 					
 function cargarAtabla(_this){
@@ -155,27 +157,17 @@ function mostrartabla(_this){
 		document.querySelector('#titulomapa #tdescripcion').innerHTML=_TablasConf[_tabla].resumen;
 	}
 	
-	_ExtraBaseWmsSource= new ol.source.TileWMS({
-        url: 'http://190.111.246.33:8080/geoserver/geoGEC/wms',
-        params: {
-	        'VERSION': '1.1.1',
-	        tiled: true,
-	        LAYERS: _tabla,
-	        STYLES: '',
-        }
-   });
-	La_ExtraBaseWms.setSource(_ExtraBaseWmsSource);
-	consultarCentroides(_this);
+	mostrarTablaEnMapa(_tabla);	
+	consultarCentroides(_tabla);
 }
 
+
 	
-function consultarCentroides(_this){
+function consultarCentroides(_tabla){
+	
 	_parametros={
-		'tabla': _this.getAttribute('tabla')
+		'tabla': _tabla
 	};
-        
-        var _Est = getParameterByName('est');
-        var _Cod = getParameterByName('cod');
 	
 	$.ajax({
 		data: _parametros,
@@ -186,48 +178,63 @@ function consultarCentroides(_this){
 			console.log(_res);
 			for(_nm in _res.mg){alert(_res.mg[_nm]);}
 			if(_res.res=='err'){
+				
 			}else{
 				//cargaContrato();	
 				_lyrCentSrc.clear();
 				_cont=document.querySelector('#menuelementos #lista');
 				_cont.innerHTML='';
-				for(_no in _res.data.centroidesOrden){
+				
+				
+				for(_no in _res.data.centroidesOrden){					
 					_nc=_res.data.centroidesOrden[_no];
 					_hayaux='no';						
-					_dat=_res.data.centroides[_nc];					
-					var format = new ol.format.WKT();				
-				    var _feat = format.readFeature(_dat.geo, {
-				        dataProjection: 'EPSG:3857',
-				        featureProjection: 'EPSG:3857'
-				    });
-				    _feat.setId(_dat.id);
-				    _feat.setProperties({
-				    	'nom':_dat.nom,
-				    	'cod':_dat.cod,
-				    	'id':_dat.id,
-				    });
-				    
-					_lyrCentSrc.addFeature(_feat);						
-					_lyrCent.setSource(_lyrCentSrc);
-					
-					_MapaCargado='si';
+					_dat=_res.data.centroides[_nc];				
 					
 					_aaa=document.createElement('a');
 					_aaa.setAttribute('centid',_dat.id);
-					_aaa.setAttribute('onmouseover','resaltarcentroide(this)');
-					_aaa.setAttribute('onmouseout','desaltarcentroide(this)');
 					_aaa.setAttribute('cod',_dat.cod);
 					_aaa.innerHTML='<span class="nom">'+_dat.nom+"</span>"+'<span class="cod">'+_dat.cod+"</cod>";
 					_aaa.setAttribute('onclick','consultarElemento("0","'+_dat.cod+'","'+_res.data.tabla+'")');
+					if(_dat.geo!=null){		
+						var format = new ol.format.WKT();				
+					    var _feat = format.readFeature(_dat.geo, {
+					        dataProjection: 'EPSG:3857',
+					        featureProjection: 'EPSG:3857'
+					    });
+					    _feat.setId(_dat.id);
+					    _feat.setProperties({
+					    	'nom':_dat.nom,
+					    	'cod':_dat.cod,
+					    	'id':_dat.id,
+					    });
+				    
+						_lyrCentSrc.addFeature(_feat);						
+						_lyrCent.setSource(_lyrCentSrc);
+						
+						_MapaCargado='si';
+						
+						_aaa.setAttribute('onmouseover','resaltarcentroide(this)');
+						_aaa.setAttribute('onmouseout','desaltarcentroide(this)');
+					}else{
+						_aaa.innerHTML+='<span class="alert" title="sin geometría">!</span>';
+					}
+					
 					_cont.appendChild(_aaa);
-				
+									
 				}
-				_ext= _lyrCentSrc.getExtent();
-				mapa.getView().fit(_ext, { duration: 1000 });
 				
-				if(_Cod != ''){		
-					consultarElemento("0",_Cod,_Est);
+				if(_MapaCargado=='si'){
+					
+					_ext= _lyrCentSrc.getExtent();
+					mapa.getView().fit(_ext, { duration: 1000 });
+					
 				}
+				
+				if(_Cod != ''){							
+					consultarElemento("0",_Cod,_Est);					
+				}
+				
 			}
 		}
 	})			
@@ -318,15 +325,13 @@ function consultarElemento(_idElem,_codElem,_tabla){
 								
 				document.querySelector('#menuacciones #titulo').innerHTML=_res.data.elemento.nombre;
 				document.querySelector('#menuacciones #titulo').innerHTML="acciones disponibles";
-				_lista=document.querySelector('#menuacciones #lista');
-					
-					
+				_lista=document.querySelector('#menuacciones #lista');	
+				
+				
 				for(_accnom in _res.data.tablasConf.acciones){
 					
-					_accndata=_res.data.tablasConf.acciones[_accnom];
-					
+					_accndata=_res.data.tablasConf.acciones[_accnom];	
 					if(_res.data.elemento.accesoAccion[_accnom]>0){
-					
 						document.querySelector('#menuacciones').style.display='block';
 						_li=document.createElement('a');
 						_li.setAttribute('href','./'+_accnom+'.php?cod='+_res.data.elemento[_campocod]);
@@ -336,14 +341,12 @@ function consultarElemento(_idElem,_codElem,_tabla){
 						_la.setAttribute('title',_accndata.resumen);
 						_li.appendChild(_la);
 						_lista.appendChild(_li);
-						
 					}
 				}
+				
 				document.querySelector('#menudatos').style.display='block';
 				
-				
 				document.querySelector('#menudatos #titulo').innerHTML=_res.data.elemento[_camponom];
-				
 				
 				if(_campodesc==null){
 					_desc='';
@@ -376,26 +379,7 @@ function consultarElemento(_idElem,_codElem,_tabla){
 					
 				}
 				
-				_lyrElemSrc.clear();
-				var format = new ol.format.WKT();	
-			    var _feat = format.readFeature(_res.data.elemento.geotx, {
-			        dataProjection: 'EPSG:3857',
-			        featureProjection: 'EPSG:3857'
-			    });
-			    
-			    _feat.setId(_res.data.elemento.id);
-			    
-			    _feat.setProperties({
-			    	'nom':_res.data.elemento[_camponom],
-			    	'cod':_res.data.elemento[_campocod],
-			    	'id':_res.data.elemento.id
-			    });
-			    
-				_lyrElemSrc.addFeature(_feat);
 				
-				_MapaCargado='si';
-					
-					
 				document.querySelector('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').setAttribute('cargado','si');	
 				
 				_pe=$('#menuelementos #lista').offset().top;
@@ -407,16 +391,36 @@ function consultarElemento(_idElem,_codElem,_tabla){
 				 }, 2000);
 				    
 				document.querySelector('#menudatos').style.display='block';
-							
-				_ext= _lyrElemSrc.getExtent();
 				
 				
-				setTimeout(
-					function(){mapa.getView().fit(_ext, { duration: 1000 })},
-						200
+				_lyrElemSrc.clear();
+				if(_res.data.elemento.geotx!=null){
+				
+					var format = new ol.format.WKT();	
+				    var _feat = format.readFeature(_res.data.elemento.geotx, {
+				        dataProjection: 'EPSG:3857',
+				        featureProjection: 'EPSG:3857'
+				    });
+				    
+				    _feat.setId(_res.data.elemento.id);
+				    
+				    _feat.setProperties({
+				    	'nom':_res.data.elemento[_camponom],
+				    	'cod':_res.data.elemento[_campocod],
+				    	'id':_res.data.elemento.id
+				    });
+				    
+					_lyrElemSrc.addFeature(_feat);
+					
+					_MapaCargado='si';
+					
+					_ext= _lyrElemSrc.getExtent();
+				
+					setTimeout(
+						function(){mapa.getView().fit(_ext, { duration: 1000 })},
+							200
 					);
-					
-					
+				}	
 									
 				//generarItemsHTML();		
 				//generarArchivosHTML();

@@ -30,7 +30,9 @@ var _MapaCargado='no';
 var _mapaEstado='';
 var mapa={};
 var vectorLayer={};
+var seleccionLayer={};
 var _source={};
+var _souceSeleccion={};
 var _AIsel='';
 var _view={};
 var _Dibujando='no';
@@ -42,12 +44,11 @@ var La_ExtraBaseWms = new ol.layer.Tile();
 //definicion de variables para el layer de centroides
 var _lyrCentSrc = new ol.source.Vector(
 	{
-		attributions: [
-		    new ol.Attribution({
-		      html: 'contenidos: ' + '<a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>'
-		    })]
+		attributions: ['contenidos: <a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>']
   	}
 );
+
+
 var _lyrCent = new ol.layer.Vector({
 	name:'centroides'
 });   
@@ -56,10 +57,7 @@ var _CentStyle = new ol.style.Style();
 //definicion de variables para el layer de elemento consultado
 var _lyrElemSrc = new ol.source.Vector(
 	{
-		attributions: [
-		    new ol.Attribution({
-		      html: 'contenidos: ' + '<a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>'
-		    })]
+		attributions: ['contenidos: <a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>']
   	}	
 );
 
@@ -70,6 +68,11 @@ var _lyrElem = new ol.layer.Vector({
 
 });   
 _lyrElem.setStyle(_CentSelStyle);
+
+
+var _sMarco = new ol.source.Vector({        
+  projection: 'EPSG:3857'      
+}); 
 
 function cargarMapa(){
 	
@@ -105,7 +108,12 @@ function cargarMapa(){
 		wrapX: false,   
     	projection: 'EPSG:3857' 
     }); 
-    
+
+	_sourceSeleccion = new ol.source.Vector({ 
+		wrapX: false,   
+    	projection: 'EPSG:3857' 
+    }); 
+        
     var styleArea = new ol.style.Style({
 	    stroke: new ol.style.Stroke({color : 'rgba(255,50,100,1)', width : 2}),
 	    fill: new ol.style.Fill({color : 'rgba(255,150,150,0.4)'})
@@ -117,7 +125,40 @@ function cargarMapa(){
 	    	fill: new ol.style.Fill({color : 'rgba(200,250,100,0.5)'}) 
 		})
     });
-         
+    
+    _CentStyle = new ol.style.Style({
+         image: new ol.style.Circle({
+		       fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
+		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5}),
+		       radius: 3
+		 }),
+		 fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
+		 stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5})
+     });
+     
+   	_CentSelStyle = new ol.style.Style({
+         image: new ol.style.Circle({
+		       fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
+		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
+		       radius: 6
+		 }),
+		 fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
+		 stroke: new ol.style.Stroke({color: '#ff3333',width: 1.8}),
+		 zIndex:100
+     });
+     
+    _lyrElemStyle = new ol.style.Style({
+         image: new ol.style.Circle({
+		       fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
+		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
+		       radius: 6
+		 }),
+		 fill: new ol.style.Fill({color: 'rgba(228,25,55,0.5)'}),
+		 stroke: new ol.style.Stroke({color: 'rgba(228,25,55,0.8)',width: 2}),
+		 zIndex:1
+     });
+     
+      
  	var _myStroke = new ol.style.Stroke({
 		color : 'rgba(255,0,0,1.0)',
 		width : 1,
@@ -154,7 +195,7 @@ function cargarMapa(){
 	        if(layer.get('name')=='centroides'){	        	
 	          return feature;
 	        }else{
-	        	console.log('no');
+	        	//console.log('no');
 	        }
         });
        
@@ -191,6 +232,21 @@ function cargarMapa(){
 		style: styleArea
 	    //source: _source
 	});
+
+	seleccionLayer = new ol.layer.Vector({
+		name: 'seleccionLayer',
+		style: _CentStyle,
+	    source: _sourceSeleccion
+	});
+	
+	var marcoLayer = new ol.layer.Vector({
+		style: new ol.style.Style({
+			stroke: new ol.style.Stroke({color : 'rgba(200,50,50,1)', width : 1, lineDash: [2,3]}),
+	    	fill: new ol.style.Fill({color : 'rgba(250,255,250,0)'})
+		}),
+		source: _sMarco
+	});
+
 	
 	var resaltadoLayer = new ol.layer.Vector({
 		style: styleMapResalt,
@@ -241,9 +297,7 @@ function cargarMapa(){
 	});
 	
 	_sourceBaseOSM.setAttributions(
-		new ol.Attribution({
-		      html: 'base: ' + '<a href="http://stamen.com/">Stamen Design</a>' + ', '+ '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-		    })
+		['base: <a href="http://stamen.com/">Stamen Design</a>, <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>']
 	)
 
 	
@@ -253,7 +307,7 @@ function cargarMapa(){
 	});
 		
 	_sourceBaseBING.setAttributions(
-		['base satelital: ' + '<a target="blank" href="https://www.microsoft.com/en-us/maps/product"><img src="https://dev.virtualearth.net/Branding/logo_powered_by.png"> Microsoft</a>']
+		['base satelital: <a target="blank" href="https://www.microsoft.com/en-us/maps/product"><img src="https://dev.virtualearth.net/Branding/logo_powered_by.png"> Microsoft</a>']
 	)
 	
 	var layerOSM = new ol.layer.Tile({
@@ -264,39 +318,9 @@ function cargarMapa(){
 		 
 	});	
 
-	 
-   	_CentStyle = new ol.style.Style({
-         image: new ol.style.Circle({
-		       fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
-		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5}),
-		       radius: 3
-		 }),
-		 fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
-		 stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5})
-     });
-     
-   	_CentSelStyle = new ol.style.Style({
-         image: new ol.style.Circle({
-		       fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
-		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
-		       radius: 6
-		 }),
-		 fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
-		 stroke: new ol.style.Stroke({color: '#ff3333',width: 1.8}),
-		 zIndex:100
-     });
         
 	_lyrCent.setStyle(_CentStyle);
-   	_lyrElemStyle = new ol.style.Style({
-         image: new ol.style.Circle({
-		       fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
-		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
-		       radius: 6
-		 }),
-		 fill: new ol.style.Fill({color: 'rgba(228,25,55,0.5)'}),
-		 stroke: new ol.style.Stroke({color: 'rgba(228,25,55,0.8)',width: 2}),
-		 zIndex:1
-     });
+   	
      
      _lyrElem.setStyle(_lyrElemStyle);
     La_ExtraBaseWms = new ol.layer.Tile({
@@ -310,6 +334,7 @@ function cargarMapa(){
 	    layers: [
 			layerOSM,
 			layerBing,
+			seleccionLayer,
 			vectorLayer,
 			resaltadoLayer,
 			candidatoLayer,
@@ -318,7 +343,8 @@ function cargarMapa(){
 			tablaRasLayer,
 			La_ExtraBaseWms,
 			_lyrCent,
-			_lyrElem
+			_lyrElem,
+			marcoLayer
 	    ],
 	    target: 'mapa',
 	    view: _view
@@ -330,7 +356,7 @@ function cargarMapa(){
 	vectorLayer.setSource(_source);
 	
 	layerOSM.setSource(_sourceBaseOSM);		
-	  
+	 /* 
 	mapa.on('pointermove', function(evt) {
 		
         if (evt.dragging) {
@@ -346,11 +372,11 @@ function cargarMapa(){
 
         sobrePunto(pixel);
     });
-
+/*
     mapa.on('click', function(evt){    	
       consultaPunto(evt.pixel,evt);       
     });
-
+*/
 	_view.on('change:resolution', function(evt){
        
         if(_view.getZoom()>=19){
@@ -369,10 +395,36 @@ function cargarMapa(){
 	
 	function consultaPunto(pixel,_ev){
 		
-	    if(_MapaCargado=='no'){return;}
-		_cod=document.querySelector('#titulomapa #tseleccion').getAttribute('cod');		
-		_tabla=document.querySelector('#titulomapa #tnombre').innerHTML;	
-		consultarElemento('0',_cod,_tabla);
+	    if(_MapaCargado=='no'){console.log('el mapa no se cargó aun');return;}
+	    
+	    
+	     var feature = mapa.forEachFeatureAtPixel(pixel, function(feature, layer){
+	        if(layer.get('name')!=undefined){
+	        	feature['layer']=layer.get('name');	        	
+	          	return feature;	        
+	        }else{
+	        	console.log('sin elementos en ese punto del mapa');
+	        	return null;	     
+	        	
+	        }
+        });
+	    
+	    if(feature==null){
+	    	return;
+	    }else if(feature.layer=='centroides'){
+			_cod=document.querySelector('#titulomapa #tseleccion').getAttribute('cod');		
+			_tabla=document.querySelector('#titulomapa #tnombre').innerHTML;	
+			consultarElemento('0',_cod,_tabla);
+		}else if(feature.layer=='seleccionLayer'){
+			
+			console.log(feature);
+			_cod=feature.get('cod');
+			_tabla=feature.get('tabla');
+			consultarSeleccion('',_cod,_tabla);
+			
+		}else{
+			console.log('sin acciones definidas para esa capa');
+		}
 
 	}
 	
@@ -400,8 +452,41 @@ function cargarMapa(){
 		formAI(_Pid);
 		
 	}
-
-	
-	
 }
 cargarMapa();
+
+
+function mostrarTablaEnMapa(_tabla){
+	_ExtraBaseWmsSource= new ol.source.TileWMS({
+        url: 'http://190.111.246.33:8080/geoserver/geoGEC/wms',
+        params: {
+	        'VERSION': '1.1.1',
+	        tiled: true,
+	        LAYERS: _tabla,
+	        STYLES: '',
+        }
+   });
+	La_ExtraBaseWms.setSource(_ExtraBaseWmsSource);
+}
+
+
+
+function cargarCapaMarco(){
+	
+	_sMarco.clear();
+    //console.log(_source_ind.getFeatures());
+	_haygeom='no';
+	if(_DataMarco.geotx==''){return;}		
+	
+	//console.log('+ um geometria: campo'+_campo+'. valor:'+_val);
+	//console.log(_DataMarco.geotx);
+	if(_DataMarco.geotx!=null){
+		var _format = new ol.format.WKT();
+		var _ft = _format.readFeature(_DataMarco.geotx, {
+	        dataProjection: 'EPSG:3857',
+	        featureProjection: 'EPSG:3857'
+	    });
+	    //_ft.setProperties(_geo);	    
+	   	_sMarco.addFeature(_ft);
+   	} 
+}

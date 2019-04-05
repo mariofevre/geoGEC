@@ -74,47 +74,13 @@ if(!isset($_POST['selecTabla'])){
 }	
 
 
-		
-	$query="
-		SELECT 
-			table_name 
-		FROM 
-			information_schema.tables 
-		WHERE 
-			table_schema = 'geogec'
-		order by 
-			table_name
-	";
-	$ConsultaProy = pg_query($ConecSIG, $query);
-	if(pg_errormessage($ConecSIG)!=''){
-		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-		$Log['tx'][]='query: '.$query;
-		$Log['res']='err';
-		terminar($Log);
-	}
-	if(pg_num_rows($ConsultaProy)<1){
-		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-		$Log['tx'][]='query: '.$query;
-		$Log['mg'][]='no se encontraron tablas disponibles';
-		$Log['res']='err';
-		terminar($Log);	
-	}
-	
-	while($fila=pg_fetch_assoc($ConsultaProy)){
-		$pre=substr($fila['table_name'],0,3);
-		if($pre=='sis'){continue;}
-
-		$Log['data']['tablas'][$pre][]=$fila['table_name'];
-		$Log['data']['tablasConf'][$fila['table_name']]=array();
-		
-	}	
-	
 	$query="
 	SELECT 
 		id, 
 		campo_id_geo, campo_id_humano, campo_desc_humano,
 		tabla, nombre_humano, descripcion, 
-	    resumen, tipo_geometria, crs, categoria_tabla_geogec
+	    resumen, tipo_geometria, crs, categoria_tabla_geogec,
+	    accmin_vista
 	  FROM geogec.sis_tablas_config
 	";
 	$ConsultaProy = pg_query($ConecSIG, $query);
@@ -142,7 +108,56 @@ if(!isset($_POST['selecTabla'])){
 			$Acct=$Usu['acc'][$fila['tabla']]['general']['general'];
 		}
 		$Log['data']['tablasConf'][$fila['tabla']]['acceso']=$Acct;
+		
+		
+		if($Acct<$fila['accmin_vista']){
+			$Log['data']['tablasConf'][$fila['tabla']]['ocultar']='ocultar';
+		}
 	}	
+	
+		
+	$query="
+		SELECT 
+			table_name 
+		FROM 
+			information_schema.tables 
+		WHERE 
+			table_schema = 'geogec'
+		order by 
+			table_name
+	";
+	$ConsultaProy = pg_query($ConecSIG, $query);
+	if(pg_errormessage($ConecSIG)!=''){
+		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+		$Log['tx'][]='query: '.$query;
+		$Log['res']='err';
+		terminar($Log);
+	}
+	if(pg_num_rows($ConsultaProy)<1){
+		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+		$Log['tx'][]='query: '.$query;
+		$Log['mg'][]='no se encontraron tablas disponibles';
+		$Log['res']='err';
+		terminar($Log);	
+	}
+	
+	while($fila=pg_fetch_assoc($ConsultaProy)){
+		if(isset($Log['data']['tablasConf'][$fila['table_name']]['ocultar'])){
+			//esta tabla no está visible para este usuario
+			{continue;}
+		}
+		
+		$pre=substr($fila['table_name'],0,3);
+		if($pre=='sis'){continue;}
+
+		$Log['data']['tablas'][$pre][]=$fila['table_name'];		
+		
+		if(!isset($Log['data']['tablasConf'][$fila['table_name']])){
+			$Log['data']['tablasConf'][$fila['table_name']]=array();
+		}
+		
+	}	
+	
 
 	$query="
 	SELECT id, tabla, accion

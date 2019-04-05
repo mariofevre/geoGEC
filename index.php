@@ -228,6 +228,13 @@ $starttime = microtime(true);
 
 <script type="text/javascript" src="./index_formSHP.js"></script> <!-- carga funciones de operacion del formulario central para la carga de SHP-->
 <script type="text/javascript" src="./index_consultas.js"></script> <!-- carga funciones consulta de datos-->
+<script>
+	var _Est = getParameterByName('est');
+    var _Cod = getParameterByName('cod');
+    
+	consultarTablas();
+</script>
+
 <script type="text/javascript" src="./index_upload.js"></script> <!-- carga funciones de upload de SHP-->
 <script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
 

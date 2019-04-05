@@ -166,7 +166,7 @@ $query="
 		terminar($Log);
 	}
 	if(pg_num_rows($ConsultaProy)<1){
-		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+		$Log['tx'][]='error';
 		$Log['tx'][]='query: '.$query;
 		$Log['mg'][]='no se encontraron tablas disponibles';
 		$Log['res']='err';

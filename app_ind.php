@@ -164,7 +164,7 @@ $starttime = microtime(true);
                 <h1>Indicadores</h1>
             </div>
             
-            <a onclick="accionCrearIndicador(this)" id='botonCrearIndicador'>Crear nuevo indicador</a></br>
+            <a onclick="accionCrearIndicador(this)" id='botonCrearIndicador'>Crear nuevo indicador</a>
             <a onclick='accionCargaCancelar(this)'  id="botonCancelarCarga">Volver al listado de indicadores</a>
             
             <div id="formSeleccionInd" class="elementoOculto">   
@@ -180,10 +180,9 @@ $starttime = microtime(true);
             
 	            <div class="menuAcciones elementoOculto" id="divMenuAccionesCrea">
 	            	<h1>Acciones</h1>
-	                <a onclick="accionCargaCancelar(this)" id='botonSeleccionarIndCambio'>Volver al listado de indicadores</a></br>
-	                <a onclick='accionCreaEliminar(this)' id="botonEliminar">Eliminar</a></br>
-	                <a onclick='accionCreaGuardar(this)' id="botonGuardar">Guardar</a></br>
-	                <a onclick='accionCreaPublicar(this)' id="botonPublicar">Publicar</a></br>
+	                <a onclick='accionCreaEliminar(this)' id="botonEliminar">Eliminar</a>
+	                <a onclick='accionCreaGuardar(this)' id="botonGuardar">Guardar</a>
+	                <a onclick='accionCreaPublicar(this)' id="botonPublicar">Publicar</a>
 	            </div>
             
                 <div class='elementoCarga'>
@@ -329,8 +328,6 @@ $starttime = microtime(true);
             	
             	 <div id="AccionesSeleccionIndCambio">
                     <h1>Acciones</h1>
-                    
-                    <a onclick="accionCargaCancelar(this)" id='botonSeleccionarIndCambio'>Volver al listado de indicadores</a>
                     <a id='botonelim' onclick='eliminarCandidatoCapa(this.parentNode);' title="Eliminar Capa">Eliminar</a>
                     <a id='botonguarada' onclick='guardarCapa(this.parentNode);' title="guardar esta capa preliminarmente">Guardar</a>
                     <a id='botonpublica' onclick='publicarCapa(this.parentNode);' >Publicar</a>
@@ -368,10 +365,9 @@ $starttime = microtime(true);
                         </div>
                         
                         <div class="menuAcciones" id="divMenuAccionesEditarValor" style="display: inline-block;">
-                            <a onclick='accionEditarValorEliminar(this)' id="botonEliminar">Elim.</a></br>
-                            <a onclick='accionEditarValorGuardar(this)' id="botonGuardar">Guardar</a></br>
-                            <a onclick='accionEditarCrearGeometria(this)' id="botonCrearGeom">Añadir geometría</a></br>
-                            <a onclick='accionCopiarGeometriaAnterior(this)' id="botonDuplicarGeom">Copiar geometría del período anterior</a></br>
+                            <a onclick='accionEditarValorGuardar(this)' id="botonGuardar">Guardar</a>
+                            <a onclick='accionEditarCrearGeometria(this)' id="botonCrearGeom">Añadir geometría</a>
+                            <a onclick='accionCopiarGeometriaAnterior(this)' id="botonDuplicarGeom">Copiar geometría del período anterior</a>
                         </div>
 						<div id='listaUnidadesInd'></div>
 							

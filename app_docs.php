@@ -425,7 +425,6 @@ $starttime = microtime(true);
     
     function guardarD(_event,_this){// ajustado geogec
             _event.preventDefault();
-            console.log(_this);
             var _this=_this;
             _parametros = {
                     "idMarco":_IdMarco,
@@ -632,7 +631,7 @@ $starttime = microtime(true);
         ///funciones para gestionar drop en el tacho
         function dropTacho(_event,_this){//ajustado geogec
 
-                _event.stopPropagation();
+        _event.stopPropagation();
         _event.preventDefault();    		
 
         limpiarAllowFile();
