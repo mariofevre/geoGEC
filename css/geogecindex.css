@@ -383,3 +383,9 @@ select{
 	z-index:2000;
 }
 
+.menuAcciones a{
+	display:inline-block;
+	border:1px solid  #08afd9;
+	margin:3px;
+	
+}

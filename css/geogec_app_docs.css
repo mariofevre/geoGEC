@@ -93,211 +93,11 @@
 		display:inline-block;
 		width:calc(60% - 5px);
 	}
-	
-	
-	.salva{
-	width:90px;
-	margin-bottom:5px;
-	float:left;
-	}
-
-	.reporte{
-	width:200px;
-	}
-
-	.marco{
-	border-bottom: 1px solid #EEEEEE;
-	float: none;
-	width: 100%;		
-	}
-	
-	.referencia{
-	font-size: 10px;
-	}
 
 	.alerta{
 	background-color:red;
 	}
 
-	.similth{
-	background-color:none;
-	width:800px;
-	text-align:left;
-	}	
-
-	.fila{
-		display:block;
-		position:relative;
-		width:784px;
-		height:auto;
-		margin-bottom: -1px;
-		font-size:11px;
-		background-color:#fff;
-	}
-	
-	.fila.busqueda{
-		border-top:#CDF0F9 1px solid;
-		height:auto;
-		overflow-y: scroll;
-		max-height: 200px;
-		background-color:#EBF5F9;
-	}
-	
-	.fila.titulo, .fila.filtro{
-		height:30px;
-	}
-			
-
-	.fila > div, .fila > a{
-		display:inline-block;
-		overflow:hidden;
-		text-align:center;
-		position:relative;		
-		vertical-align:top;
-	}
-	
-	.fila > a{
-		line-height: 15px;
-	}
-	
-	.contenido{
-		font-size:12px;
-		height:30px;
-		border-top:1px solid #000;
-		border-bottom:1px solid #000;
-		z-index:1;	
-	}	
-	
-	.cerrada .contenido{
-		z-index:0;
-		border-color:silver;
-	}		
-	.cerrada .contenido.respuesta{
-		border-left-color:silver;
-	}			
-
-
-	.fila.titulo{
-		background-color:#DBF7FE;
-	}			
-	.fila.titulo > div{
-		height: 28px;
-		font-size:11px;	
-		margin-right: 0px;	
-	}
-				
-	.seleccion{
-		width:30px;
-		font-size:10px;	
-	}		
-	
-	.nombre{
-		width:170px;
-		font-size:14px;	
-		line-height:14px;
-	}
-	
-	.nombre.eliminada{
-		background-color:#f00;
-	}
-	.accion{
-		width:45px;
-		line-height:12px;
-	}		
-	
-	.aclaracionsubmit{
-		width:120px;
-		height:24px;
-		font-size:12px;
-		font-weight:normal;
-		display:inline-block;
-	}
-	
-	.tipo{
-		width:40px;
-	}
-	
-	.adjunto{
-		width:30px;
-	}
-	.contenido.adjunto > a{
-		font-size:9px;
-		width:auto;
-		display:inline-block;
-	}
-	.contenido.adjunto > a.alerta{
-		border:1px solid red;
-		background-color:transparent;
-	}		
-	
-			
-	div.emision, div.recepcion, div.cerradodesde{
-		width:41px;
-		line-height:9px;
-	}		
-		
-	.emision>span, .recepcion>span, .cerradodesde>span{
-		font-size:10px;
-	}		
-	
-	.ids{
-		width:88px;
-		display:block;
-	}
-	.id1{
-		width:86px;
-		display:block;		
-	}
-
-		
-	.id2{
-		width:86px;
-		display:block;
-	}
-				
-	.responder{
-		width:20px;
-	}					
-	
-	.contenido.alta{
-		font-size:10px;
-	}
-	.contenido.baja{
-		font-size:10px;
-	}		
-	
-
-
-	a.contenido.nombre{
-		color:#000;
-	}
-	
-	.cerrada{
-		color: #777;
-		background-color:#E4F4EB;
-	}		
-	
-	a.contenido.nombre{
-		color: #000;
-	}		
-	.cerrada > a.contenido.nombre{
-		color: #777;
-	}
-	.cerrada > a.contenido.nombre:hover{
-		color: #000;
-	}				
-			
-	.id_p_B_usuarios_usuarios_id_nombre_autor{
-		width:45px;
-	}	
-	.id_p_B_usuarios_usuarios_id_nombre_responsable{
-		width:45px;
-	}		
-	
-
-.accionseleccion{
-	display:auto;
-}
 
 			
 button{
@@ -323,10 +123,6 @@ button{
 		body{
 			background-image:none;
 		}
-		div.fila, form.fila{
-			width:718px;
-		}
-		
 	
 		#page{
 			width:722px;
@@ -334,99 +130,28 @@ button{
 			border:1px solid #000;
 			background-image:none;
 		}			
-		div.recuadros.ventanadesarrollo{
-			display:none;
-		}
+
 		#pageborde{
 			background-color:transparent;
 		} 
-		
-		#recuadro{
-			display:none;
-		}
-		#recuadro2{
-			display:none;
-		}
-		#recuadro3{
-			display:none;
-		}			
+				
 		
 		a{
 			color:#000;
 		}
-		
-		a.linkppal{
-			display:none;				
-		}			
-		
-		a.version{
-			display:none;		
-		}
-		
-		.fila{
-			font-size:5px;
-			position:relative;
-		}
-		div.version{
-			width:5px;
-			border-width:1px;
-		}
+
 		div#contenidoextenso{
 			margin:0px;
 		}
-		div.cargafecha{
-			display:none;
-		}
-		div.versionesventana {
-		    width: 100px;
-		}
+
 		select{
 			display:none;
 		}
 		input{
 			display:none;
-		}
-		.fila.filtro{
-			display:none;
-		}			
-		.recuadro.ventanadesarrollo{
-			display:none;
-		}
-		div.#comandoA{
-			display:none;
-		}
-		a.botonmenu{
-			display:none;
-		}
-		a.cargarespuesta{
-			display:none;
-		}
-		a.eliminar.respuesta{
-			display:none;
-		}					
-		.respuesta{
-			width: 140px;
-			display:inline-block;
-		}
-		#comandoAborde, #encabezado{
-			display:none;
-		}
-		
-		#pageborde{
-			margin:0;
-		}
-		
-		#cuadroresumen{
-		   page-break-before: always;		
-		}
-		
-		.respuesta > div > a.cargarespuesta{
-			display:none;
 		}		
 		
-		.fila > div.descrip{
-			display:none;
-		}
+
 	}
 
 #page>div{
