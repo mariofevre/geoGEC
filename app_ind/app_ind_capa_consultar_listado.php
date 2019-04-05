@@ -30,6 +30,7 @@ include($GeoGecPath."/includes/pgqonect.php");
 include_once($GeoGecPath."/usuarios/usu_validacion.php");
 //$Usu = validarUsuario(); // en ./usu_valudacion.php
 
+
 $Hoy_a = date("Y");
 $Hoy_m = date("m");
 $Hoy_d = date("d");

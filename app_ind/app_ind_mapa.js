@@ -115,7 +115,7 @@ function dibujarPoligonosMapa(_res){
 	_campo=_res.data.indicador.representar_campo;
 	
 	_haygeom='no';
-	for(_gn in _res.data.geom){		
+	for(_gn in _res.data.geom){
 		_geo=_res.data.geom[_gn];
 		_val=null;
 		_haygeom='si';
@@ -339,6 +339,7 @@ function dibujarCapaSuperp(_res){
         //Operaciones para leer del xml los valores de simbologia
         var xmlSld = capaQuery["sld"];
 		
+		console.log('representando capa superpuesta');
         if (xmlSld && xmlSld != ''){
             var colorRelleno = '';
             var transparenciaRelleno = '';
@@ -346,23 +347,17 @@ function dibujarCapaSuperp(_res){
             var anchoTrazo = '';
 
             
-            if (window.DOMParser)
-            {
+            if (window.DOMParser){
                 parser = new DOMParser();
                 xmlDoc = parser.parseFromString(xmlSld, "text/xml");
-            }
-            else // Internet Explorer
-            {
+            }else{ // Internet Explorer
                 xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async = false;
                 xmlDoc.loadXML(xmlSld);
             }
             
-            _rules= xmlDoc.getElementsByTagName("Rule");
-	
-	
+            _rules= xmlDoc.getElementsByTagName("Rule");	
 		    _condiciones=Array();
-		    
 		    
 		    if(Object.keys(_rules).length>1){
 			    for(_rn in _rules){	
@@ -427,8 +422,10 @@ function dibujarCapaSuperp(_res){
 				}
 			}
 			
+			console.log('o'+_features);
+			
 		    for(var elem in _features){
-	
+				console.log('feat:'+elem);
 		        var format = new ol.format.WKT();	
 		        var _feat = format.readFeature(_features[elem].geom_intersec, {
 		            dataProjection: 'EPSG:3857',
@@ -471,7 +468,7 @@ function dibujarCapaSuperp(_res){
 				//console.log(_features[elem][_campoMM] +' >= '+_valorMM+'&&'+_features[elem][_campomm]+' < '+ _valormm);
 				
 					
-		         _c= hexToRgb(document.getElementById('inputcolorrelleno').value);
+		         	_c= hexToRgb(document.getElementById('inputcolorrelleno').value);
 			        _n=(1 - (document.getElementById('inputtransparenciarellenoNumber').value) * 1.0 / 100);
 			        _rgba='rgba('+_c.r+', '+_c.g+', '+_c.b+', '+_n+')';
 			
@@ -485,7 +482,7 @@ function dibujarCapaSuperp(_res){
 			            width: document.getElementById('inputanchotrazoNumber').value
 			          })
 			        });
-			        
+			        console.log('lll:'+_st);
 			        for(_nc in _condiciones){
 						if(
 							Number(_features[elem][_campoMM]) >= Number(_condiciones[_nc].valorMM)
@@ -514,6 +511,39 @@ function dibujarCapaSuperp(_res){
 		
 		        _source_ind_superp.addFeature(_feat);
 		    }
+		}else{
+			_st= new ol.style.Style({
+		          fill: new ol.style.Fill({
+		            color: 'rgba(250, 200, 100, 0.5)'
+		
+		          }),
+		          stroke: new ol.style.Stroke({
+		            color: 'rgba(255, 100, 50, 1)',
+		            width: '1'
+		          })
+	        });
+			
+			for(var elem in _features){
+				console.log('feat:'+elem);
+		        var format = new ol.format.WKT();	
+		        var _feat = format.readFeature(_features[elem].geom_intersec, {
+		            dataProjection: 'EPSG:3857',
+		            featureProjection: 'EPSG:3857'
+		        });
+		
+		        _feat.setId(_features[elem].id);
+		
+		        _feat.setProperties({
+		            'id':_features[elem].id
+		        });
+		        
+		        
+	        	_feat.setStyle(_st);
+		
+		        _source_ind_superp.addFeature(_feat);
+			}
+			
+			
 		}
     }
 }
@@ -570,8 +600,8 @@ function accionEditarCrearGeometria(){
 		}	
 		
 		_features=_source_ind_sel.getFeatures();
-		var format = new ol.format.WKT();
-		_geometria=format.writeGeometry(_features[0].getGeometry());
+		var _format = new ol.format.WKT();
+		_geometria=_format.writeGeometry(_features[0].getGeometry());
 		
 		_nnelem++;		
 		guardarNuevaGeometria(_geometria,_nnelem);

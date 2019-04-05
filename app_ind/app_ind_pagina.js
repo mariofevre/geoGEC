@@ -30,7 +30,7 @@ function accionCreaCancelar(_this){
     document.getElementById('formEditarIndicadores').style.display='none';
     document.getElementById('formSeleccionInd').style.display='none';
     document.getElementById('divListaIndicadoresCarga').style.display='none';
-    document.querySelector('#divListaIndicadoresCarga #AccionesSeleccionIndCambio #botonSeleccionarIndCambio').removeAttribute('idind');
+    document.querySelector('#divListaIndicadoresCarga #botonSeleccionarIndCambio').removeAttribute('idind');
     document.getElementById('divMenuAccionesCrea').style.display='none';
     document.getElementById('botonCrearIndicador').style.display='block';
     
@@ -115,7 +115,7 @@ function accionCargaCancelar(_this){
     document.getElementById('formEditarIndicadores').style.display='none';
     document.getElementById('formSeleccionInd').style.display='none';
     document.getElementById('divListaIndicadoresCarga').style.display='none';
-    document.querySelector('#divListaIndicadoresCarga #AccionesSeleccionIndCambio #botonSeleccionarIndCambio').removeAttribute('idind');
+    document.querySelector('#divListaIndicadoresCarga #botonSeleccionarIndCambio').removeAttribute('idind');
     //document.getElementById('divMenuAccionesCarga').style.display='none';
     document.getElementById('botonCrearIndicador').style.display='block';
     
@@ -439,6 +439,13 @@ function cargarValoresIndicadorExist(_res){
 
 		_form=document.querySelector('#formEditarIndicadores');
         _form.setAttribute('idindicador', indicadorQuery["id"]);
+        
+        if(indicadorQuery["zz_publicada"]=='1'){
+        	document.querySelector('#divMenuAccionesCrea #botonPublicar').style.display='none';
+        }else{
+        	document.querySelector('#divMenuAccionesCrea #botonPublicar').style.display='inline-block';
+        }
+        
         _form.querySelector('#indNombre').value = indicadorQuery["nombre"];
         _form.querySelector('#indDescripcion').value = indicadorQuery["descripcion"];
         _form.querySelector('#inputFechaDesde').value = indicadorQuery["fechadesde"];
@@ -1117,7 +1124,8 @@ function mostrarListadoIndicadoresPublicados(){
 function accionIndicadorPublicadoSeleccionado(_this, idindicador){
 	_encuadrado='no';
     document.getElementById('indicadorActivo').setAttribute('idindicador', idindicador);    
-    document.querySelector('#divListaIndicadoresCarga').setAttribute('idindicadorcarga',idindicador);    
+    document.querySelector('#divListaIndicadoresCarga').setAttribute('idindicadorcarga',idindicador);
+    document.querySelector('#botonCancelarCarga').style.display='block';
     
     var fechaHoy = new Date();
     cargarIndicadorPublicado(idindicador, fechaHoy.getFullYear(), fechaHoy.getMonth()+1);
@@ -1139,7 +1147,8 @@ function accionIndicadorPublicadoCargar(idindicador, _res, seleccionarFechaAno, 
 
         document.getElementById('formSeleccionInd').style.display='none';
         document.getElementById('divListaIndicadoresCarga').style.display='block';
-		document.querySelector('#divListaIndicadoresCarga #AccionesSeleccionIndCambio #botonSeleccionarIndCambio').setAttribute('idind',_res.data.indicador.id);
+        document.querySelector('#divListaIndicadoresCarga #AccionesSeleccionIndCambio').style.display='none';
+		document.querySelector('#divListaIndicadoresCarga #botonSeleccionarIndCambio').setAttribute('idind',_res.data.indicador.id);
 		
 		
         if (_res.data['indicador']['fechadesde'] == null || _res.data['indicador']['fechahasta'] == null){
@@ -1428,6 +1437,7 @@ function accionSeleccionarIndCambio(_this){
 	        document.getElementById('formEditarIndicadores').style.display='inline-block';
 		    document.getElementById('divMenuAccionesCrea').style.display='inline-block';
 		    document.getElementById('botonCrearIndicador').style.display='none';
+		    document.getElementById('formSeleccionInd').style.display='none';
 	        consultarIndicadorParaModificar(_idind);
 	        
         }
