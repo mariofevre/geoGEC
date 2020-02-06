@@ -1,10 +1,10 @@
 <?php
 /**
-* aplicación de visualización y gestion de documentos de trabajo. consulta carga y genera la interfaz de configuración de lo0s mismos.
+* aplicación de visualización y gestion de relevamientos de campo.
  * 
  *  
 * @package    	geoGEC
-* @subpackage 	app_campa. Aplicacion para la gestión de documento
+* @subpackage 	app_rele. Aplicacion para la gestión de relevamientos
 * @author     	GEC - Gestión de Espacios Costeros, Facultad de Arquitectura, Diseño y Urbanismo, Universidad de Buenos Aires.
 * @author     	<mario@trecc.com.ar>
 * @author    	http://www.municipioscosteros.org
