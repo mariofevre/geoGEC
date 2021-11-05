@@ -24,7 +24,6 @@
 
 ini_set('display_errors', 1);
 $GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
-
 include($GeoGecPath.'/includes/encabezado.php');
 include($GeoGecPath."/includes/pgqonect.php");
 
@@ -74,26 +73,108 @@ if($Acc<$minacc){
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
-$query = "
-	INSERT INTO geogec.ref_capasgeo
-        (autor, ic_p_est_02_marcoacademico, srid, zz_borrada, zz_publicada)
-    VALUES
-        ('".$idUsuario."', '".$_POST['codMarco']."', 3857, 0, 0)
-    RETURNING ID;
-";
+if(!isset($_POST['idgeom'])){
+	$Log['res']='error';
+	$Log['tx'][]='falta id de idgeom';	
+	terminar($Log);
+}
 
+
+if(!isset($_POST['idcapa'])){
+	$Log['res']='error';
+	$Log['tx'][]='falta id de idcapa';	
+	terminar($Log);
+}
+
+if(!isset($_POST['geomtx'])){
+	$Log['res']='error';
+	$Log['tx'][]='falta id de geomtx';	
+	terminar($Log);
+}
+
+if(!isset($_POST['tipogeom'])){
+	$Log['res']='error';
+	$Log['tx'][]='falta id de tipogeom';	
+	terminar($Log);
+}
+
+
+$query="SELECT  *
+        FROM    geogec.ref_capasgeo
+        WHERE 
+  		id='".$_POST['idcapa']."'
+  	AND
+ 	 	zz_borrada = '0'
+ 	AND
+ 		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+ ";
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
+	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+	$Log['tx'][]='query: '.$query;
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
+}
+if(pg_num_rows($Consulta)<1){
+	$Log['tx'][]=utf8_encode('error: No se encotró la capa solicitad');
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
 }
 
 $fila=pg_fetch_assoc($Consulta);
 
-$Log['tx'][]= "Creada capa id: ".$fila['id'];
-$Log['data']['id']=$fila['id'];
+if($fila['zz_aux_rele']==null){
+	$Log['tx'][]=utf8_encode('esta funcion solo está habilitada por ahora para capas auxiliares a relevamientos');
+	$Log['mg'][]=utf8_encode('esta funcion solo está habilitada por ahora para capas auxiliares a relevamientos');
+	$Log['res']='err';
+	terminar($Log);
+}
+
+if(
+	$_POST['tipogeom']=='Polygon'
+){
+	$setgeom="geom = ST_GeomFromText('".$_POST['geomtx']."', 3857)";
+}elseif(
+	$_POST['tipogeom']=='LineString'
+){
+$setgeom="geom_line = ST_GeomFromText('".$_POST['geomtx']."', 3857)";	
+}elseif(
+	$_POST['tipogeom']=='Point'
+){
+$setgeom="geom_point = ST_GeomFromText('".$_POST['geomtx']."', 3857)";	
+}else{
+	$Log['tx'][]='error: No puedo interpretar el tipo de geometría que se pretende guardar';
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
+}
+$query = "
+UPDATE 
+	geogec.ref_capasgeo_registros
+	SET
+	".$setgeom."
+	WHERE 
+		id='".$_POST['idgeom']."'
+	AND
+		id_ref_capasgeo='".$_POST['idcapa']."'
+";
+
+
+$Consulta = pg_query($ConecSIG, $query);
+if(pg_errormessage($ConecSIG)!=''){
+        $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+        $Log['tx'][]='query: '.$query;
+        $Log['mg'][]='error interno';
+        $Log['res']='err';
+        terminar($Log);	
+}
+
+
+$Log['tx'][]="Editada capa id: ".$_POST['idcapa'];
+$Log['data']['idgeom']=$_POST['idgeom'];
+$Log['data']['idcapa']=$_POST['idcapa'];
 $Log['res']="exito";
+
 terminar($Log);

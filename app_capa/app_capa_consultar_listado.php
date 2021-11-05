@@ -90,11 +90,14 @@ $query="
     	geogec.ref_capasgeo
    	LEFT JOIN
 		geogec.sis_usu_registro ON sis_usu_registro.id = ref_capasgeo.autor
+		
    	
     WHERE 
     	ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
     AND
   		zz_borrada = '0'
+  	AND
+  		zz_aux_ind is null
   	AND
  	 	zz_publicada = '1'
   		

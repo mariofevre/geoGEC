@@ -61,15 +61,27 @@ if(!isset($_POST['idcapa'])){
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
+if(!isset($_POST['modo'])){
+	$_POST['modo']='normal';
+	//modo = forzado, arroja todos los registros sin importar el peso.
+}
 
 
 
 
 $query="
 	SELECT 
-		id, autor, nombre, ic_p_est_02_marcoacademico, zz_borrada, descripcion, nom_col_text1, nom_col_text2, nom_col_text3, nom_col_text4, nom_col_text5, nom_col_num1, nom_col_num2, nom_col_num3, nom_col_num4, nom_col_num5, zz_publicada, srid, sld, tipogeometria, zz_instrucciones
+		c.id, c.autor, c.nombre, 
+		c.ic_p_est_02_marcoacademico, c.zz_borrada, c.descripcion, 
+		c.nom_col_text1, c.nom_col_text2, c.nom_col_text3, c.nom_col_text4, c.nom_col_text5, c.nom_col_num1, c.nom_col_num2, c.nom_col_num3, c.nom_col_num4, c.nom_col_num5, 
+		c.zz_publicada, c.srid, c.sld, 
+		c.tipogeometria, c.zz_instrucciones,
+		c.modo_defecto, c.wms_layer, c.zz_aux_ind, c.zz_aux_rele, c.modo_publica, c.tipo_fuente, 
+		c.link_capa, c.link_capa_campo_local, c.link_capa_campo_externo, c.fecha_ano, c.fecha_mes, c.fecha_dia
+	
 	FROM 
-		geogec.ref_capasgeo
+		geogec.ref_capasgeo as c
+	
 	WHERE 
 		id = '".$_POST['idcapa']."'
 ";
@@ -88,7 +100,7 @@ if (pg_num_rows($Consulta) <= 0){
     $Log['res']='err';
     terminar($Log);	
 }
-
+$ref_campos=array();;
 $campos='';
 $fila=pg_fetch_assoc($Consulta);
 foreach($fila as $k => $v){
@@ -97,51 +109,265 @@ foreach($fila as $k => $v){
 		$campo=str_replace('nom_col_', '', $k);
 		$campo=str_replace('text', 'texto', $campo);
 		$campo=str_replace('num', 'numero', $campo);
-		$campos.=' '.$campo.', ';
+		$campos.=' r.'.$campo.', ';
+		
+		$ref_campos[$k]=$campo;
+		
 	}
 }   
 
-$campogeom='geom';
 
-if(
-	$fila['tipogeometria']=='Point'
-){
-	$campogeom='geom_point';
+function nombre_a_campo($k){
+	// cambia el tipo nom_col_num1 a numero1
+	// la primera refiere al campo que define el nombre del campo de una capa.
+	// la seguna al campo de la capa correspondiente
+	if(substr($k,0,8)=='nom_col_'){
+		$campo=str_replace('nom_col_', '', $k);
+		$campo=str_replace('text', 'texto', $campo);
+		$campo=str_replace('num', 'numero', $campo);
+		$ref_campos[$k]=$campo;
+		return $campo;
+	}else{
+		return "ERR";	
+	}
 }
 
+
+$lim_base=10000;
+
+$campogeom='';
+
+
+$tipogeom=$fila['tipogeometria'];
 if(
-	$fila['tipogeometria']=='Line'
+	$tipogeom=='Polygon'
+	||
+	$tipogeom=='LineString'
+	||
+	$tipogeom=='Point'
+	){
+		
+	$fuentegeometria='local';
+}elseif(
+	$tipogeom=='Tabla'
 ){
-	$campogeom='geom_line';
+	
+	$fuentegeometria='sin geometria';
+		
+
+
+	if(
+		$fila['link_capa']!=''
+		&&
+		$fila['link_capa']!='-1'
+		&&
+		$fila['link_capa_campo_local']!=''
+		&&
+		$fila['link_capa_campo_externo']!=''	
+	){
+		
+		$fuentegeometria='externa_capa';
+			
+		$query="
+			SELECT 
+				c.id, c.autor, c.nombre, 
+				c.ic_p_est_02_marcoacademico,
+				c.tipogeometria, c.zz_instrucciones
+				
+			FROM 
+				geogec.ref_capasgeo as c
+			
+			WHERE 
+				id = '".$fila['link_capa']."'
+		";
+		$Consulta = pg_query($ConecSIG, $query);
+		if(pg_errormessage($ConecSIG)!=''){
+			$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+			$Log['tx'][]='query: '.$query;
+			$Log['mg'][]='error interno';
+			$Log['res']='err';
+			terminar($Log);	
+		}	
+		$link=pg_fetch_assoc($Consulta);	
+		$tipogeom=$link['tipogeometria'];
+		
+	}elseif(
+		$fila['link_capa']=='-1'
+		&&
+		$fila['link_capa_campo_local']!=''
+		&&
+		$fila['link_capa_campo_externo']!=''	
+	){
+				
+		$fuentegeometria='externa_est01';
+		$tipogeom='Polygon';
+	}
+
+}else{
+	$Log['tx'][]= "No se encontraron registros para esta capa.";
+	$Log['tx'][]= utf8_encode("Esta capa aún no cuenta con un tipo de geometría definida.");    
+	$Log['res']="exito";
+	terminar($Log);
 }
 
-$query="SELECT  
-                id,
-                ".$campos."
-                ST_AsText(ST_SnapToGrid(".$campogeom.",0.01)) as geotx
-                
+
+$query="SELECT  count(*)
         FROM    
-                geogec.ref_capasgeo_registros
+            geogec.ref_capasgeo_registros as r
         WHERE 
-  		id_ref_capasgeo = '".$_POST['idcapa']."'
- ";
+  			id_ref_capasgeo = '".$_POST['idcapa']."'
+	";
 $Consulta = pg_query($ConecSIG, $query);
  //  echo $query;
 if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
+	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+	$Log['tx'][]='query: '.utf8_encode($query);
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
 }
+$countfila=pg_fetch_assoc($Consulta);
+$Log['data']['cant_reg']=$countfila['count'];
+
+
+
+$mag=1;
+if(
+	$tipogeom=='Point'
+){
+	$campogeom='geom_point';
+	$mag=1;
+}
+
+if(
+	$tipogeom=='Line'
+){
+	$campogeom='geom_line';
+	$mag=4;
+}
+
+if(
+	$tipogeom=='Polygon'
+){
+	$campogeom='geom';
+	$mag=16;//valor para pnderar preliminarmente el peso de la información
+}
+
+$Lim='';
+if($_POST['modo']!='forzado'){
+	$Lim= "LIMIT ".(2*$lim_base/$mag);
+}
+
+$query="";
+
+if($fuentegeometria=='local'){
+
+	$query="SELECT  
+            r.id,
+            ".$campos."
+            ST_AsText(ST_SnapToGrid(r.".$campogeom.",0.01)) as geotx
+                
+        FROM    
+            geogec.ref_capasgeo_registros as r
+        WHERE 
+  			id_ref_capasgeo = '".$_POST['idcapa']."'
+  		$Lim
+	";
+ 
+}elseif($fuentegeometria=='externa_capa'){
+
+
+	$query="SELECT  
+            r.id,
+            ".$campos."
+            ST_AsText(ST_SnapToGrid(lr.".$campogeom.",0.01)) as geotx
+                
+        FROM    
+           geogec.ref_capasgeo_registros as r
+           FULL OUTER JOIN
+           geogec.ref_capasgeo_registros as lr 
+				ON lr.".nombre_a_campo($fila['link_capa_campo_externo'])." = r.".$ref_campos[$fila['link_capa_campo_local']]." 
+				
+				AND r.id_ref_capasgeo = '".$_POST['idcapa']."'
+        WHERE 
+  			lr.id_ref_capasgeo = '".$fila['link_capa']."'
+  		$Lim
+ ";
+
+
+	
+}elseif($fuentegeometria=='externa_est01'){
+
+	$campogeom='geo';
+	
+	$query='SELECT  
+            r.id,
+            '.$campos.'
+            ST_AsText(ST_SnapToGrid(lr."'.$campogeom.'",0.01)) as geotx
+                
+        FROM    
+           geogec.ref_capasgeo_registros as r
+           LEFT JOIN
+          
+           geogec.est_01_municipios as lr ON lr."'.$fila['link_capa_campo_externo'].'" = r.'.$ref_campos[$fila['link_capa_campo_local']].'
+        WHERE 
+  			r.id_ref_capasgeo = \''.$_POST['idcapa'].'\' 
+  			
+  		'.$Lim;
+	
+}
+
+	
+if($query!=''){
+	$Consulta = pg_query($ConecSIG, $query);
+	$Log['tx'][]='query: '.utf8_encode($query);
+	 //  echo $query;
+	if(pg_errormessage($ConecSIG)!=''){
+		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+		$Log['tx'][]='query: '.utf8_encode($query);
+		$Log['mg'][]='error interno';
+		$Log['res']='err';
+		terminar($Log);	
+	}
+}else{
+		
+		$Log['mg'][]=utf8_encode('error en la configuración de vinculacion a otras capas');
+		$Log['res']='err';
+		terminar($Log);	
+		
+}
+
+
 
 if (pg_num_rows($Consulta) <= 0){
     $Log['tx'][]= "No se encontraron registros para esta capa.";
-    $Log['data']=null;
+    $Log['data']['registros']=null;
 } else {
+	
+	$Log['tx'][]= "Registros cargados:: ".pg_num_rows($Consulta);
     $Log['tx'][]= "Consulta de capa existente id: ".$_POST['idcapa'];
-    while ($fila=pg_fetch_assoc($Consulta)){	
-	$Log['data'][$fila['id']]=$fila;
+	
+	
+	if((pg_num_rows($Consulta)*$mag)>10000&&$_POST['modo']!='forzado'){
+		$Log['tx'][]= utf8_encode("LA cantidad de registros supera el límite de seguridad:: ".pg_num_rows($Consulta));
+	    $Log['tx'][]= utf8_encode("Abortamos el envío de registros");
+	    $Log['mg'][]= utf8_encode("Dado el gran tamaño, enviamos solo una muestra. Recomendamos activar el modo wms para esta capa");
+		$max=100;	
+	}
+	
+	$c=0;
+    while ($fila=pg_fetch_assoc($Consulta)){
+		$id=$fila['id'];
+		if($fila['id']==null||$fila['id']==''){
+			$id='aux'.$c;
+		}
+		$Log['data']['registros'][$id]=$fila;
+		$c++;
+    	if(isset($max)){
+    		if($c>$max){
+    			break;
+    		}
+		}
     }
 }
 

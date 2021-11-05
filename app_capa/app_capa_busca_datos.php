@@ -24,11 +24,12 @@
 
 ini_set('display_errors', 1);
 $GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
-
 include($GeoGecPath.'/includes/encabezado.php');
 include($GeoGecPath."/includes/pgqonect.php");
 
+
 include_once($GeoGecPath."/usuarios/usu_validacion.php");
+//$Usu = validarUsuario(); // en ./usu_valudacion.php
 $Usu = validarUsuario(); // en ./usu_valudacion.php
 
 $Hoy_a = date("Y");
@@ -53,10 +54,10 @@ if(!isset($_POST['codMarco'])){
 	$Log['res']='err';
 	terminar($Log);	
 }
-
+/*
 $Acc=0;
-if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'])){
-	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'];
+if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_docs'])){
+	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_docs'];
 }elseif(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'])){
 	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'];
 }elseif(isset($Usu['acc']['est_02_marcoacademico']['general']['general'])){
@@ -64,36 +65,70 @@ if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'])){
 }elseif(isset($Usu['acc']['general']['general']['general'])){
 	$Acc=$Usu['acc']['general']['general']['general'];
 }
-$minacc=2;
-if($Acc<$minacc){
-	$Log['mg'][]=utf8_encode('no cuenta con permisos para modificar la planificación de este marco académico. \n minimo requerido: '.$minacc.' \ nivel disponible: '.$Acc);
-	$Log['tx'][]=print_r($Usu,true);
+
+if($Acc<1){
+	$Log['mg'][]=utf8_encode('no cuenta con permisos para consultar la caja de documentnos de este marco académico. \n minimo requerido: 1 \ nivel disponible: '.$Acc);
 	$Log['res']='err';
-	terminar($Log);
+	terminar($Log);	
+}
+*/
+
+if(!isset($_POST['busqueda'])){
+	$Log['tx'][]='no fue enviada la variable zz_publicada';
+	$Log['res']='err';
+	terminar($Log);	
+}
+if(strlen($_POST['busqueda'])<3){$Log['res']="exito";terminar($Log);}
+
+
+if(isset($_SESSION["geogec"]["usuario"])){
+	$idUsuario = $_SESSION["geogec"]["usuario"]['id'];
+}else{
+	$idUsuario='';
 }
 
-$idUsuario = $_SESSION["geogec"]["usuario"]['id'];
+$Log['data']['busquedatipo']='capa';
 
-$query = "
-	INSERT INTO geogec.ref_capasgeo
-        (autor, ic_p_est_02_marcoacademico, srid, zz_borrada, zz_publicada)
-    VALUES
-        ('".$idUsuario."', '".$_POST['codMarco']."', 3857, 0, 0)
-    RETURNING ID;
-";
-
+$query="
+	SELECT  
+		ref_capasgeo.*,
+		sis_usu_registro.nombre as autornom,
+		sis_usu_registro.apellido as autorape
+    FROM
+    	geogec.ref_capasgeo
+   	LEFT JOIN
+		geogec.sis_usu_registro ON sis_usu_registro.id = ref_capasgeo.autor
+		
+   	
+    WHERE 
+    
+  		zz_borrada = '0'
+  	AND
+  		zz_aux_ind is null
+  	AND
+ 	 	zz_publicada = '1'
+ 	AND
+ 	  (
+	 	  ref_capasgeo.nombre LIKE '%".$_POST['busqueda']."%'
+	 	  OR
+	 	  ref_capasgeo.descripcion LIKE '%".$_POST['busqueda']."%'
+	  )
+  		
+ ";
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
+	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+	$Log['tx'][]='query: '.$query;
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
 }
 
-$fila=pg_fetch_assoc($Consulta);
+$Log['data']['resultados']=Array();
+while ($fila=pg_fetch_assoc($Consulta)){	
+	$Log['data']['resultados'][$fila['id']]=$fila;
+}
 
-$Log['tx'][]= "Creada capa id: ".$fila['id'];
-$Log['data']['id']=$fila['id'];
+
 $Log['res']="exito";
 terminar($Log);

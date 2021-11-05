@@ -40,28 +40,14 @@ var	_ExtraBaseWmsSource = new ol.source.TileWMS();//variable source utilizada po
 var La_ExtraBaseWms = new ol.layer.Tile();
 
 //definicion de variables para el layer de centroides
-var _lyrCentSrc = new ol.source.Vector(
-	{
-		attributions: [
-		    new ol.Attribution({
-		      html: 'contenidos: ' + '<a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>'
-		    })]
-  	}
-);
+var _lyrCentSrc = new ol.source.Vector({});
 var _lyrCent = new ol.layer.Vector({
 	name:'centroides'
 });   
 var _CentSelStyle = new ol.style.Style();
 var _CentStyle = new ol.style.Style();
 //definicion de variables para el layer de elemento consultado
-var _lyrElemSrc = new ol.source.Vector(
-	{
-		attributions: [
-		    new ol.Attribution({
-		      html: 'contenidos: ' + '<a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>'
-		    })]
-  	}	
-);
+var _lyrElemSrc = new ol.source.Vector({});
 
 var _lyrElemStyle = new ol.style.Style();
 var _lyrElem = new ol.layer.Vector({
@@ -70,6 +56,12 @@ var _lyrElem = new ol.layer.Vector({
 
 });   
 _lyrElem.setStyle(_CentSelStyle);
+
+
+var _sMarco = new ol.source.Vector({        
+  projection: 'EPSG:3857'      
+}); 
+
 
 function cargarMapa(){
 	
@@ -216,6 +208,19 @@ function cargarMapa(){
 		source: _sArea
 	});
 	
+	var marcoLayer = new ol.layer.Vector({
+		style: new ol.style.Style({
+			stroke: new ol.style.Stroke({color : 'rgba(200,50,50,1)', width : 1, lineDash: [2,3]}),
+	    	fill: new ol.style.Fill({color : 'rgba(250,255,250,0)'})
+		}),
+		source: _sMarco
+	});
+
+	
+	
+	
+	
+	
 	_view =	new ol.View({
       projection: 'EPSG:3857',
       center: [-7000000,-4213000],
@@ -225,49 +230,52 @@ function cargarMapa(){
 	});
 
 	var tablaRasLayer = new ol.layer.Image();
- /*
-	 var tablaRasLayer = new ol.layer.Image({
-	    source: new ol.source.ImageWMS({
-	      ratio: 1,
-	      url: 'http://190.111.246.33:8080/geoserver/geoGEC/wms',
-	      params: {
-	            'VERSION': '1.1.1',  
-	            LAYERS: 'est_01_municipios',
-	            STYLES: ''
-	      }
-	    })
-	});
-	*/
-	//var _sourceBaseOSM=new ol.source.OSM();
-	var _sourceBaseOSM=new ol.source.Stamen({
-		layer: 'toner'
-	});
-	
-	_sourceBaseOSM.setAttributions(
-		new ol.Attribution({
-		      html: 'base: ' + '<a href="http://stamen.com/">Stamen Design</a>' + ', '+ '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-		    })
-	)
-
 	
 	var _sourceBaseBING=new ol.source.BingMaps({
 	 	key: 'CygH7Xqd2Fb2cPwxzhLe~qz3D2bzJlCViv4DxHJd7Iw~Am0HV9t9vbSPjMRR6ywsDPaGshDwwUSCno3tVELuob__1mx49l2QJRPbUBPfS8qN',
 	 	imagerySet:  'Aerial'
 	});
 		
-	_sourceBaseBING.setAttributions(
-		['base satelital: ' + '<a target="blank" href="https://www.microsoft.com/en-us/maps/product"><img src="https://dev.virtualearth.net/Branding/logo_powered_by.png"> Microsoft</a>']
-	)
+	
 	
 	var layerOSM = new ol.layer.Tile({
-		 
+		  source: new ol.source.Stamen({layer: 'toner'})
+	});
+
+	
+	var _sMascaraMalvinas = new ol.source.Vector({});	  
+    _wkt='POLYGON((-7140000 -6400000 , -5600000 -6400000 , -5600000 -7000000 , -7140000 -7000000 , -7140000 -6400000 ))';
+	var _format = new ol.format.WKT();
+	var _ft = _format.readFeature(_wkt, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857'
+    });	    
+   	_sMascaraMalvinas.addFeature(_ft);
+   	
+	var _layerMascaraMalvinas= new ol.layer.Vector({
+		style: null,		
+		source: _sMascaraMalvinas
+	});			
+	
+	_layerMascaraMalvinas.getSource().on('addfeature', function () {
+	  layerOSM.setExtent(_layerMascaraMalvinas.getSource().getExtent());
+	});  
+	
+	var style = new ol.style.Style ({
+	  fill: new ol.style.Fill({color: 'black',}),
 	});
 	
-	var layerBing = new ol.layer.Tile({
-		 
+	layerOSM.on('postrender', function (e) {
+	  var vectorContext = ol.render.getVectorContext(e);
+	  e.context.globalCompositeOperation = 'destination-out';
+	  _layerMascaraMalvinas.getSource().forEachFeature(function (feature) {
+	    vectorContext.drawFeature(feature, style);
+	  });
+	  e.context.globalCompositeOperation = 'source-over';
 	});	
+	
+	var layerBing = new ol.layer.Tile({});	
 
-	 
    	_CentStyle = new ol.style.Style({
          image: new ol.style.Circle({
 		       fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
@@ -312,6 +320,7 @@ function cargarMapa(){
 	mapa = new ol.Map({
 	    layers: [
 			layerOSM,
+			_layerMascaraMalvinas,
 			layerBing,
 			vectorLayer,
 			resaltadoLayer,
@@ -321,7 +330,8 @@ function cargarMapa(){
 			tablaRasLayer,
 			La_ExtraBaseWms,
 			_lyrCent,
-			_lyrElem
+			_lyrElem,
+			marcoLayer
 	    ],
 	    target: 'mapa',
 	    view: _view
@@ -331,7 +341,7 @@ function cargarMapa(){
 	
 	vectorLayer.setSource(_source);
 	
-	layerOSM.setSource(_sourceBaseOSM);
+	//layerOSM.setSource(_sourceBaseOSM);
 	  
 	_view.on('change:resolution', function(evt){       
         if(_view.getZoom()>=19){
@@ -349,6 +359,10 @@ function cargarMapa(){
       consultaPunto(evt.pixel,evt);       
     });
 
+	if(document.querySelector('.ol-zoom.ol-unselectable.ol-control .ol-zoom-out')!=null){
+		//corrige el encode del zoom out
+    	document.querySelector('.ol-zoom.ol-unselectable.ol-control .ol-zoom-out').innerHTML='-';
+    }
 
 	function consultaPunto(pixel,_ev){
 		
@@ -385,8 +399,13 @@ function cargarMapa(){
 			_b=document.createElement('br');
 			_cont.appendChild(_b);		
 		}
-		_aux.setAttribute('idreg',_datasec.id);
 		
+		if(_datasec==undefined){
+			// FALTA PROGRAMAR LA REFERENCIA A ATRIBUTOS DE VCAPAS VINCULADAS
+			
+		}else{
+			_aux.setAttribute('idreg',_datasec.id);
+		}
 	}
 	
 	function reiniciarMapa(){
@@ -451,4 +470,46 @@ function cargarWmsCapaExist(_res){
       });
       
 	//consultarCentroides(_this);
+}
+
+
+function cargarCapaMarco(){
+	
+	_sMarco.clear();
+    //console.log(_source_ind.getFeatures());
+	_haygeom='no';
+	if(_DataMarco.geotx==''){return;}		
+	
+	//console.log('+ um geometria: campo'+_campo+'. valor:'+_val);
+	var _format = new ol.format.WKT();
+	var _ft = _format.readFeature(_DataMarco.geotx, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857'
+    });
+    //_ft.setProperties(_geo);	    
+   	_sMarco.addFeature(_ft); 
+}
+
+
+function resaltarcentroide(_this){
+    var _src = _lyrCent.getSource();
+    _centid=_this.getAttribute('centid');
+    _feat=_src.getFeatureById(_centid);
+
+    _feat.setStyle(_CentSelStyle);
+    _pp=_feat.getProperties('nom');
+    document.querySelector('#tseleccion').setAttribute('cod',_pp.cod);
+    document.querySelector('#tseleccion').innerHTML=_pp.nom;
+    document.querySelector('#tseleccion').style.display='inline-block';
+}
+
+function desaltarcentroide(_this){	
+    var _src = _lyrCent.getSource();
+    _centid=_this.getAttribute('centid');
+    _feat=_src.getFeatureById(_centid);
+
+    _feat.setStyle(_CentStyle);
+    document.querySelector('#tseleccion').setAttribute('cod','');
+    document.querySelector('#tseleccion').innerHTML='';
+    document.querySelector('#tseleccion').style.display='none';
 }

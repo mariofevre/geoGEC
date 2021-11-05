@@ -99,14 +99,9 @@ if(!isset($_POST['fi_prj'])){
 	terminar($Log);	
 }
 
-if($_POST['fi_prj']==''){
-	$Log['tx'][]='no fue enviado un valor valido la variable fi_prj';
-	$Log['mg'][]='por favor selecciones la proyección de los datos antes de procesar la capa';
-	$Log['res']='err';
-	terminar($Log);
-}
 
-//el json de las instrucciones se guarda en la session
+
+//el json de las instrucciones se guarda en la session ¿porque?
 
 $_SESSION['instrucciones'] = $_POST['instrucciones'];
 $_SESSION['fi_prj'] = $_POST['fi_prj'];
@@ -135,13 +130,27 @@ if(pg_errormessage($ConecSIG)!=''){
 	$Log['res']='err';
 	terminar($Log);	
 }
-
+$row=pg_fetch_assoc($ConsultaVer);
 if(pg_num_rows($ConsultaVer)<0){
 	$Log['mg'][]='error interno no se encontro la versión con el id enviado';
 	$Log['res']='err';
 	terminar($Log);	
 }
 
+if(
+	$_POST['fi_prj']==''
+	&&
+	$row['tipogeometria']!='Tabla'
+){
+	$Log['tx'][]='no fue enviada la variable fi_prj';
+	$Log['tx'][]=$row['tipogeometria'];
+	$Log['res']='err';
+	terminar($Log);
+}
+
+
+if(	$row['tipogeometria']!='Tabla'
+){
 $query="
 	UPDATE 
 		geogec.ref_capasgeo
@@ -155,6 +164,23 @@ $query="
 	AND
 		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
 ";
+}else{
+$query="
+	UPDATE 
+		geogec.ref_capasgeo
+   	SET 
+       	zz_instrucciones='".$_POST['instrucciones']."'
+ 	WHERE 
+ 		id='".$_POST['id']."'
+	AND
+		autor = '".$_SESSION["geogec"]["usuario"]['id']."'
+	AND
+		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+";
+}
+
+
+
 $ConsultaVer = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
 	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);

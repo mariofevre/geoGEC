@@ -115,91 +115,15 @@ if($fila['autor']!=$idUsuario){
 $query = '';
 
 if(isset($_POST['nombre'])){
-    $query = "UPDATE
-                    geogec.ref_capasgeo
-             SET    
-                    nombre='".$_POST['nombre']."'
-             WHERE
-                    ref_capasgeo.id = '".$_POST['id']."'
-             AND
-                    ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
-             AND
-                    ref_capasgeo.autor='".$idUsuario."'
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	nombre='".$_POST['nombre']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
     ;";
-}
-
-if(isset($_POST['descripcion'])){
-    $query = "UPDATE
-                    geogec.ref_capasgeo
-             SET    
-                    descripcion='".$_POST['descripcion']."'
-             WHERE
-                    ref_capasgeo.id = '".$_POST['id']."'
-             AND
-                    ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
-             AND
-                    ref_capasgeo.autor='".$idUsuario."'
-    ;";
-}
-
-if(isset($_POST['nombre']) && isset($_POST['descripcion'])) {
-    $query = "UPDATE
-                     geogec.ref_capasgeo
-              SET    
-                     nombre = '".$_POST['nombre']."',  
-                     descripcion = '".$_POST['descripcion']."'
-              WHERE
-                     ref_capasgeo.id = '".$_POST['id']."'
-              AND
-                     ref_capasgeo.ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
-              AND
-                     ref_capasgeo.autor='".$idUsuario."'
-    ;";
-}
-
-
-$haycampos='buscando';
-$campos='';
-foreach($_POST as $k => $v){
-	if(substr($k,0,8)=='nom_col_'){
-		$campos.=" ".$k." ='".$v."',";
-		$haycampos='si';
-	}	
-}
-$campos=substr($campos,0,-1);
-if($haycampos=='buscando'){$haycampos='no';}
-
-if($haycampos=='si'){
     
-    $query = "UPDATE
-                    geogec.ref_capasgeo
-             SET    
-                   $campos
-             WHERE
-                    ref_capasgeo.id = '".$_POST['id']."'
-             AND
-                    ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
-             AND
-                    ref_capasgeo.autor='".$idUsuario."'
-    ;";
-}
-
-if(isset($_POST['sld'])){
-    $query = "UPDATE
-                    geogec.ref_capasgeo
-             SET    
-                    sld='".$_POST['sld']."'
-             WHERE
-                    ref_capasgeo.id = '".$_POST['id']."'
-             AND
-                    ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
-             AND
-                    ref_capasgeo.autor='".$idUsuario."'
-    ;";
-}
-
-if ($query != ''){
-    $Consulta = pg_query($ConecSIG, $query);
+    
+	$Consulta = pg_query($ConecSIG, $query);
     if(pg_errormessage($ConecSIG)!=''){
             $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
             $Log['tx'][]='query: '.$query;
@@ -209,6 +133,340 @@ if ($query != ''){
     }
 
     $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['descripcion'])){
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	descripcion='".$_POST['descripcion']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['modo_publica'])){
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	modo_publica='".$_POST['modo_publica']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['tipo_fuente'])){
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	tipo_fuente='".$_POST['tipo_fuente']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['link_capa'])){
+	if($_POST['link_capa']==''){$set="NULL";}else{$set="'".$_POST['link_capa']."'";}
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	link_capa= $set
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['link_capa_campo_local'])){
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	link_capa_campo_local='".$_POST['link_capa_campo_local']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['link_capa_campo_externo'])){
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	link_capa_campo_externo='".$_POST['link_capa_campo_externo']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['fecha_ano'])){
+	if($_POST['fecha_ano']==''){$set="NULL";}else{$set="'".$_POST['fecha_ano']."'";}
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	fecha_ano= ".$set."
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['fecha_mes'])){
+	if($_POST['fecha_mes']==''){$set="NULL";}else{$set="'".$_POST['fecha_mes']."'";}
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	fecha_mes= ".$set."
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['fecha_dia'])){
+	if($_POST['fecha_dia']==''){$set="NULL";}else{$set="'".$_POST['fecha_dia']."'";}
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	fecha_dia= ".$set."
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+
+
+$haycampos='buscando';
+$campos='';
+foreach($_POST as $k => $v){
+	if(substr($k,0,8)=='nom_col_'){
+		$campos.=" ".$k." ='".$v."',";
+		$haycampos='si';
+	}
+		
+	if(substr($k,0,8)=='cod_col_'){
+		$campos.=" ".$k." ='".$v."',";
+		$haycampos='si';
+	}
+	
+}
+$campos=substr($campos,0,-1);
+if($haycampos=='buscando'){$haycampos='no';}
+
+if($haycampos=='si'){
+    
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	$campos
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+if(isset($_POST['sld'])){
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	sld='".$_POST['sld']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+
+if(isset($_POST['tipogeometria'])){
+    $query = "UPDATE	geogec.ref_capasgeo
+             SET    	tipogeometria='".$_POST['tipogeometria']."'
+             WHERE		ref_capasgeo.id = '".$_POST['id']."'
+             AND		ref_capasgeo.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+             AND		ref_capasgeo.autor='".$idUsuario."'
+    ;";
+    
+    
+	$Consulta = pg_query($ConecSIG, $query);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="Editada capa id: ".$_POST['id'];
+    $Log['data']['id']=$_POST['id'];
+    $Log['res']="exito";
+}
+
+
+
+if ($query != ''){
     
     $Log['tx'][]="Editada capa id: ".$_POST['id'];
     $Log['data']['id']=$_POST['id'];

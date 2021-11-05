@@ -60,7 +60,7 @@ function drop(ev,_gg) {
     
     if(_dest.parentNode.getAttribute('origen')=='aux'){
         _clon=_dest.parentNode.cloneNode(true);
-        _parent.parentNode.appendChild(_clon);
+        document.querySelector('#ecamposdelosarchivos #camposdesecha').appendChild(_clon);
 
         _dest.parentNode.setAttribute('origen','shp');
     }
@@ -118,21 +118,26 @@ function actualizarCadenaCampos(){
 var _checkList={
     'prj':{'s':'no','mg':'sin prj definido'},
     'shp':{'s':'no','mg':'sin shapefile definido'},
-    'dbf':{'s':'no','mg':'completamiento indefinido para algunas columnas d ela base'}
+    'dbf':{'s':'no','mg':'completamiento indefinido para algunas columnas de la base'}
 };
+
+
 
 function procesarCapa(_this){
     _stop='no';
-    for(var _comp in _checkList){
-        if(_checkList[_comp].s=='no'){
-            alert(_checkList[_comp].mg);
-            _stop='si';	
-        }		
-    }
-    if(_stop=='si'){
-        return;
-    }
-
+    
+	for(var _comp in _checkList){
+		if(_checkList[_comp].s=='no'){
+			if(_comp!='dbf'&&_Capa.tipogeometria=='Tabla'){continue;}
+			console.log()
+			alert(_checkList[_comp].mg);
+			_stop='si';	
+		}		
+	}
+	if(_stop=='si'){
+		return;
+	}
+	
     guardarCapa(_this,'si');
 }
 
@@ -163,6 +168,7 @@ function procesarCapa2(_this,_avance){
                 }else{
                     alert("Shapefile procesado exitosamente");
                     document.querySelector('#avanceproceso').style.display='none';
+                    cargarValoresCapaExistQuery();
                 }
             }
         }
@@ -247,7 +253,8 @@ function formversion(_this){
 
     var _parametros = {
         'id': document.getElementById('divCargaCapa').getAttribute('idcapa'),
-        'codMarco':_CodMarco
+        'codMarco':_CodMarco,
+        'tipo_geometria_form':document.querySelector('#tipo_fuente [name="tipogeometria"]').value
     };
     $.ajax({
         url:   './app_capa/app_capa_validar.php',
@@ -263,6 +270,10 @@ function formversion(_this){
             }
 
             if(_res.res=='exito'){
+				
+				_Capa=_res.data.version;
+				
+				
                 document.querySelector('#divCargaCapa #carga').style.display='block';
 
                 for(var _na in _res.data.archivos){
@@ -273,79 +284,81 @@ function formversion(_this){
                     document.querySelector('#divCargaCapa #carga #archivoscargados').appendChild(_fil);						
                 }
 
-                if(_res.data.prj.stat=='viable'){
-                    _checkList.prj.s='si';
-                    _checkList.prj.ms='ok';
-                    _sel=document.querySelector('#crs');
-                    for(_no in _sel.options){
-                        if(_sel.options[_no].value==_res.data.prj.def){
-                            _sel.options[_no].selected=true;
+				if(_res.data.version.tipogeometria!='Tabla'){
+					if(_res.data.prj.stat=='viable'){
+						_checkList.prj.s='si';
+						_checkList.prj.ms='ok';
+						_sel=document.querySelector('#crs');
+						for(_no in _sel.options){
+							if(_sel.options[_no].value==_res.data.prj.def){
+								_sel.options[_no].selected=true;
 
-                            _ppp=document.querySelectorAll('#archivoscargados [fileext="prj"], #archivoscargados [fileext="qpj"]');
-                            for(_np in _ppp){
-                                if(typeof _ppp[_np] == 'object'){
-                                    _ppp[_np].setAttribute('estado','viable');
-                                    _ppp[_np].title=_res.data.prj.mg;
-                                }
-                            }
-                        }
-                    }
-                } else if(_res.data.prj.stat=='viableobs'){
-                    _checkList.prj.s='si';
-                    _checkList.prj.ms='se adoptará el prj del formulario que difiere del explicitado en el archivo subido';
-                    _sel=document.querySelector('#crs');
-                    for(var _no in _sel.options){
-                        if(_sel.options[_no].value==_res.data.prj.def){
-                            _sel.options[_no].selected=true;
+								_ppp=document.querySelectorAll('#archivoscargados [fileext="prj"], #archivoscargados [fileext="qpj"]');
+								for(_np in _ppp){
+									if(typeof _ppp[_np] == 'object'){
+										_ppp[_np].setAttribute('estado','viable');
+										_ppp[_np].title=_res.data.prj.mg;
+									}
+								}
+							}
+						}
+					} else if(_res.data.prj.stat=='viableobs'){
+						_checkList.prj.s='si';
+						_checkList.prj.ms='se adoptará el prj del formulario que difiere del explicitado en el archivo subido';
+						_sel=document.querySelector('#crs');
+						for(var _no in _sel.options){
+							if(_sel.options[_no].value==_res.data.prj.def){
+								_sel.options[_no].selected=true;
 
-                            _ppp=document.querySelectorAll('#archivoscargados [fileext="prj"], #archivoscargados [fileext="qpj"]');
-                            for(var _np in _ppp){
-                                if(typeof _ppp[_np] == 'object'){
-                                        _ppp[_np].setAttribute('estado','viableobs');
-                                        _ppp[_np].title=_res.data.prj.mg;
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    _checkList.prj.s='no';
-                    _checkList.prj.ms=_res.data.prj.mg;
-                    _ppp=document.querySelectorAll('#archivoscargados [fileext="prj"], #archivoscargados [fileext="qpj"]');
-                    for(var _np in _ppp){
-                        if(typeof _ppp[_np] == 'object'){
-                            _ppp[_np].setAttribute('estado','inviable');
-                            _ppp[_np].title=_res.data.prj.mg;
-                        }
-                    }
+								_ppp=document.querySelectorAll('#archivoscargados [fileext="prj"], #archivoscargados [fileext="qpj"]');
+								for(var _np in _ppp){
+									if(typeof _ppp[_np] == 'object'){
+											_ppp[_np].setAttribute('estado','viableobs');
+											_ppp[_np].title=_res.data.prj.mg;
+									}
+								}
+							}
+						}
+					} else {
+						_checkList.prj.s='no';
+						_checkList.prj.ms=_res.data.prj.mg;
+						_ppp=document.querySelectorAll('#archivoscargados [fileext="prj"], #archivoscargados [fileext="qpj"]');
+						for(var _np in _ppp){
+							if(typeof _ppp[_np] == 'object'){
+								_ppp[_np].setAttribute('estado','inviable');
+								_ppp[_np].title=_res.data.prj.mg;
+							}
+						}
 
-                    //alert("crs: ",_res.data.prj.mg);
-                }
+						//alert("crs: ",_res.data.prj.mg);
+					}
 
-                if(_res.data.shp.stat=='viable'){
-                    _checkList.shp.s='si';
-                    _checkList.shp.ms='ok';
-                    _ppp=document.querySelectorAll('#archivoscargados [fileext="shp"], #archivoscargados [fileext="shx"], #archivoscargados [fileext="dbf"]');
-                    for(var _np in _ppp){
-                        if(typeof _ppp[_np] == 'object'){
-                            _ppp[_np].setAttribute('estado','viable');
-                            _ppp[_np].title=_res.data.shp.mg;
-                        }
-                    }
-                } else if(_res.data.prj.stat=='inviable'){
-                    _checkList.shp.s='no';
-                    _checkList.shp.ms=_res.data.shp.mg;
-                    _ppp=document.querySelectorAll('#archivoscargados [fileext="shp"], #archivoscargados [fileext="shx"], #archivoscargados [fileext="dbf"]');
-                    for(var _np in _ppp){
-                        if(typeof _ppp[_np] == 'object'){
-                            _ppp[_np].setAttribute('estado','inviable');
-                            _ppp[_np].title=_res.data.shp.mg;
-                        }
-                    }
-                    alert(_res.data.shp.mg);
-                }
-
+					if(_res.data.shp.stat=='viable'){
+						_checkList.shp.s='si';
+						_checkList.shp.ms='ok';
+						_ppp=document.querySelectorAll('#archivoscargados [fileext="shp"], #archivoscargados [fileext="shx"], #archivoscargados [fileext="dbf"]');
+						for(var _np in _ppp){
+							if(typeof _ppp[_np] == 'object'){
+								_ppp[_np].setAttribute('estado','viable');
+								_ppp[_np].title=_res.data.shp.mg;
+							}
+						}
+					} else if(_res.data.prj.stat=='inviable'){
+						_checkList.shp.s='no';
+						_checkList.shp.ms=_res.data.shp.mg;
+						_ppp=document.querySelectorAll('#archivoscargados [fileext="shp"], #archivoscargados [fileext="shx"], #archivoscargados [fileext="dbf"]');
+						for(var _np in _ppp){
+							if(typeof _ppp[_np] == 'object'){
+								_ppp[_np].setAttribute('estado','inviable');
+								_ppp[_np].title=_res.data.shp.mg;
+							}
+						}
+						alert(_res.data.shp.mg);
+					}
+				}
 				
 				
+				document.querySelector('#ecamposdelosarchivos').setAttribute('archivocargado','si');
                 for(var _col in _res.data.columnas){
                     if(_col=='id'){continue;}
                     if(_col=='geo'){continue;}
@@ -385,166 +398,190 @@ function formversion(_this){
 
                 _Icampos={};
                 if(_res.data.version.instrucciones!=''&&_res.data.version.instrucciones!=null){
+						console.log('parseando icampos');
+						console.log(_res.data.version.zz_instrucciones);
                     _Icampos = $.parseJSON(_res.data.version.zz_instrucciones);
                 }
-				console.log('icampos');
-				console.log(_Icampos);
+				//console.log('icampos');
+				//console.log(_Icampos);
 				
 				
-                for(_col in _res.data.dbf.campos){
-                	_ref=null;
-                    _dat=_res.data.dbf.campos[_col];
-                    _norig=_dat.name;
-                    _nombre=_dat.name;
-
-                    if(_norig=='id'){continue;}
-                    if(_norig=='geo'){continue;}
-                    if(_norig=='id_sis_versiones'){continue;}
-                    if(_col=='zz_obsoleto'){continue;}
-
-					console.log('_col:'+_nombre);
-					if(_Icampos[_nombre]!=null){
-						console.log('_nombre: es key en icampos');
-						_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[nom="'+_Icampos[_nombre].nom+'"]');
-						
-						if(_ref!=null){
-	                    	console.log('_col: localizado en las instrucciones');
-	                    	_ref.setAttribute('estado','lleno');
-	                        _nome=_ref.parentNode.querySelector('#espacioshp');
-	                        _nom=document.createElement('div');
-	                        _c++;
-	                        _nom.setAttribute('id',_c);
-	                        _nom.setAttribute('class','enshp');
-	                        _nom.setAttribute('nom',_norig);
-	                        _nom.setAttribute("draggable","true");
-	                        _nom.setAttribute("ondragstart","drag(event)");							
-	                        _nom.innerHTML=_norig;			
-	                        _nome.appendChild(_nom);
-	                    }							
+				
+				
+				
+				
+				
+				if(_res.data.version.tipogeometria!='Tabla'){
+					if(_res.data.dbf==undefined){
+						//aun no se cargo el archivo de datos
+						_camposfile={};
+					}else{
+						_camposfile=_res.data.dbf.campos;
+					}
+				}else{
+					if(_res.data.xlsx==undefined){
+						//aun no se cargo el archivo de datos
+						_camposfile={};
+					}else{
+						_camposfile=_res.data.xlsx.campos;	
 					}
 				}
 					
-				for(_col in _res.data.dbf.campos){
-                	_ref=null;
-                    _dat=_res.data.dbf.campos[_col];
-                    _norig=_dat.name;
-                    _nombre=_dat.name;
+				for(_col in _camposfile){
+					_ref=null;
+					_dat=_camposfile[_col];
+					_norig=_dat.name;
+					_nombre=_dat.name;
+
+					if(_norig=='id'){continue;}
+					if(_norig=='geo'){continue;}
+					if(_norig=='id_sis_versiones'){continue;}
+					if(_col=='zz_obsoleto'){continue;}
+
+					//console.log('_col:'+_nombre);
+					if(_Icampos[_nombre]!=null){
+						//console.log('_nombre: es key en icampos');
+						_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[nom="'+_Icampos[_nombre].nom+'"]');
+						
+						if(_ref!=null){
+							//console.log('_col: localizado en las instrucciones');
+							_ref.setAttribute('estado','lleno');
+							_nome=_ref.parentNode.querySelector('#espacioshp');
+							_nom=document.createElement('div');
+							_c++;
+							_nom.setAttribute('id',_c);
+							_nom.setAttribute('class','enshp');
+							_nom.setAttribute('nom',_norig);
+							_nom.setAttribute("draggable","true");
+							_nom.setAttribute("ondragstart","drag(event)");							
+							_nom.innerHTML=_norig;			
+							_nome.appendChild(_nom);
+						}							
+					}
+				}
+					
+				for(_col in _camposfile){
+					_ref=null;
+					_dat=_camposfile[_col];
+					_norig=_dat.name;
+					_nombre=_dat.name;
 		
-                    if(_norig=='id'){continue;}
-                    if(_norig=='geo'){continue;}
-                    if(_norig=='id_sis_versiones'){continue;}
-                    if(_col=='zz_obsoleto'){continue;}
-                    
-                    console.log('_col:'+_nombre);
-                    if(_Icampos[_nombre]!=null){
+					if(_norig=='id'){continue;}
+					if(_norig=='geo'){continue;}
+					if(_norig=='id_sis_versiones'){continue;}
+					if(_col=='zz_obsoleto'){continue;}
+					
+					console.log('_col:'+_nombre);
+					if(_Icampos[_nombre]!=null){
 						_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[nom="'+_Icampos[_nombre].nom+'"]');			
 					}
 											
-                    if(_ref==null){
-                    	console.log('_col: sin localizar en las instrucciones');                    	
-                    	console.log(_dat.type);
-                    	if(_dat.type=='N'){
-                    		_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[estado="vacio"][tipo="n"]');
-                    		console.log('es N');
-                    		console.log(_ref);
-                    		if(_ref==null){
-                    			_fil=document.createElement('div');
-		                        _fil.setAttribute('id','entabla');
-		                        _fil.setAttribute('origen','shp');
+					if(_ref==null){
+						console.log('_col: sin localizar en las instrucciones');                    	
+						console.log(_dat.type);
+						if(_dat.type=='N'){
+							_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[estado="vacio"][tipo="n"]');
+							console.log('es N');
+							console.log(_ref);
+							if(_ref==null){
+								_fil=document.createElement('div');
+								_fil.setAttribute('id','entabla');
+								_fil.setAttribute('origen','shp');
 		
-		                        _nom=document.createElement('div');
-		                        _nom.setAttribute('id','entabla');
-		                        _nom.setAttribute('nom','');
-		                        _fil.appendChild(_nom);
+								_nom=document.createElement('div');
+								_nom.setAttribute('id','entabla');
+								_nom.setAttribute('nom','');
+								_fil.appendChild(_nom);
 		
-		                        _nome=document.createElement('div');
-		                        _nome.setAttribute('id','espacioshp');	
-		                        _nome.setAttribute('ondrop',"drop(event)");
-		                        _nome.setAttribute('ondragover',"allowDrop(event)");
-		                        _fil.appendChild(_nome);
+								_nome=document.createElement('div');
+								_nome.setAttribute('id','espacioshp');	
+								_nome.setAttribute('ondrop',"drop(event)");
+								_nome.setAttribute('ondragover',"allowDrop(event)");
+								_fil.appendChild(_nome);
 		
-		                        _nom=document.createElement('div');
-		                        _c++;
-		                        _nom.setAttribute('id',_c);
-		                        _nom.setAttribute('class','enshp');
-		                        _nom.setAttribute('nom',_norig);
-		                        _nom.setAttribute("draggable","true");
-		                        _nom.setAttribute("ondragstart","drag(event)");							
-		                        _nom.innerHTML=_norig;			
-		                        _nome.appendChild(_nom);
+								_nom=document.createElement('div');
+								_c++;
+								_nom.setAttribute('id',_c);
+								_nom.setAttribute('class','enshp');
+								_nom.setAttribute('nom',_norig);
+								_nom.setAttribute("draggable","true");
+								_nom.setAttribute("ondragstart","drag(event)");							
+								_nom.innerHTML=_norig;			
+								_nome.appendChild(_nom);
 		
-		                        document.querySelector('#divCargaCapa #carga #camposident').appendChild(_fil);
-                    		
-                    		}else{
-                    		
-	                    		_ref.setAttribute('estado','lleno');
-	                    		_nome=_ref.parentNode.querySelector('#espacioshp');
-		                        _nom=document.createElement('div');
-		                        _c++;
-		                        _nom.setAttribute('id',_c);
-		                        _nom.setAttribute('class','enshp');
-		                        _nom.setAttribute('nom',_norig);
-		                        _nom.setAttribute("draggable","true");
-		                        _nom.setAttribute("ondragstart","drag(event)");							
-		                        _nom.innerHTML=_norig;			
-		                        _nome.appendChild(_nom);	
-		                        
-                    		}
-                    	}else{
-                    		console.log('es S');
-                    		console.log(_ref);
-                    		_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[estado="vacio"][tipo="t"]');
-                    		
-                    		if(_ref==null){
-                    			_fil=document.createElement('div');
-		                        _fil.setAttribute('id','entabla');
-		                        _fil.setAttribute('origen','shp');
+								document.querySelector('#divCargaCapa #carga #camposdesecha').appendChild(_fil);
+							
+							}else{
+							
+								_ref.setAttribute('estado','lleno');
+								_nome=_ref.parentNode.querySelector('#espacioshp');
+								_nom=document.createElement('div');
+								_c++;
+								_nom.setAttribute('id',_c);
+								_nom.setAttribute('class','enshp');
+								_nom.setAttribute('nom',_norig);
+								_nom.setAttribute("draggable","true");
+								_nom.setAttribute("ondragstart","drag(event)");							
+								_nom.innerHTML=_norig;			
+								_nome.appendChild(_nom);	
+								
+							}
+						}else{
+							console.log('es S');
+							console.log(_ref);
+							_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[estado="vacio"][tipo="t"]');
+							
+							if(_ref==null){
+								_fil=document.createElement('div');
+								_fil.setAttribute('id','entabla');
+								_fil.setAttribute('origen','shp');
 		
-		                        _nom=document.createElement('div');
-		                        _nom.setAttribute('id','entabla');
-		                        _nom.setAttribute('nom','');
-		                        _fil.appendChild(_nom);
+								_nom=document.createElement('div');
+								_nom.setAttribute('id','entabla');
+								_nom.setAttribute('nom','');
+								_fil.appendChild(_nom);
 		
-		                        _nome=document.createElement('div');
-		                        _nome.setAttribute('id','espacioshp');	
-		                        _nome.setAttribute('ondrop',"drop(event)");
-		                        _nome.setAttribute('ondragover',"allowDrop(event)");
-		                        _fil.appendChild(_nome);
+								_nome=document.createElement('div');
+								_nome.setAttribute('id','espacioshp');	
+								_nome.setAttribute('ondrop',"drop(event)");
+								_nome.setAttribute('ondragover',"allowDrop(event)");
+								_fil.appendChild(_nome);
 		
-		                        _nom=document.createElement('div');
-		                        _c++;
-		                        _nom.setAttribute('id',_c);
-		                        _nom.setAttribute('class','enshp');
-		                        _nom.setAttribute('nom',_norig);
-		                        _nom.setAttribute("draggable","true");
-		                        _nom.setAttribute("ondragstart","drag(event)");							
-		                        _nom.innerHTML=_norig;			
-		                        _nome.appendChild(_nom);
+								_nom=document.createElement('div');
+								_c++;
+								_nom.setAttribute('id',_c);
+								_nom.setAttribute('class','enshp');
+								_nom.setAttribute('nom',_norig);
+								_nom.setAttribute("draggable","true");
+								_nom.setAttribute("ondragstart","drag(event)");							
+								_nom.innerHTML=_norig;			
+								_nome.appendChild(_nom);
 		
-		                        document.querySelector('#divCargaCapa #carga #camposident').appendChild(_fil);
-                    		
-                    		}else{
-                    		
-	                     		_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[estado="vacio"][tipo="t"]');
-	                     		_ref.setAttribute('estado','lleno');
-	                    		_nome=_ref.parentNode.querySelector('#espacioshp');
-		                        _nom=document.createElement('div');
-		                        _c++;
-		                        _nom.setAttribute('id',_c);
-		                        _nom.setAttribute('class','enshp');
-		                        _nom.setAttribute('nom',_norig);
-		                        _nom.setAttribute("draggable","true");
-		                        _nom.setAttribute("ondragstart","drag(event)");							
-		                        _nom.innerHTML=_norig;			
-		                        _nome.appendChild(_nom);	            
-		                     }       		
-                    	}
-                    	  
-                    } else{
-                    	console.log('salteado');
-                    }
-                }
-
+								document.querySelector('#divCargaCapa #carga #camposident').appendChild(_fil);
+							
+							}else{
+							
+								_ref=document.querySelector('#divCargaCapa #carga #camposident #entabla[estado="vacio"][tipo="t"]');
+								_ref.setAttribute('estado','lleno');
+								_nome=_ref.parentNode.querySelector('#espacioshp');
+								_nom=document.createElement('div');
+								_c++;
+								_nom.setAttribute('id',_c);
+								_nom.setAttribute('class','enshp');
+								_nom.setAttribute('nom',_norig);
+								_nom.setAttribute("draggable","true");
+								_nom.setAttribute("ondragstart","drag(event)");							
+								_nom.innerHTML=_norig;			
+								_nome.appendChild(_nom);	            
+							 }       		
+						}
+						  
+					} else{
+						//console.log('salteado');
+					}
+				
+				}
+			
                 _fil=document.createElement('div');	
                 _fil.setAttribute('origen','aux');
 
@@ -560,7 +597,7 @@ function formversion(_this){
 
                 _fil.appendChild(_nom);
 
-                document.querySelector('#divCargaCapa #carga #camposident').appendChild(_fil);
+                document.querySelector('#divCargaCapa #carga #camposdesecha').appendChild(_fil);
 
                 actualizarCadenaCampos();
             }
@@ -571,41 +608,6 @@ function formversion(_this){
     });
 }
 
-function guardarCapa(_this,_procesar){
-    var _this=_this;
-    var _procesar=_procesar;
-    
-    editarNombreCapa();
-    editarDescripcionCapa();
-    editarCamposCapa();
-    guardarSLD();
-    
-    var _parametros = {
-        'instrucciones': _this.parentNode.querySelector('#verproccampo').innerHTML, 
-        'fi_prj': _this.parentNode.querySelector('select#crs').value,
-        'id': document.getElementById('divCargaCapa').getAttribute('idcapa'),
-        'codMarco': _CodMarco
-    };
-    $.ajax({
-        url:  './app_capa/app_capa_editar_shapefile.php',
-        type: 'post',
-        data: _parametros,
-        success:  function (response){
-            var _res = $.parseJSON(response);
-            for(var _nm in _res.mg){
-                alert(_res.mg[_nm]);
-            }
-            console.log(_res);
-
-            if(_procesar=='si')
-            {
-                procesarCapa2(_this.parentNode,0);
-                return;
-            }
-            formversion(_this.parentNode);
-        }
-    });
-}
 
 var _contUp=0;
 var _Cargas={};
@@ -687,7 +689,7 @@ function enviarArchivosSHPUpload(_event,_this){
                 if(_pendientes==0){
                     //alert(document.querySelector('#botonformversion').innerHTML);
                     formversion(document.querySelector('#botonformversion'));
-                    alert('ok');
+                    document.querySelector('#ecamposdelosarchivos').setAttribute('archivocargado','si');
                 }
             }
         });

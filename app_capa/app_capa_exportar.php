@@ -72,16 +72,70 @@ if($Acc<$minacc){
 	terminar($Log);
 }
 
-$idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
-$query = "
-	INSERT INTO geogec.ref_capasgeo
-        (autor, ic_p_est_02_marcoacademico, srid, zz_borrada, zz_publicada)
-    VALUES
-        ('".$idUsuario."', '".$_POST['codMarco']."', 3857, 0, 0)
-    RETURNING ID;
+if(!isset($_POST['codMarcoDestino'])){
+	$Log['mg'][]=utf8_encode('error en las variables codMarco.');
+	$Log['tx'][]='error, no se recibió la variable id';
+	$Log['res']='err';
+	terminar($Log);	
+}
+
+if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarcoDestino']]['app_capa'])){
+	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarcoDestino']]['app_capa'];
+}elseif(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarcoDestino']]['general'])){
+	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarcoDestino']]['general'];
+}elseif(isset($Usu['acc']['est_02_marcoacademico']['general']['general'])){
+	$Acc=$Usu['acc']['est_02_marcoacademico']['general']['general'];
+}elseif(isset($Usu['acc']['general']['general']['general'])){
+	$Acc=$Usu['acc']['general']['general']['general'];
+}
+$minacc=2;
+if($Acc<$minacc){
+	$Log['mg'][]=utf8_encode('no cuenta con permisos para modificar la planificación de este marco académico. \n minimo requerido: '.$minacc.' \ nivel disponible: '.$Acc);
+	$Log['tx'][]=print_r($Usu,true);
+	$Log['res']='err';
+	terminar($Log);
+}
+
+
+
+if(!isset($_POST['idCapa'])){
+	$Log['mg'][]=utf8_encode('error en las variables enviadas para guardar una versión. Consulte al administrador');
+	$Log['tx'][]='error, no se recibió la variable id';
+	$Log['res']='err';
+	terminar($Log);	
+}
+
+
+
+
+$query="
+
+	INSERT INTO
+		geogec.ref_capasgeo(
+			autor,nombre,ic_p_est_02_marcoacademico,zz_borrada,
+			descripcion,nom_col_text1,nom_col_text2,nom_col_text3,
+			nom_col_text4,nom_col_text5,nom_col_num1,nom_col_num2,
+			nom_col_num3,nom_col_num4,nom_col_num5,zz_publicada,
+			srid,sld,tipogeometria,zz_instrucciones,modo_defecto,
+			wms_layer,zz_aux_ind,zz_aux_rele
+		)
+		
+		SELECT 
+				'".$_SESSION["geogec"]["usuario"]['id']."',nombre,'".$_POST['codMarcoDestino']."',zz_borrada,
+				descripcion,nom_col_text1,nom_col_text2,nom_col_text3,
+				nom_col_text4,nom_col_text5,nom_col_num1,nom_col_num2,
+				nom_col_num3,nom_col_num4,nom_col_num5,zz_publicada,
+				srid,sld,tipogeometria,zz_instrucciones,modo_defecto,
+				wms_layer,zz_aux_ind,zz_aux_rele 
+		FROM 
+			geogec.ref_capasgeo
+		WHERE
+			id = '".$_POST['idCapa']."'
+		
+		
+		returning id
 ";
-
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
     $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
@@ -95,5 +149,44 @@ $fila=pg_fetch_assoc($Consulta);
 
 $Log['tx'][]= "Creada capa id: ".$fila['id'];
 $Log['data']['id']=$fila['id'];
+
+
+
+
+$query="
+	INSERT INTO
+		geogec.ref_capasgeo_registros(
+			geom,geom_point,geom_line,
+			texto1,texto2,texto3,texto4,texto5,
+			numero1,numero2,numero3,numero4,numero5,
+			id_ref_capasgeo,zz_auto_crea_usu,zz_auto_crea_fechau
+			
+		)
+			SELECT
+				geom,geom_point,geom_line,
+				texto1,texto2,texto3,texto4,texto5,
+				numero1,numero2,numero3,numero4,numero5,
+				'".$Log['data']['id']."','".$_SESSION["geogec"]["usuario"]['id']."','".time()."'
+				
+				FROM 
+				geogec.ref_capasgeo_registros
+				WHERE
+				id_ref_capasgeo= '".$_POST['idCapa']."'
+		
+		returning id
+";
+$Consulta = pg_query($ConecSIG, $query);
+if(pg_errormessage($ConecSIG)!=''){
+    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+    $Log['tx'][]='query: '.$query;
+    $Log['mg'][]='error interno';
+    $Log['res']='err';
+    terminar($Log);	
+}
+
+
+
+
+
 $Log['res']="exito";
 terminar($Log);

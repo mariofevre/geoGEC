@@ -129,6 +129,7 @@ $extVal['dbf']='1';
 $extVal['shp']='1';
 $extVal['shx']='1';
 $extVal['cpg']='1';
+$extVal['xlsx']='1';
 
 if(!isset($extVal[strtolower($ext)])){	
     $Log['tx'][]="solo se aceptan los formatos:";

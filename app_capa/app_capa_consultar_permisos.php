@@ -39,6 +39,7 @@ $HOY = $Hoy_a."-".$Hoy_m."-".$Hoy_d;
 $Log['data']=array();
 $Log['tx']=array();
 $Log['mg']=array();
+$Log['acc']=array();
 $Log['res']='';
 
 function terminar($Log){
@@ -55,10 +56,27 @@ if(!isset($_POST['codMarco'])){
 }
 
 
+if(!isset($_SESSION["geogec"])){
+	$Log['tx'][]='sesion caduca';
+	$Log['acc'][]='login';
+	terminar($Log);	
+}
+if($_SESSION["geogec"]["usuario"]['id']=='-1'){
+	$Log['tx'][]='sesion caduca';
+	$Log['acc'][]='login';
+	terminar($Log);
+}
 	
 $Acc=0;
-if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_docs'])){
-	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_docs'];
+
+$Acc='app_capa';
+
+if(isset($_POST["Accion"])){
+	$Acc=$_POST["Accion"];	
+}
+
+if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']][$Acc])){
+	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']][$Acc];
 }elseif(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'])){
 	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'];
 }elseif(isset($Usu['acc']['est_02_marcoacademico']['general']['general'])){

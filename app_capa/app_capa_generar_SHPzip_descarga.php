@@ -21,15 +21,17 @@
 * 
 * Si usted no cuenta con una copia de dicha licencia puede encontrarla aquí: <http://www.gnu.org/licenses/>.
 */
-
 ini_set('display_errors', 1);
 $GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
 
+if(!isset($_SESSION)) { session_start(); }
+
+
+
 include($GeoGecPath.'/includes/encabezado.php');
 include($GeoGecPath."/includes/pgqonect.php");
-
 include_once($GeoGecPath."/usuarios/usu_validacion.php");
-$Usu = validarUsuario(); // en ./usu_valudacion.php
+//$Usu = validarUsuario(); // en ./usu_valudacion.php
 
 $Hoy_a = date("Y");
 $Hoy_m = date("m");
@@ -54,46 +56,63 @@ if(!isset($_POST['codMarco'])){
 	terminar($Log);	
 }
 
-$Acc=0;
-if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'])){
-	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'];
-}elseif(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'])){
-	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'];
-}elseif(isset($Usu['acc']['est_02_marcoacademico']['general']['general'])){
-	$Acc=$Usu['acc']['est_02_marcoacademico']['general']['general'];
-}elseif(isset($Usu['acc']['general']['general']['general'])){
-	$Acc=$Usu['acc']['general']['general']['general'];
-}
-$minacc=2;
-if($Acc<$minacc){
-	$Log['mg'][]=utf8_encode('no cuenta con permisos para modificar la planificación de este marco académico. \n minimo requerido: '.$minacc.' \ nivel disponible: '.$Acc);
-	$Log['tx'][]=print_r($Usu,true);
+if(!isset($_POST['idcapa'])){
+	$Log['tx'][]='no fue enviada la variable idcapa';
 	$Log['res']='err';
-	terminar($Log);
+	terminar($Log);	
 }
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
+$Log['data']['idcapa']=$_POST['idcapa'];
 
-$query = "
-	INSERT INTO geogec.ref_capasgeo
-        (autor, ic_p_est_02_marcoacademico, srid, zz_borrada, zz_publicada)
-    VALUES
-        ('".$idUsuario."', '".$_POST['codMarco']."', 3857, 0, 0)
-    RETURNING ID;
+$query="
+	SELECT  *
+    FROM    geogec.ref_capasgeo
+    WHERE 
+    	ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+    AND
+        id='".$_POST['idcapa']."'
 ";
 
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
+	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+	$Log['tx'][]='query: '.$query;
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
 }
 
-$fila=pg_fetch_assoc($Consulta);
+if (pg_num_rows($Consulta) <= 0){
+	$Log['tx'][]= "No se encontraron capas existentes para este usuario.";
+	$Log['data']=null;
+	terminar($Log);	
+} else {
+	//Asumimos que solo devuelve una fila
+	$fila=pg_fetch_assoc($Consulta);
+	$Log['tx'][]= "Consulta de capa existente id: ".$fila['id'];
+	$Log['data']['capa']=$fila;
+}
 
-$Log['tx'][]= "Creada capa id: ".$fila['id'];
-$Log['data']['id']=$fila['id'];
+
+$strcapa=str_pad($_POST['idcapa'],6,'0',STR_PAD_LEFT);
+
+$Log['data']['ruta']='/documentos/auxiliares/capa/descargas/'.$strcapa.'.shp';
+
+chdir($GeoGecPath.'/documentos/auxiliares/capa/descargas/');
+
+$f=$GeoGecPath.'/documentos/auxiliares/capa/descargas/'.$strcapa.'.zip';
+if(file_exists($f)){unlink($f);}
+
+$comando='zip ./'.$strcapa.'.zip ./'.$strcapa.'.*';
+// echo PHP_EOL;echo $comando;echo PHP_EOL; 
+exec($comando,$exec_res);
+$Log['tx'][]=$comando;
+$Log['tx'][]='creando zip desde shapefile: '.print_r($exec_res,true);
+$Log['data']['descarga']='./documentos/auxiliares/capa/descargas/'.$strcapa.'.zip';
+
+
+
+
 $Log['res']="exito";
 terminar($Log);

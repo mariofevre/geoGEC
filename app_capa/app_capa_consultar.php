@@ -109,5 +109,50 @@ if ($query != ''){
     $Log['res']="error";
 }
 
+
+
+
+
+if($Log['data']['link_capa']>0){
+	
+	$query="
+		SELECT  *
+		FROM    geogec.ref_capasgeo
+		WHERE 
+		id = '".$Log['data']['link_capa']."'
+    ";	
+    
+	$Consulta = pg_query($ConecSIG, $query);
+	
+	if(pg_errormessage($ConecSIG)!=''){
+		$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+		$Log['tx'][]='query: '.$query;
+		$Log['mg'][]='error interno';
+		$Log['res']='err';
+		terminar($Log);	
+	}
+	
+	$Log['data']['muestra_link_capa']=$Consulta['nombre'];
+	
+	
+	if($Log['data']['link_capa_campo_externo']!=''){		
+		$campo=str_replace('nom_col_', '', $Log['data']['link_capa_campo_externo']);
+		$campo=str_replace('text', 'texto', $campo);
+		$campo=str_replace('num', 'numero', $campo);
+		$Log['data']['muestra_link_capa_campo_externo']=$Consulta[$campo];
+	}	
+	
+}
+
+if($Log['data']['link_capa']=='-1'){
+	
+	$Log['data']['muestra_link_capa']=utf8_encode('Departamentos costeros república argentina');
+		
+	if($Log['data']['link_capa_campo_externo']=='COD_DEPTO_'){		
+		$Log['data']['muestra_link_capa_campo_externo']='COD_DEPTO_';
+	}			
+}
+
+
 $Log['res']="exito";
 terminar($Log);

@@ -24,7 +24,6 @@
 
 ini_set('display_errors', 1);
 $GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
-
 include($GeoGecPath.'/includes/encabezado.php');
 include($GeoGecPath."/includes/pgqonect.php");
 
@@ -74,26 +73,84 @@ if($Acc<$minacc){
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
-$query = "
-	INSERT INTO geogec.ref_capasgeo
-        (autor, ic_p_est_02_marcoacademico, srid, zz_borrada, zz_publicada)
-    VALUES
-        ('".$idUsuario."', '".$_POST['codMarco']."', 3857, 0, 0)
-    RETURNING ID;
-";
 
+if(!isset($_POST['idcapa'])){
+	$Log['res']='error';
+	$Log['tx'][]='falta id de idcapa';	
+	terminar($Log);
+}
+
+
+
+$query="SELECT  *
+        FROM    geogec.ref_capasgeo
+        WHERE 
+  		id='".$_POST['idcapa']."'
+  	AND
+ 	 	zz_borrada = '0'
+ 	AND
+ 		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+ ";
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
+	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+	$Log['tx'][]='query: '.$query;
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
+}
+if(pg_num_rows($Consulta)<1){
+	$Log['tx'][]=utf8_encode('error: No se encotró la capa solicitad');
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
 }
 
 $fila=pg_fetch_assoc($Consulta);
 
-$Log['tx'][]= "Creada capa id: ".$fila['id'];
-$Log['data']['id']=$fila['id'];
+if($fila['zz_aux_rele']==null){
+	$Log['tx'][]=utf8_encode('esta funcion solo está habilitada por ahora para capas auxiliares a relevamientos');
+	$Log['mg'][]=utf8_encode('esta funcion solo está habilitada por ahora para capas auxiliares a relevamientos');
+	$Log['res']='err';
+	terminar($Log);
+}
+
+$query = "
+INSERT INTO
+	geogec.ref_capasgeo_registros(	
+	id_ref_capasgeo,
+	zz_auto_crea_usu,
+	zz_auto_crea_fechau
+	)VALUES(
+	'".$_POST['idcapa']."',
+	'".$idUsuario."',
+	'".time()."'
+	)
+	RETURNING id
+";
+
+
+$Consulta = pg_query($ConecSIG, $query);
+if(pg_errormessage($ConecSIG)!=''){
+        $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+        $Log['tx'][]='query: '.$query;
+        $Log['mg'][]='error interno';
+        $Log['res']='err';
+        terminar($Log);	
+}
+$row = pg_fetch_assoc($Consulta);
+if($row['id']<0){
+	    $Log['tx'][]='error: no se genero id de registro';
+        $Log['tx'][]='query: '.$query;
+        $Log['mg'][]='error interno';
+        $Log['res']='err';
+        terminar($Log);	
+}
+
+$Log['data']['idgeom']=$row['id'];
+$Log['data']['idcapa']=$_POST['idcapa'];
+
+
 $Log['res']="exito";
+
 terminar($Log);

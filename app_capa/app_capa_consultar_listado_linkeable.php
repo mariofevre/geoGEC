@@ -24,11 +24,12 @@
 
 ini_set('display_errors', 1);
 $GeoGecPath = $_SERVER["DOCUMENT_ROOT"]."/geoGEC";
-
 include($GeoGecPath.'/includes/encabezado.php');
 include($GeoGecPath."/includes/pgqonect.php");
 
+
 include_once($GeoGecPath."/usuarios/usu_validacion.php");
+//$Usu = validarUsuario(); // en ./usu_valudacion.php
 $Usu = validarUsuario(); // en ./usu_valudacion.php
 
 $Hoy_a = date("Y");
@@ -55,8 +56,8 @@ if(!isset($_POST['codMarco'])){
 }
 
 $Acc=0;
-if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'])){
-	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'];
+if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_docs'])){
+	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_docs'];
 }elseif(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'])){
 	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['general'];
 }elseif(isset($Usu['acc']['est_02_marcoacademico']['general']['general'])){
@@ -64,36 +65,83 @@ if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'])){
 }elseif(isset($Usu['acc']['general']['general']['general'])){
 	$Acc=$Usu['acc']['general']['general']['general'];
 }
-$minacc=2;
-if($Acc<$minacc){
-	$Log['mg'][]=utf8_encode('no cuenta con permisos para modificar la planificación de este marco académico. \n minimo requerido: '.$minacc.' \ nivel disponible: '.$Acc);
-	$Log['tx'][]=print_r($Usu,true);
+
+if($Acc<1){
+	$Log['mg'][]=utf8_encode('no cuenta con permisos para consultar la caja de documentnos de este marco académico. \n minimo requerido: 1 \ nivel disponible: '.$Acc);
 	$Log['res']='err';
-	terminar($Log);
+	terminar($Log);	
 }
+
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
-$query = "
-	INSERT INTO geogec.ref_capasgeo
-        (autor, ic_p_est_02_marcoacademico, srid, zz_borrada, zz_publicada)
-    VALUES
-        ('".$idUsuario."', '".$_POST['codMarco']."', 3857, 0, 0)
-    RETURNING ID;
-";
 
+$Log['data']['linkeables'][-1]=array(
+
+	'autor'=>'GEC',
+	'nombre'=>utf8_encode('Departamentos costeros república argentina'),
+	'descripcion'=>utf8_encode('Capa utilizada para la organización de la plataforma geoGEC. Los departamentos costerons constituyen el recorte terriotrial sobre el cual esta organización centra sus investigaciones.'),
+	'modo_publica'=>'publica',
+	'nom_col_text1'=>'COD_DEPTO_'
+	
+);
+
+
+$query="
+	SELECT  
+		ref_capasgeo.*,
+		sis_usu_registro.nombre as autornom,
+		sis_usu_registro.apellido as autorape,
+		est_02_marcoacademico.nombre as marconombre
+    FROM
+    	geogec.ref_capasgeo
+   	LEFT JOIN
+		geogec.sis_usu_registro ON sis_usu_registro.id = ref_capasgeo.autor
+   	LEFT JOIN
+		geogec.est_02_marcoacademico ON ref_capasgeo.ic_p_est_02_marcoacademico = est_02_marcoacademico.codigo
+		
+    WHERE 
+    	
+  		zz_borrada = '0'
+  	AND
+  		zz_aux_ind is null
+  	AND
+ 	 	zz_publicada = '1'
+ 	AND
+		(
+ 	 	ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+ 	 	OR
+ 	 	ref_capasgeo.modo_publica='publica'
+ 	 	OR
+ 	 	ref_capasgeo.modo_publica='GEC'
+ 	 )
+  		
+ ";
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
+	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+	$Log['tx'][]='query: '.$query;
+	$Log['mg'][]='error interno';
+	$Log['res']='err';
+	terminar($Log);	
 }
 
-$fila=pg_fetch_assoc($Consulta);
 
-$Log['tx'][]= "Creada capa id: ".$fila['id'];
-$Log['data']['id']=$fila['id'];
+
+if (pg_num_rows($Consulta) <= 0){
+    $Log['tx'][]= "No se encontraron capas existentes para este usuario.";
+    $Log['data']=null;
+} else {
+	$Log['tx'][]= "Consulta de capas linikeables";
+    while ($fila=pg_fetch_assoc($Consulta)){	
+		foreach($fila as $k => $v){
+			if($k=='sld'){continue;}
+			$Log['data']['linkeables'][$fila['id']][$k]=$v;
+		}
+    }
+}
+
+
+
 $Log['res']="exito";
 terminar($Log);

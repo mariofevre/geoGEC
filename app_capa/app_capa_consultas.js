@@ -121,7 +121,7 @@ function consultarTablas(){
                 _standarSHP="ows?service=WFS&version=1.0.0&request=GetFeature&maxFeatures=1000000&outputFormat=SHAPE-ZIP";
                 _capaSHP="&typeName=geogec:"+_Tablas['est'][_nn];
 
-                _aaa.setAttribute('onclick','descargarSHP(this,event)');
+                _aaa.setAttribute('onclick','alert("modo deprecado, actualizar referencia a funcion de descarga")');//antes: escargarSHP(this,event),
 
                 _host="http://190.111.246.33:8080/geoserver/geoGEC/";
 
@@ -144,6 +144,124 @@ function consultarTablas(){
     });
 }
 consultarTablas();
+
+
+var _Linkeables={};
+
+
+function consultarCapasLinkeables(){
+	
+
+    var _parametros = {
+        'codMarco':_CodMarco
+    };
+    
+    
+    document.querySelector('#formlinkcapa #lista').innerHTML='';
+	document.querySelector('#formlinkcapa').style.display='none';
+	
+    $.ajax({
+        url:   './app_capa/app_capa_consultar_listado_linkeable.php',
+        type:  'post',
+        data: _parametros,
+        success:  function (response){
+            var _res = $.parseJSON(response);
+            for(_nm in _res.mg)
+            {
+                alert(_res.mg[_nm]);
+            }
+            
+            _Linkeables=_res.data.linkeables;
+            
+            
+            for(_n in _Linkeables){
+				_d=_Linkeables[_n];
+				_op=document.createElement('a');
+				_op.innerHTML=_d.nombre;
+				_op.setAttribute('onclick','elijeCapaLink("'+_n+'")');
+				_op.title=_d.descripcion;				
+				document.querySelector('#formlinkcapa #lista').appendChild(_op);
+			}
+			
+			
+			document.querySelector('#formlinkcapa').style.display='block';
+		}
+	})
+}
+
+
+
+
+
+
+function consultarCamposExternosLinkeables(){	
+
+    var _parametros = {
+        'codMarco':_CodMarco
+    };
+    
+    _va_li_ca=document.querySelector('#vinculaciones input[name="link_capa"]').value;
+    if(_va_li_ca==''){
+		alert('para elegir un campo de vinculación en la capa destino antes debe elegir cual seá la capa destino');
+		return;
+	}
+      
+    
+    document.querySelector('#formlinkcampoexterno #lista').innerHTML='';
+	document.querySelector('#formlinkcampoexterno').style.display='none';
+	
+    $.ajax({
+        url:   './app_capa/app_capa_consultar_listado_linkeable.php',
+        type:  'post',
+        data: _parametros,
+        success:  function (response){
+            var _res = $.parseJSON(response);
+            for(_nm in _res.mg){
+                alert(_res.mg[_nm]);
+            }
+            
+            _Linkeables=_res.data.linkeables;
+            
+             _va_li_ca=document.querySelector('#vinculaciones input[name="link_capa"]').value;
+            
+            for(_n in _Linkeables[_va_li_ca]){
+				_d=_Linkeables[_va_li_ca][_n];
+				
+				if(_n.substring(0,8)!='nom_col_'){continue;}
+				
+				_op=document.createElement('a');
+				_op.innerHTML=_d;
+				_op.setAttribute('onclick','elijeCampoExternoLink("'+_n+'")');
+				document.querySelector('#formlinkcampoexterno #lista').appendChild(_op);
+				
+			}
+			
+			document.querySelector('#formlinkcampoexterno').style.display='block';
+		}
+	})			
+}
+
+function mostrarCamposLocalesLinkeables(){	
+
+    document.querySelector('#formlinkcampolocal #lista').innerHTML='';
+	document.querySelector('#formlinkcampolocal').style.display='none';
+	
+            
+	for(_n in _Capa){
+		
+		_d=_Capa[_n];
+		
+		if(_n.substring(0,8)!='nom_col_'){continue;}
+		
+		_op=document.createElement('a');
+		_op.innerHTML=_d;
+		_op.setAttribute('onclick','elijeCampoLocalLink("'+_n+'")');
+		
+		document.querySelector('#formlinkcampolocal #lista').appendChild(_op);	
+	}
+	document.querySelector('#formlinkcampolocal').style.display='block';
+}
+
 
 					
 function cargarAtabla(_this){
@@ -243,29 +361,504 @@ function consultarCentroides(_this){
     });		
 }
 
-function resaltarcentroide(_this){
-    var _src = _lyrCent.getSource();
-    _centid=_this.getAttribute('centid');
-    _feat=_src.getFeatureById(_centid);
 
-    _feat.setStyle(_CentSelStyle);
-    _pp=_feat.getProperties('nom');
-    document.querySelector('#tseleccion').setAttribute('cod',_pp.cod);
-    document.querySelector('#tseleccion').innerHTML=_pp.nom;
-    document.querySelector('#tseleccion').style.display='inline-block';
+
+function guardarCapa(_this,_procesar){
+    var _this=_this;
+    var _procesar=_procesar;
+    
+    editarNombreCapa();
+    editarDescripcionCapa();
+    editarCamposCapa();
+    editarCamposNombresCapa();
+    editarTipoGeomCapa();
+    editarModoWMSCapa();
+    editarCaracteristicasCapa();
+    guardarSLD();
+    
+    
+    var _parametros = {
+        'instrucciones': _this.parentNode.querySelector('#verproccampo').innerHTML, 
+        'fi_prj': _this.parentNode.querySelector('select#crs').value,
+        'id': document.getElementById('divCargaCapa').getAttribute('idcapa'),
+        'codMarco': _CodMarco
+    };
+    $.ajax({
+        url:  './app_capa/app_capa_editar_shapefile.php',
+        type: 'post',
+        data: _parametros,
+        success:  function (response){
+            var _res = $.parseJSON(response);
+            for(var _nm in _res.mg){
+                alert(_res.mg[_nm]);
+            }
+            console.log(_res);
+			
+            if(_procesar=='si')
+            {
+                procesarCapa2(_this.parentNode,0);
+                return;
+            }
+            formversion(_this.parentNode);
+        }
+    });
 }
 
-function desaltarcentroide(_this){	
-    var _src = _lyrCent.getSource();
-    _centid=_this.getAttribute('centid');
-    _feat=_src.getFeatureById(_centid);
 
-    _feat.setStyle(_CentStyle);
-    document.querySelector('#tseleccion').setAttribute('cod','');
-    document.querySelector('#tseleccion').innerHTML='';
-    document.querySelector('#tseleccion').style.display='none';
+
+function editarCapaNombre(_event,_this){
+    //console.log(_event.keyCode);
+    if(_event.keyCode==9){return;}//tab
+    if(_event.keyCode>=33&&_event.keyCode<=40){return;}//direccionales
+    if(_event.keyCode==13){
+        editarNombreCapa();
+    }
 }
 
+function editarCapaDescripcion(_event,_this){
+    //console.log(_event.keyCode);
+    if(_event.keyCode==9){return;}//tab
+    if(_event.keyCode>=33&&_event.keyCode<=40){return;}//direccionales
+    if(_event.keyCode==13){
+        editarDescripcionCapa();
+    }
+}
+
+function editarNombreCapa(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+    var nuevoNombre = document.getElementById('capaNombre').value;
+    
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': idCapa,
+        'nombre': nuevoNombre
+    };
+    
+    editarCapa(parametros);
+}
+
+
+function editarTipoGeomCapa(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+    
+    _val='';
+    _ops=document.querySelectorAll('#carga [name="tipogeometria"] option');
+    for(_opn in _ops){
+    	if(typeof _ops[_opn] != 'object'){continue;}
+    	if(_ops[_opn].selected==true){
+    		_val=_ops[_opn].value;
+    		break;		
+    	}
+    }
+        
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': idCapa,
+        'tipogeometria': _val
+    };
+    
+    editarCapa(parametros);
+}
+
+
+function editarModoWMSCapa(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+
+    _val=document.querySelector('#carga [name="modo_wms"]').value;
+    
+    if(_val=='si'){
+    	_wms_layer='geoGEC:v_capas_registros_capa_'+idCapa;
+    }else{
+    	_wms_layer='';
+    }
+    var _wms_layer = 'v_capas_registros_capa_'+idCapa;
+    
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': idCapa,
+        'wms_layer': _wms_layer
+    };
+    
+    $.ajax({
+	   url:   './app_capa/app_capa_publicar_wms.php',
+        type:  'post',
+        data: parametros,
+        error:  function (response){alert('error al contactar al servidor');},
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            for(_nm in _res.mg){alert(_res.mg[_nm]);}
+            if(_res.res=='exito'){
+                //Hacer algo luego de editar?
+    			alert('wmseditado');            
+            }else{
+                alert('error asf0jg4fcn02h');
+            }
+        }
+    })
+    
+}
+
+
+
+function editarCaracteristicasCapa(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+
+    _val=document.querySelector('#carga [name="modo_wms"]').value;
+        
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': idCapa,
+        'modo_publica': document.querySelector('#carga [name="modo_publica"]').value,
+        'tipo_fuente': document.querySelector('#carga [name="tipo_fuente"]').value,
+        'link_capa': document.querySelector('#carga [name="link_capa"]').value,
+        'link_capa_campo_local': document.querySelector('#carga [name="link_capa_campo_local"]').value,
+        'link_capa_campo_externo': document.querySelector('#carga [name="link_capa_campo_externo"]').value,
+        'fecha_ano': document.querySelector('#carga [name="fecha_ano"]').value,
+        'fecha_mes': document.querySelector('#carga [name="fecha_mes"]').value,
+        'fecha_dia': document.querySelector('#carga [name="fecha_dia"]').value
+    };
+    
+    $.ajax({
+	   url:   './app_capa/app_capa_editar.php',
+        type:  'post',
+        data: parametros,
+        error:  function (response){alert('error al contactar al servidor');},
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            for(_nm in _res.mg){alert(_res.mg[_nm]);}
+            if(_res.res=='exito'){
+                //Hacer algo luego de editar?
+                
+                accionCargarCapaPublicada('',_res.data.id);
+                
+    			//alert('wmseditado');            
+            }else{
+                alert('error asf0jg4fcn02h');
+            }
+        }
+    })
+    
+}
+
+
+
+
+
+function editarDescripcionCapa(idCapa, descripcion){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+    var nuevaDescripcion = document.getElementById('capaDescripcion').value;
+    
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': idCapa,
+        'descripcion': nuevaDescripcion
+    };
+
+    editarCapa(parametros);
+}
+
+function editarCamposCapa(idCapa, descripcion){
+    var idMarco = getParameterByName('id');
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+    var nuevaDescripcion = document.getElementById('capaDescripcion').value;
+    
+    _inps=document.querySelectorAll('#camposident #renombrar');
+    
+    var parametros = {
+        'codMarco': _CodMarco,
+        'idMarco': idMarco,
+        'id': idCapa,
+    };
+    
+    
+    
+    _cant=0;
+    for(_ni in _inps){
+    	if(typeof _inps[_ni] != 'object'){continue;}
+		_nom=_inps[_ni].getAttribute('nom');
+		_nom=_nom.replace('texto','text');
+		_nom=_nom.replace('numero','num');
+		parametros['nom_col_'+_nom]=_inps[_ni].value;
+		_cant++;
+    }
+	if(_cant>0){
+    	editarCapa(parametros);
+    }
+}
+
+
+function editarCamposNombresCapa(){
+	
+
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+    
+    
+    
+    var parametros = {
+        'codMarco': _CodMarco,
+        'idMarco':  getParameterByName('id'),
+        'id': idCapa,
+    };
+    
+    _inps=document.querySelectorAll('#configurarCampos input[editado="si"]');
+    for(_ni in _inps){
+    	if(typeof _inps[_ni] != 'object'){continue;}
+		_nom=_inps[_ni].getAttribute('name');
+		parametros[_nom]=_inps[_ni].value;
+    }
+    
+	editarCapa(parametros);
+    
+	
+}
+
+function editarCapa(parametros){
+    $.ajax({
+            url:   './app_capa/app_capa_editar.php',
+            type:  'post',
+            data: parametros,
+            error:  function (response){alert('error al contactar al servidor');},
+            success:  function (response)
+            {   
+                var _res = $.parseJSON(response);
+                //console.log(_res);
+                for(_nm in _res.mg){alert(_res.mg[_nm]);}
+                if(_res.res=='exito'){
+                    //Hacer algo luego de editar?
+                }else{
+                    alert('error asf0jg4fcn02h');
+                }
+            }
+    });
+}
+
+function publicarCapaQuery(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': document.getElementById('divCargaCapa').getAttribute('idcapa')
+    };
+    
+    $.ajax({
+            url:   './app_capa/app_capa_publicar.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                var _res = $.parseJSON(response);
+                //console.log(_res);
+                if(_res.res!='exito'){
+                    alert('error asf0jofvg4fcn02h');
+                }
+            }
+    });
+}
+
+function publicarCapa(_this){
+    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
+    var _CodMarco = getParameterByName('cod');
+    _parametros = {
+            'codMarco':_CodMarco,
+            'idcapa': idCapa
+    };
+    $.ajax({
+        url:   './app_capa/app_capa_consultar_registros.php',
+        type:  'post',
+        data: _parametros,
+        success:  function (response){
+            var _res = $.parseJSON(response);
+            for(var _nm in _res.mg)
+            {
+                alert(_res.mg[_nm]);
+            }
+            
+            if(_res.res == 'exito'){
+                publicarCapaQuery();
+
+                accionCancelarCargarNuevaCapa(_this);
+                alert("Capa publicada");
+            } else {
+                alert ("La capa no tiene shapefile cargado");
+            }
+        }
+    });
+}
+
+function guardarSLD(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    
+    var colorRelleno = document.getElementById('inputcolorrelleno').value;
+    var transparenciaRelleno = document.getElementById('inputtransparenciarellenoNumber').value;
+    var colorTrazo = document.getElementById('inputcolortrazo').value;
+    var anchoTrazo = document.getElementById('inputanchotrazoNumber').value;
+    var capaNombre = document.getElementById('capaNombre').value;
+    var layerName = capaNombre;
+    var styleTitle = '';
+    var ruleTitle = '';
+    
+    //Convertir la transparencia de porcentaje a numero decimal 
+    transparenciaRelleno = transparenciaRelleno * 1.0 /100;
+    var opacidadRelleno = 1 - transparenciaRelleno;
+    
+    
+    _rules=document.querySelectorAll('#simbologia div[name="rule"]');
+    if(Object.keys(_rules).length==0){
+
+    var sld = `<?xml version="1.0" encoding="ISO-8859-1"?>
+<StyledLayerDescriptor version="1.0.0"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
+  xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <NamedLayer>
+	<Name>`+layerName+`</Name>
+	<UserStyle>
+  	<Title>`+styleTitle+`</Title>
+  	<FeatureTypeStyle>
+    	<Rule>
+      	<Title></Title>
+      	<PolygonSymbolizer>
+        	<Fill>
+          	<CssParameter name="fill">`+colorRelleno+`</CssParameter>
+          	<CssParameter name="fill-opacity">`+opacidadRelleno+`</CssParameter>
+        	</Fill>
+        	<Stroke>
+          	<CssParameter name="stroke">`+colorTrazo+`</CssParameter>
+          	<CssParameter name="stroke-width">`+anchoTrazo+`</CssParameter>
+        	</Stroke>
+      	</PolygonSymbolizer>
+    	</Rule>
+  	</FeatureTypeStyle>
+	</UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>`;
+    }else{
+    	
+     var sld = `<?xml version="1.0" encoding="ISO-8859-1"?>
+<StyledLayerDescriptor version="1.0.0"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
+  xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <NamedLayer>
+	<Name>`+layerName+`</Name>
+	<UserStyle>
+  	<Title>`+styleTitle+`</Title>
+  	<FeatureTypeStyle>
+  	`;
+  	
+  	
+  	for(_nr in _rules){
+		if(typeof _rules[_nr] != 'object'){continue;}
+   		sld += `
+	   		<Rule>
+	         <Name>`+_rules[_nr].querySelector('#etiqueta').value+`</Name>
+	         <Title></Title>
+	         <ogc:Filter>
+	           <ogc:And>
+	             <ogc:PropertyIsGreaterThanOrEqualTo>
+	               <ogc:PropertyName>`+_rules[_nr].querySelector('#campo').value+`</ogc:PropertyName>
+	               <ogc:Literal>`+_rules[_nr].querySelector('#desde').value+`</ogc:Literal>
+	             </ogc:PropertyIsGreaterThanOrEqualTo>
+	             <ogc:PropertyIsLessThan>
+	               <ogc:PropertyName>`+_rules[_nr].querySelector('#campo').value+`</ogc:PropertyName>
+	               <ogc:Literal>`+_rules[_nr].querySelector('#hasta').value+`</ogc:Literal>
+	             </ogc:PropertyIsLessThan>
+	           </ogc:And>
+	         </ogc:Filter>
+	        <PolygonSymbolizer>
+			   <Fill>
+				 <CssParameter name="fill">`+_rules[_nr].querySelector('#inputcolorrelleno').value+`</CssParameter>
+				 <CssParameter name="fill-opacity">`+_rules[_nr].querySelector('#inputtransparenciarellenoNumber').value/100+`</CssParameter>
+			   </Fill>
+			   <Stroke>
+	          	<CssParameter name="stroke">` +_rules[_nr].querySelector('#inputcolortrazo').value+`</CssParameter>
+	          	<CssParameter name="stroke-width">`+_rules[_nr].querySelector('#inputanchotrazoRange').value+`</CssParameter>
+	        	</Stroke>
+	         </PolygonSymbolizer>
+	     </Rule>
+	     `;
+     
+  	}
+  	
+  	sld += ` 
+  	</FeatureTypeStyle>
+	</UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>`;
+
+   	//console.log(sld);
+    }
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': document.getElementById('divCargaCapa').getAttribute('idcapa'),
+        'sld': sld
+    };
+    
+    editarCapa(parametros);
+}
+
+function cargarListadoCapasPublicadas(){
+	
+	limpiarMapa();
+    var _this = _this;
+    
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    var zz_publicada = '1';
+    
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'zz_publicada': zz_publicada
+    };
+    
+    $.ajax({
+            url:   './app_capa/app_capa_consultar_listado.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                var _res = $.parseJSON(response);
+                console.log(_res);
+                for(_nm in _res.mg){alert(_res.mg[_nm]);}
+                if(_res.res=='exito'){
+                    cargarValoresCapasPublicadas(_res);
+                    mostrarListadoCapasPublicadas();
+                }else{
+                    alert('error asf0jg44ff0gh');
+                }
+            }
+    });
+}
+
+
+
+/* DEPRECADO
 function descargarSHP(_this,_ev){	
     _ev.stopPropagation();
     _if=document.createElement('iframe');
@@ -280,6 +873,8 @@ function descargarSHP(_this,_ev){
 
     _if.src=_this.getAttribute('link');
 }
+*/
+
 
 function consultarElemento(_idElem,_codElem,_tabla){
     document.querySelector('#menudatos #titulo').innerHTML='';
@@ -291,10 +886,10 @@ function consultarElemento(_idElem,_codElem,_tabla){
 
     _elems = document.querySelectorAll('#menuelementos #lista a[cargado="si"]');
     if(_elems!=null){
-    for(_nn in _elems){
-            if(typeof _elems[_nn] != 'object'){continue;}
-            _elems[_nn].removeAttribute('cargado');
-    }
+		for(_nn in _elems){
+				if(typeof _elems[_nn] != 'object'){continue;}
+				_elems[_nn].removeAttribute('cargado');
+		}
     }
 
     if(_codElem==null){return;}
@@ -410,4 +1005,70 @@ function consultarElemento(_idElem,_codElem,_tabla){
             }
         }
     });	
+}
+
+
+function descargarSHP(_idcapa){
+	_boton=document.querySelector('#listacapaspublicadas .filaCapaLista[idcapa="'+_idcapa+'"] .botondescarga');
+	
+	if(_boton.getAttribute('estado')=='generandoshp'){alert('ya estamos generando la descarga de esta capa... paciencia.');return;}
+	_boton.setAttribute('estado','generandoshp');
+	
+    var _parametros = {
+        'codMarco':_CodMarco,
+        'idcapa': _idcapa
+    };		
+	$.ajax({
+        data: _parametros,
+        url:   './app_capa/app_capa_generar_SHP_descarga.php',
+        type:  'post',
+        success:  function (response){
+            var _res = $.parseJSON(response);
+            console.log(_res);
+            for(var _nm in _res.mg){
+                alert(_res.mg[_nm]);
+            }
+            if(_res.res=='exito'){	
+				descargarSHPzip(_res.data.idcapa);
+			}
+		}
+	})	
+}
+
+function descargarSHPzip(_idcapa){
+	
+    var _parametros = {		
+        'codMarco':_CodMarco,
+        'idcapa': _idcapa
+    };		
+    
+	$.ajax({
+        data: _parametros,
+        url:   './app_capa/app_capa_generar_SHPzip_descarga.php',
+        type:  'post',
+        success:  function (response){
+            var _res = $.parseJSON(response);
+            console.log(_res);
+            for(var _nm in _res.mg){
+                alert(_res.mg[_nm]);
+            }
+            if(_res.res=='exito'){	
+				
+				_boton=document.querySelector('#listacapaspublicadas .filaCapaLista[idcapa="'+_res.data.idcapa+'"] .botondescarga');
+				_boton.setAttribute('estado','generandoshp');
+   
+   
+				console.log('descarga:'+_res.data.descarga);
+				var file_path = _res.data.descarga;
+				var a = document.createElement('A');
+				a.href = file_path;
+				a.download = file_path.substr(file_path.lastIndexOf('/') + 1);
+				a.download =_res.data.capa.nombre+'.zip';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				
+			}
+		}
+	})	
 }

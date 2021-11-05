@@ -26,10 +26,11 @@ function consultarPermisos(){
     var _IdMarco = getParameterByName('id');
     var _CodMarco = getParameterByName('cod');
     _parametros = {
-            'codMarco':_CodMarco	
+            'codMarco':_CodMarco,
+            'accion':_Acc
     };
     $.ajax({
-        url:   './app_capa/app_capa_consultar_permisos.php',
+        url:   './sistema/sis_consulta_permisos.php',
         type:  'post',
         data: _parametros,
         error:  function (response){alert('error al consultar el servidor');},
@@ -47,6 +48,7 @@ function consultarPermisos(){
 }
 consultarPermisos();
 
+
 function cagarDefaults(){
     //RGBA (250, 200, 100, 0.5)
     document.getElementById('inputcolorrelleno').value = '#FAC864';
@@ -60,11 +62,12 @@ function cagarDefaults(){
 }
 cagarDefaults();
 
-function accionCargarNuevaCapa(_this){
-    generarNuevaCapa(_this);
+function accionCargarNuevaCapa(){
+    generarNuevaCapa();
     document.getElementById('divSeleccionCapa').style.display='none';
     document.getElementById('divCargaCapa').style.display='block';
-    document.getElementById('botonElegirCapa').style.display='none';
+    limpiarFormCapa();
+    //document.getElementById('botonElegirCapa').style.display='none';
     document.getElementById('botonAnadirCapa').style.display='none';
 }
 
@@ -72,7 +75,7 @@ function accionCargarCapaExist(){
     cargarListadoCapasPublicadas();    
     document.getElementById('divSeleccionCapa').style.display='none';
     document.getElementById('botonCancelarCarga').style.display='none';
-    document.getElementById('botonElegirCapa').style.display='none';
+    //document.getElementById('botonElegirCapa').style.display='none';
     document.getElementById('botonAnadirCapa').style.display='block';
 }
 accionCargarCapaExist();
@@ -82,7 +85,7 @@ function accionCancelarCargarNuevaCapa(_this){
     cargarListadoCapasPublicadas();    
     document.getElementById('divSeleccionCapa').style.display='none';
     document.getElementById('botonCancelarCarga').style.display='none';
-    document.getElementById('botonElegirCapa').style.display='none';
+    //document.getElementById('botonElegirCapa').style.display='none';
     document.getElementById('botonAnadirCapa').style.display='block';
     
     limpiarFormularioCapa();
@@ -106,7 +109,7 @@ function accionCargarCapaPublicada(_this, idcapa){
     
     document.getElementById('divSeleccionCapa').style.display='none';
     document.getElementById('divCargaCapa').style.display='block';
-    document.getElementById('botonElegirCapa').style.display='none';
+    //document.getElementById('botonElegirCapa').style.display='none';
     document.getElementById('botonAnadirCapa').style.display='none';
 }
 
@@ -132,11 +135,26 @@ function limpiarFormularioCapa(){
     _divrules=document.querySelectorAll('#simbologia > div[name="rule"]');
     for(_nr in _divrules){
     	if(typeof _divrules[_nr] == 'object'){
-    		console.log(_divrules[_nr]);
+    		//console.log(_divrules[_nr]);
     		_divrules[_nr].parentNode.removeChild(_divrules[_nr]);
     	}
     }
+    
+    _inp=document.querySelectorAll('#configurarCampos input');
+    
+    for(_in in _inp){
+    	if(typeof _inp[_in] == 'object'){
+			
+    		//console.log(_divrules[_nr]);    		
+    		_inp[_in].setAttribute('editado','no');
+    		_inp[_in].value='';
+    		_inp[_in].parentNode.setAttribute('activo','no');
+    		
+    	}
+    }
 }
+
+
 
 function mostrarListadoCapasPublicadas(){
     document.querySelector('#divSeleccionCapa #txningunacapa').style.display='none';
@@ -159,7 +177,7 @@ function actualizarBusqueda(_event){
 		_input.parentNode.setAttribute('estado','inactivo');
 	}
 	_str=_str.toLowerCase();
-	console.log('buscando: '+_str);
+	//console.log('buscando: '+_str);
 	
 	_lis=document.querySelectorAll('#listacapaspublicadas > a.filaCapaLista');
 	
@@ -184,11 +202,7 @@ function actualizarBusqueda(_event){
 		}
 	}
 	
-	/*
-	buscarContratos();
-	buscarWiki();
-	buscarAntec();
-	buscarTelef();*/
+
 }
 
 
@@ -200,7 +214,52 @@ function cargarValoresCapaExist(_res){
         document.getElementById('divCargaCapa').setAttribute('idcapa', capaQuery["id"]);
         document.getElementById('capaNombre').value = capaQuery["nombre"];
         document.getElementById('capaDescripcion').value = capaQuery["descripcion"];
-
+        document.querySelector('#carga [name="modo_publica"]').value = capaQuery["modo_publica"];
+        document.querySelector('#carga [name="tipo_fuente"]').value = capaQuery["tipo_fuente"];
+        document.querySelector('#carga [name="link_capa"]').value = capaQuery["link_capa"];
+        document.querySelector('#carga #muestra_link_capa').innerHTML = capaQuery["muestra_link_capa"];
+        
+        document.querySelector('#carga [name="link_capa_campo_local"]').value = capaQuery["link_capa_campo_local"];
+        document.querySelector('#carga #muestra_link_capa_campo_local').innerHTML = capaQuery[capaQuery["link_capa_campo_local"]];
+        
+        document.querySelector('#carga [name="link_capa_campo_externo"]').value = capaQuery["link_capa_campo_externo"];
+        document.querySelector('#carga #muestra_link_capa_campo_externo').innerHTML = capaQuery["muestra_link_capa_campo_externo"];
+        
+        document.querySelector('#carga [name="fecha_ano"]').value = capaQuery["fecha_ano"];
+        document.querySelector('#carga [name="fecha_mes"]').value = capaQuery["fecha_mes"];
+        document.querySelector('#carga [name="fecha_dia"]').value = capaQuery["fecha_dia"];
+        
+        
+        for(_k in _res.data){
+			console.log(_res.data[_k]);
+			if(_k.substring(0,8)=='nom_col_' && _res.data[_k]!='' && _res.data[_k]!=null){
+				document.querySelector('#configurarCampos [name="'+_k+'"]').parentNode.setAttribute('activo','si');
+				document.querySelector('#configurarCampos [name="'+_k+'"]').value=_res.data[_k];
+			}		
+			if(_k.substring(0,8)=='cod_col_' && _res.data[_k]!=''){
+				document.querySelector('#configurarCampos [name="'+_k+'"]').value=_res.data[_k];
+			}		
+		}
+        
+        
+        if(capaQuery["tipogeometria"]!=null){
+			if(document.querySelector('.formCargaCapa [name="tipogeometria"] option[value="'+capaQuery["tipogeometria"]+'"')!=null){
+				document.querySelector('.formCargaCapa [name="tipogeometria"] option[value="'+capaQuery["tipogeometria"]+'"').selected=true;
+			}else{
+				console.log('error, no se encontró la opción '+capaQuery["tipogeometria"]);
+			}
+		}
+		
+		$(".formCargaCapa [name='tipogeometria']" ).change();
+				
+		
+		if(_res.data.zz_publicada=='1'){
+			document.querySelector('.formCargaCapa #cargarGeometrias').setAttribute('abiertaedicion','no');
+			
+		}else{
+			document.querySelector('.formCargaCapa #cargarGeometrias').setAttribute('abiertaedicion','si');
+		}
+		
         //Operaciones para leer del xml los valores de simbologia
         var xmlSld = capaQuery["sld"];
 
@@ -262,19 +321,19 @@ function cargarValoresCapaExist(_res){
            			_larule = _rules[_rn];
            			if(typeof _larule != 'object'){continue;}
            			_algo=_larule.getElementsByTagName("Fill")[0];
-           			console.log(_algo);
+           			//console.log(_algo);
            			var xmlFill = _larule.getElementsByTagName("Fill")[0];
            			
 		            for(var node in xmlFill.childNodes){
 		                if (xmlFill.childNodes[node].nodeName == "CssParameter" 
 		                        && xmlFill.childNodes[node].getAttribute("name") == "fill"){
 		                    colorRelleno = xmlFill.childNodes[node].textContent;
-		                    console.log(colorRelleno);
+		                    //console.log(colorRelleno);
 		                }
 		                if (xmlFill.childNodes[node].nodeName == "CssParameter"
 		                        && xmlFill.childNodes[node].getAttribute("name") == "fill-opacity"){
 		                    transparenciaRelleno = xmlFill.childNodes[node].textContent;
-		                     console.log(transparenciaRelleno);
+		                     //console.log(transparenciaRelleno);
 		                }
 		            }
 		
@@ -290,10 +349,12 @@ function cargarValoresCapaExist(_res){
 		                }
 		            }
 		            
+		          //  console.log( capaQuery["sld"]);
+		            
 		           _etiqueta = _larule.getElementsByTagName("Name")[0].textContent;
 		           _mayor = _larule.getElementsByTagName("ogc:PropertyIsGreaterThanOrEqualTo")[0]; 
 		             for(var node in _mayor.childNodes){
-		             	console.log(_mayor.childNodes[node].nodeName);
+		             	//console.log(_mayor.childNodes[node].nodeName);
 		             	if(_mayor.childNodes[node].nodeName == "ogc:PropertyName"){
 		             		_campo = _mayor.childNodes[node].textContent;
 		             	}
@@ -310,172 +371,8 @@ function cargarValoresCapaExist(_res){
 		             }
 		             	 	
 		             	
-		             	
-		             	
-					_rr=document.createElement('div');
-					_rr.setAttribute('name','rule');
-
-					
-					_ident=document.createElement('div');
-					_ident.setAttribute('class','identificacion');
-					_rr.appendChild(_ident);
-					
-					
-					_tit=document.createElement('h3');
-					_tit.innerHTML='Regla '+(Number(_rn)+1);
-					_ident.appendChild(_tit);
-					
-					_aaa=document.createElement('a');
-					_aaa.setAttribute('onclick','eliminarReglaSLD(this)');
-					_aaa.setAttribute('id','eliminarRegla');
-					_aaa.innerHTML="x";
-					_aaa.titl="eliminar regla";
-					_ident.appendChild(_aaa);
-					
-					_imp=document.createElement('input');
-					_imp.setAttribute('id','etiqueta');
-					_imp.setAttribute('type','text');
-					_imp.value=_etiqueta;
-					_ident.appendChild(_imp);
-			
-					
-					_cond=document.createElement('div');
-					_cond.setAttribute('class','condicion');
-					_rr.appendChild(_cond);
-					
-					_camposNum=Array();
-					for(_nc in capaQuery){
-						if(_nc.substring(0, 11)!='nom_col_num'){continue;}
-						if(capaQuery[_nc]==''){continue;}						
-						_camposNum.push(capaQuery[_nc]);
-					}
-										
-					_imp=document.createElement('select');
-					_imp.setAttribute('id','campo');					
-					_cond.appendChild(_imp);					
-					for(_nc in _camposNum){
-						_op=document.createElement('option');
-						_op.value=_camposNum[_nc];
-						_op.innerHTML=_camposNum[_nc];
-						_imp.appendChild(_op);
-						if(_camposNum[_nc]==_campo){_op.selected=true;}
-					}
-					
-					_imp=document.createElement('label');
-					_imp.innerHTML='de:';
-					_cond.appendChild(_imp);
-										
-					_imp=document.createElement('input');
-					_imp.setAttribute('id','desde');
-					_imp.setAttribute('oninput',' actualizarSimbolo(this)');
-					_imp.setAttribute('type','number');
-					_imp.value=_valorMayor;
-					_cond.appendChild(_imp);
-					
-					_br=document.createElement('br');
-					_cond.appendChild(_br);
-					
-					
-					_imp=document.createElement('label');
-					_imp.innerHTML='a:';
-					_cond.appendChild(_imp);
-					
-					_imp=document.createElement('input');
-					_imp.setAttribute('id','hasta');
-					_imp.setAttribute('oninput',' actualizarSimbolo(this)');
-					_imp.setAttribute('type','number');
-					_imp.value=_valorMenor;
-					_cond.appendChild(_imp);
-					
-
-					
-					
-					_sim=document.createElement('div');
-					_sim.setAttribute('class','simbolo');
-					_rr.appendChild(_sim);
-						
-						_con=document.createElement('div');
-						_con.setAttribute('class','contienecolor');
-						_con.style.border=anchoTrazo+'px solid '+colorTrazo;
-							_imp=document.createElement('input');
-							_imp.setAttribute('id','inputcolorrelleno');
-							_imp.setAttribute('oninput',' actualizarSimbolo(this)');
-							_imp.style.opacity=transparenciaRelleno;
-							_imp.setAttribute('type','color');
-							_imp.setAttribute('name','colorRelleno');
-							_imp.value=colorRelleno;
-						_con.appendChild(_imp);
-						_sim.appendChild(_con);
-						
-					
-						_con=document.createElement('div');
-						_con.setAttribute('class','grupoborde');
-						_sim.appendChild(_con);
-						
-							_imp=document.createElement('input');
-							_imp.setAttribute('id','inputcolortrazo');
-							_imp.setAttribute('oninput',' actualizarSimbolo(this)')
-							_imp.setAttribute('type','color');
-							_imp.setAttribute('name','colorBorde');
-							_imp.value= colorTrazo;
-							_con.appendChild(_imp);		
 							
-							_imp=document.createElement('input');
-							_imp.setAttribute('id','inputanchotrazoRange');
-							_imp.setAttribute('oninput',' actualizarSimbolo(this)');
-							_imp.setAttribute('type','range');
-							_imp.setAttribute('name','anchoBorde');
-							_imp.setAttribute('min','0');
-							_imp.setAttribute('max','10');
-							_imp.setAttribute('step','0.5');
-							_imp.value=anchoTrazo;
-							_con.appendChild(_imp);
-							
-							_imp=document.createElement('input');
-							_imp.setAttribute('id','inputanchotrazoNumber');
-							_imp.setAttribute('oninput',' actualizarSimbolo(this)');
-							_imp.setAttribute('name','anchoBorde');
-							_imp.setAttribute('min','0');
-							_imp.setAttribute('max','10');
-							_imp.setAttribute('step','0.5');
-							_imp.value=anchoTrazo;
-							_con.appendChild(_imp);
-												
-							_imp=document.createElement('span');
-							_imp.setAttribute('id','uniancho');
-							_imp.innerHTML='px';
-							_con.appendChild(_imp);
-						
-						
-						_con=document.createElement('div');
-						_con.setAttribute('class','gruporelleno');
-						_sim.appendChild(_con);
-						
-							
-							
-							_imp=document.createElement('input');
-							_imp.setAttribute('id','inputtransparenciarellenoRange');
-							_imp.setAttribute('oninput',' actualizarSimbolo(this)');
-							_imp.setAttribute('type','range');
-							_imp.setAttribute('name','transparenciaRelleno');
-							_imp.setAttribute('min','0');
-							_imp.setAttribute('max','100');
-							_imp.value= transparenciaRelleno * 100;
-							_con.appendChild(_imp);
-							
-							_imp=document.createElement('input');
-							_imp.setAttribute('id','inputtransparenciarellenoNumber');
-							_imp.setAttribute('oninput',' actualizarSimbolo(this)');
-							_imp.setAttribute('name','transparenciaRelleno');
-							_imp.value=transparenciaRelleno * 100;
-							_con.appendChild(_imp);
-							
-							_imp=document.createElement('span');
-							_imp.setAttribute('id','unitransp');
-							_imp.innerHTML='%';
-							_con.appendChild(_imp);
-							
-
+					_rr=crearReglaDiv(_rn,_etiqueta,_valorMenor,_valorMayor,colorRelleno,transparenciaRelleno,colorTrazo,anchoTrazo,_campo);
 					
 					document.querySelector('#simbologia').appendChild(_rr);
            		}
@@ -489,7 +386,179 @@ function cargarValoresCapaExist(_res){
     
     cargarValoresCapaExistQuery();
 }
+function anadirReglaSLD(_padre){
+	_rn='1';
+	_etiqueta='nueva regla';
+	_valorMenor='0';
+	_valorMayor='0';
+	colorRelleno='#fbb';
+	transparenciaRelleno='0.5';
+	colorTrazo='#000';
+	anchoTrazo='1';
+	_campo=_Capa['nom_col_num1'];
+	_div=crearReglaDiv(_rn,_etiqueta,_valorMenor,_valorMayor,colorRelleno,transparenciaRelleno,colorTrazo,anchoTrazo,_campo);
+	_padre.parentNode.appendChild(_div); 
+}	
+	
+function crearReglaDiv(_rn,_etiqueta,_valorMenor,_valorMayor,colorRelleno,transparenciaRelleno,colorTrazo,anchoTrazo,_campo){
+	_rr=document.createElement('div');
+	_rr.setAttribute('name','rule');
+	
+	_ident=document.createElement('div');
+	_ident.setAttribute('class','identificacion');
+	_rr.appendChild(_ident);		
+	
+	_tit=document.createElement('h3');
+	_tit.innerHTML='Regla '+(Number(_rn)+1);
+	_ident.appendChild(_tit);
+	
+	_aaa=document.createElement('a');
+	_aaa.setAttribute('onclick','eliminarReglaSLD(this)');
+	_aaa.setAttribute('id','eliminarRegla');
+	_aaa.innerHTML="x";
+	_aaa.titl="eliminar regla";
+	_ident.appendChild(_aaa);
+	
+	_imp=document.createElement('input');
+	_imp.setAttribute('id','etiqueta');
+	_imp.setAttribute('type','text');
+	_imp.value=_etiqueta;
+	_ident.appendChild(_imp);
 
+	
+	_cond=document.createElement('div');
+	_cond.setAttribute('class','condicion');
+	_rr.appendChild(_cond);
+	
+	_camposNum=Array();
+	for(_nc in _Capa){
+		if(_nc.substring(0, 11)!='nom_col_num'){continue;}
+		if(_Capa[_nc]==''){continue;}						
+		_camposNum.push(_Capa[_nc]);
+	}
+						
+	_imp=document.createElement('select');
+	_imp.setAttribute('id','campo');					
+	_cond.appendChild(_imp);					
+	for(_nc in _camposNum){
+		_op=document.createElement('option');
+		_op.value=_camposNum[_nc];
+		_op.innerHTML=_camposNum[_nc];
+		_imp.appendChild(_op);
+		if(_camposNum[_nc]==_campo){_op.selected=true;}
+	}
+	
+	_imp=document.createElement('label');
+	_imp.innerHTML='de:';
+	_cond.appendChild(_imp);
+						
+	_imp=document.createElement('input');
+	_imp.setAttribute('id','desde');
+	_imp.setAttribute('oninput',' actualizarSimbolo(this)');
+	_imp.setAttribute('type','number');
+	_imp.value=_valorMayor;
+	_cond.appendChild(_imp);
+	
+	_br=document.createElement('br');
+	_cond.appendChild(_br);		
+	
+	_imp=document.createElement('label');
+	_imp.innerHTML='a:';
+	_cond.appendChild(_imp);
+	
+	_imp=document.createElement('input');
+	_imp.setAttribute('id','hasta');
+	_imp.setAttribute('oninput',' actualizarSimbolo(this)');
+	_imp.setAttribute('type','number');
+	_imp.value=_valorMenor;
+	_cond.appendChild(_imp);
+	
+	_sim=document.createElement('div');
+	_sim.setAttribute('class','simbolo');
+	_rr.appendChild(_sim);
+		
+		_con=document.createElement('div');
+		_con.setAttribute('class','contienecolor');
+		_con.style.border=anchoTrazo+'px solid '+colorTrazo;
+			_imp=document.createElement('input');
+			_imp.setAttribute('id','inputcolorrelleno');
+			_imp.setAttribute('oninput',' actualizarSimbolo(this)');
+			_imp.style.opacity=transparenciaRelleno;
+			_imp.setAttribute('type','color');
+			_imp.setAttribute('name','colorRelleno');
+			_imp.value=colorRelleno;
+		_con.appendChild(_imp);
+		_sim.appendChild(_con);
+		
+	
+		_con=document.createElement('div');
+		_con.setAttribute('class','grupoborde');
+		_sim.appendChild(_con);
+		
+			_imp=document.createElement('input');
+			_imp.setAttribute('id','inputcolortrazo');
+			_imp.setAttribute('oninput',' actualizarSimbolo(this)')
+			_imp.setAttribute('type','color');
+			_imp.setAttribute('name','colorBorde');
+			_imp.value= colorTrazo;
+			_con.appendChild(_imp);		
+			
+			_imp=document.createElement('input');
+			_imp.setAttribute('id','inputanchotrazoRange');
+			_imp.setAttribute('oninput',' actualizarSimbolo(this)');
+			_imp.setAttribute('type','range');
+			_imp.setAttribute('name','anchoBorde');
+			_imp.setAttribute('min','0');
+			_imp.setAttribute('max','10');
+			_imp.setAttribute('step','0.5');
+			_imp.value=anchoTrazo;
+			_con.appendChild(_imp);
+			
+			_imp=document.createElement('input');
+			_imp.setAttribute('id','inputanchotrazoNumber');
+			_imp.setAttribute('oninput',' actualizarSimbolo(this)');
+			_imp.setAttribute('name','anchoBorde');
+			_imp.setAttribute('min','0');
+			_imp.setAttribute('max','10');
+			_imp.setAttribute('step','0.5');
+			_imp.value=anchoTrazo;
+			_con.appendChild(_imp);
+								
+			_imp=document.createElement('span');
+			_imp.setAttribute('id','uniancho');
+			_imp.innerHTML='px';
+			_con.appendChild(_imp);
+		
+		
+		_con=document.createElement('div');
+		_con.setAttribute('class','gruporelleno');
+		_sim.appendChild(_con);
+		
+			
+		
+		_imp=document.createElement('input');
+		_imp.setAttribute('id','inputtransparenciarellenoRange');
+		_imp.setAttribute('oninput',' actualizarSimbolo(this)');
+		_imp.setAttribute('type','range');
+		_imp.setAttribute('name','transparenciaRelleno');
+		_imp.setAttribute('min','0');
+		_imp.setAttribute('max','100');
+		_imp.value= transparenciaRelleno * 100;
+		_con.appendChild(_imp);
+		
+		_imp=document.createElement('input');
+		_imp.setAttribute('id','inputtransparenciarellenoNumber');
+		_imp.setAttribute('oninput',' actualizarSimbolo(this)');
+		_imp.setAttribute('name','transparenciaRelleno');
+		_imp.value=transparenciaRelleno * 100;
+		_con.appendChild(_imp);
+		
+		_imp=document.createElement('span');
+		_imp.setAttribute('id','unitransp');
+		_imp.innerHTML='%';
+		_con.appendChild(_imp);
+	return(_rr);
+}
 
 
 function actualizarSimbolo(_this){
@@ -536,17 +605,15 @@ function actualizarSimbolo(_this){
 }
 
 
-function simbolizarCapa(){
-	
-	_condiciones= condicionesSimbologiaInput();
-	
-	console.log(_condiciones);
-	
+function simbolizarCapa(){	
+	_condiciones= condicionesSimbologiaInput();	
+	//console.log(_condiciones);	
 	_features=_lyrElemSrc.getFeatures();
 		
 	for(_fn in _features){
 		_idreg=_features[_fn].getId();
 		_feat=_features[_fn];
+        
         
 	 	if(_condiciones.length>0){
 			_datasec=_Features[_idreg];
@@ -601,7 +668,7 @@ function simbolizarCapa(){
 				Number(_Features[_idreg][_campomm]) <  Number(_condiciones[_nc].valormm)
 			){
 				_c= hexToRgb(_condiciones[_nc].colorRelleno);
-				console.log(_condiciones[_nc].transparenciaRelleno);
+				//console.log(_condiciones[_nc].transparenciaRelleno);
 		        _n=(1 - (_condiciones[_nc].transparenciaRelleno));
 		        _rgba='rgba('+_c.r+', '+_c.g+', '+_c.b+', '+_n+')';
 		
@@ -680,9 +747,10 @@ function cargarValoresCapaExistQuery(){
                 alert(_res.mg[_nm]);
             }
             
-            _Features=_res.data;
+            _Features=_res.data.registros;
             
             if(_res.res == 'exito'){
+				document.querySelector('#cantreg #contador').innerHTML=_res.data.cant_reg;
             	cargarFeatures();
             }
         }
@@ -714,7 +782,6 @@ function cargarFeatures(){
 	}
 	    	
     _condiciones=Array();
-    
     
     if(Object.keys(_rules).length>1){
 	    for(_rn in _rules){	
@@ -780,14 +847,20 @@ function cargarFeatures(){
 	}
 	
     for(var elem in _Features){
-
+		if(_Features[elem].geotx==''){continue;}//este registro debería ser eliminado
+		if(_Features[elem].geotx==null){continue;}//este registro debería ser eliminado
         var format = new ol.format.WKT();	
         var _feat = format.readFeature(_Features[elem].geotx, {
             dataProjection: 'EPSG:3857',
             featureProjection: 'EPSG:3857'
         });
-
-        _feat.setId(_Features[elem].id);
+        
+        
+		//console.log(_Features[elem].id+': '+_Features[elem].geotx.substring(0,50));		
+		if(_Features[elem].id!=null){
+			_feat.setId(_Features[elem].id);
+		}
+        //console.log('ok1');
 
         _feat.setProperties({
             'id':_Features[elem].id
@@ -802,7 +875,7 @@ function cargarFeatures(){
 				//console.log(_kref+' - '+_Capa[_kref] +' vs ' +_campoMM);
 				if(_Capa[_kref] == _campoMM){
 					_campoMM =_k; 
-					//console.log('eureka. ahora: '+_campoMM);
+					console.log('eureka. ahora: '+_campoMM);
 					break;
 				}		
 			}
@@ -820,10 +893,14 @@ function cargarFeatures(){
 						
 			}
 		}
+		//console.log('ok2');
+		//console.log('condiciones: ');
+		//console.log(_condiciones);
 		//console.log(_Features[elem][_campoMM] +' >= '+_valorMM+'&&'+_Features[elem][_campomm]+' < '+ _valormm);
 		
 			
          _c= hexToRgb(document.getElementById('inputcolorrelleno').value);
+         //console.log('transp: '+document.getElementById('inputtransparenciarellenoNumber').value);
 	        _n=(1 - (document.getElementById('inputtransparenciarellenoNumber').value) * 1.0 / 100);
 	        _rgba='rgba('+_c.r+', '+_c.g+', '+_c.b+', '+_n+')';
 	
@@ -835,7 +912,18 @@ function cargarFeatures(){
 	          stroke: new ol.style.Stroke({
 	            color: document.getElementById('inputcolortrazo').value,
 	            width: document.getElementById('inputanchotrazoNumber').value
-	          })
+	          }),
+	          image: new ol.style.Circle({
+				   fill: new ol.style.Fill({
+							color: _rgba
+				
+						  }),
+				   stroke:  new ol.style.Stroke({
+							color: document.getElementById('inputcolortrazo').value,
+							width: document.getElementById('inputanchotrazoNumber').value
+						  }),
+				   radius: 5
+				 }),
 	        });
 	        
 	        for(_nc in _condiciones){
@@ -846,8 +934,14 @@ function cargarFeatures(){
 				){
 					_c= hexToRgb(_condiciones[_nc].colorRelleno);
 					//console.log(_condiciones[_nc].transparenciaRelleno);
+					
 			        _n=(1 - (_condiciones[_nc].transparenciaRelleno));
+			        //console.log(_condiciones[_nc].transparenciaRelleno);
+			        _n=_condiciones[_nc].transparenciaRelleno;
+			        //console.log(_n);
+			       
 			        _rgba='rgba('+_c.r+', '+_c.g+', '+_c.b+', '+_n+')';
+			        
 			
 			        _st= new ol.style.Style({
 			          fill: new ol.style.Fill({
@@ -862,9 +956,9 @@ function cargarFeatures(){
 				}
 			}
         	_feat.setStyle (_st);
-
+			//console.log('ok3');
         _lyrElemSrc.addFeature(_feat);
-
+		//console.log('ok4');
         _MapaCargado='si';
     }
 
@@ -875,9 +969,9 @@ function cargarFeatures(){
     }, 200);
 }
 
-function generarNuevaCapa(_this){
+function generarNuevaCapa(){
     //consultar si ya existe una capa sin publicar para este autor y sino crearla
-    var _this = _this;
+    //var _this = _this;
     
     var idMarco = getParameterByName('id');
     var codMarco = getParameterByName('cod');
@@ -896,12 +990,13 @@ function generarNuevaCapa(_this){
             success:  function (response)
             {   
                 var _res = $.parseJSON(response);
-                console.log(_res);
+                //console.log(_res);
                 if(_res.res=='exito'){
+                	_Capa=_res.data;
                     if (_res.data != null){
                         cargarValoresCapaExist(_res);
                     } else {
-                        generarNuevaCapaQuery(_this);
+                        generarNuevaCapaQuery();
                     }
                 }else{
                     alert('error asf0jg44f9fgh');
@@ -929,9 +1024,11 @@ function generarNuevaCapaQuery(_this){
             success:  function (response)
             {   
                 var _res = $.parseJSON(response);
-                console.log(_res);
+                //console.log(_res);
                 if(_res.res=='exito'){
-                    asignarIdCapa(_res.data.id);
+					
+					generarNuevaCapa();
+                    //asignarIdCapa(_res.data.id);
                 }else{
                     alert('error asf0jg44ffgh');
                 }
@@ -943,352 +1040,41 @@ function asignarIdCapa(idCapa){
     document.getElementById('divCargaCapa').setAttribute('idcapa', idCapa);
 }
 
-function editarCapaNombre(_event,_this){
-    console.log(_event.keyCode);
-    if(_event.keyCode==9){return;}//tab
-    if(_event.keyCode>=33&&_event.keyCode<=40){return;}//direccionales
-    if(_event.keyCode==13){
-        editarNombreCapa();
-    }
-}
-
-function editarCapaDescripcion(_event,_this){
-    console.log(_event.keyCode);
-    if(_event.keyCode==9){return;}//tab
-    if(_event.keyCode>=33&&_event.keyCode<=40){return;}//direccionales
-    if(_event.keyCode==13){
-        editarDescripcionCapa();
-    }
-}
-
-function editarNombreCapa(){
-    var idMarco = getParameterByName('id');
-    var codMarco = getParameterByName('cod');
-    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
-    var nuevoNombre = document.getElementById('capaNombre').value;
-    
-    var parametros = {
-        'codMarco': codMarco,
-        'idMarco': idMarco,
-        'id': idCapa,
-        'nombre': nuevoNombre
-    };
-    
-    editarCapa(parametros);
-}
-
-function editarDescripcionCapa(idCapa, descripcion){
-    var idMarco = getParameterByName('id');
-    var codMarco = getParameterByName('cod');
-    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
-    var nuevaDescripcion = document.getElementById('capaDescripcion').value;
-    
-    var parametros = {
-        'codMarco': codMarco,
-        'idMarco': idMarco,
-        'id': idCapa,
-        'descripcion': nuevaDescripcion
-    };
-
-    editarCapa(parametros);
-}
-
-function editarCamposCapa(idCapa, descripcion){
-    var idMarco = getParameterByName('id');
-    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
-    var nuevaDescripcion = document.getElementById('capaDescripcion').value;
-    
-    _inps=document.querySelectorAll('#camposident #renombrar');
-    
-    var parametros = {
-        'codMarco': _CodMarco,
-        'idMarco': idMarco,
-        'id': idCapa,
-    };
-    
-    for(_ni in _inps){
-    	if(typeof _inps[_ni] != 'object'){continue;}
-		_nom=_inps[_ni].getAttribute('nom');
-		_nom=_nom.replace('texto','text');
-		_nom=_nom.replace('numero','num');
-		parametros['nom_col_'+_nom]=_inps[_ni].value;
-    }
-
-    editarCapa(parametros);
-}
-
-
-function editarCapa(parametros){
-    $.ajax({
-            url:   './app_capa/app_capa_editar.php',
-            type:  'post',
-            data: parametros,
-            error:  function (response){alert('error al contactar al servidor');},
-            success:  function (response)
-            {   
-                var _res = $.parseJSON(response);
-                console.log(_res);
-                for(_nm in _res.mg){alert(_res.mg[_nm]);}
-                if(_res.res=='exito'){
-                    //Hacer algo luego de editar?
-                }else{
-                    alert('error asf0jg4fcn02h');
-                }
-            }
-    });
-}
-
-function publicarCapaQuery(){
-    var idMarco = getParameterByName('id');
-    var codMarco = getParameterByName('cod');
-
-    var parametros = {
-        'codMarco': codMarco,
-        'idMarco': idMarco,
-        'id': document.getElementById('divCargaCapa').getAttribute('idcapa')
-    };
-    
-    $.ajax({
-            url:   './app_capa/app_capa_publicar.php',
-            type:  'post',
-            data: parametros,
-            success:  function (response)
-            {   
-                var _res = $.parseJSON(response);
-                console.log(_res);
-                if(_res.res!='exito'){
-                    alert('error asf0jofvg4fcn02h');
-                }
-            }
-    });
-}
-
-function publicarCapa(_this){
-    var idCapa = document.getElementById('divCargaCapa').getAttribute('idcapa');
-    var _CodMarco = getParameterByName('cod');
-    _parametros = {
-            'codMarco':_CodMarco,
-            'idcapa': idCapa
-    };
-    $.ajax({
-        url:   './app_capa/app_capa_consultar_registros.php',
-        type:  'post',
-        data: _parametros,
-        success:  function (response){
-            var _res = $.parseJSON(response);
-            for(var _nm in _res.mg)
-            {
-                alert(_res.mg[_nm]);
-            }
-            
-            if(_res.res == 'exito'){
-                publicarCapaQuery();
-
-                accionCancelarCargarNuevaCapa(_this);
-                alert("Capa publicada");
-            } else {
-                alert ("La capa no tiene shapefile cargado");
-            }
-        }
-    });
-}
-
-function guardarSLD(){
-	return;
-    var idMarco = getParameterByName('id');
-    var codMarco = getParameterByName('cod');
-    
-    var colorRelleno = document.getElementById('inputcolorrelleno').value;
-    var transparenciaRelleno = document.getElementById('inputtransparenciarellenoNumber').value;
-    var colorTrazo = document.getElementById('inputcolortrazo').value;
-    var anchoTrazo = document.getElementById('inputanchotrazoNumber').value;
-    var capaNombre = document.getElementById('capaNombre').value;
-    var layerName = capaNombre;
-    var styleTitle = '';
-    var ruleTitle = '';
-    
-    //Convertir la transparencia de porcentaje a numero decimal 
-    transparenciaRelleno = transparenciaRelleno * 1.0 /100;
-    var opacidadRelleno = 1 - transparenciaRelleno;
-    
-    
-    _rules=document.querySelectorAll('#simbologia div[name="rule"]');
-    if(Object.keys(_rules).length==0){
-
-    var sld = `<?xml version="1.0" encoding="ISO-8859-1"?>
-<StyledLayerDescriptor version="1.0.0"
-  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
-  xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-  <NamedLayer>
-	<Name>`+layerName+`</Name>
-	<UserStyle>
-  	<Title>`+styleTitle+`</Title>
-  	<FeatureTypeStyle>
-    	<Rule>
-      	<Title></Title>
-      	<PolygonSymbolizer>
-        	<Fill>
-          	<CssParameter name="fill">`+colorRelleno+`</CssParameter>
-          	<CssParameter name="fill-opacity">`+opacidadRelleno+`</CssParameter>
-        	</Fill>
-        	<Stroke>
-          	<CssParameter name="stroke">`+colorTrazo+`</CssParameter>
-          	<CssParameter name="stroke-width">`+anchoTrazo+`</CssParameter>
-        	</Stroke>
-      	</PolygonSymbolizer>
-    	</Rule>
-  	</FeatureTypeStyle>
-	</UserStyle>
-  </NamedLayer>
-</StyledLayerDescriptor>`;
-    }else{
-    	
-     var sld = `<?xml version="1.0" encoding="ISO-8859-1"?>
-<StyledLayerDescriptor version="1.0.0"
-  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
-  xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-  <NamedLayer>
-	<Name>`+layerName+`</Name>
-	<UserStyle>
-  	<Title>`+styleTitle+`</Title>
-  	<FeatureTypeStyle>
-  	`;
-  	
-  	
-  	for(_nr in _rules){
-
-   		sld += `
-	   		<Rule>
-	         <Name>`+_rules[_nr].querySelector('etiqueta').value+`</Name>
-	         <Title></Title>
-	         <ogc:Filter>
-	           <ogc:And>
-	             <ogc:PropertyIsGreaterThanOrEqualTo>
-	               <ogc:PropertyName>`+_rules[_nr].querySelector('campo').value+`</ogc:PropertyName>
-	               <ogc:Literal>`+_rules[_nr].querySelector('desde').value+`</ogc:Literal>
-	             </ogc:PropertyIsGreaterThanOrEqualTo>
-	             <ogc:PropertyIsLessThan>
-	               <ogc:PropertyName>Densidad</ogc:PropertyName>
-	               <ogc:Literal>`+_rules[_nr].querySelector('hasta').value+`</ogc:Literal>
-	             </ogc:PropertyIsLessThan>
-	           </ogc:And>
-	         </ogc:Filter>
-	        <PolygonSymbolizer>
-			   <Fill>
-				 <CssParameter name="fill">`+_rules[_nr].querySelector('inputcolorrelleno').value+`</CssParameter>
-				 <CssParameter name="fill-opacity">`+_rules[_nr].querySelector('inputtransparenciarellenoNumber').value+`</CssParameter>
-			   </Fill>
-			   <Stroke>
-	          	<CssParameter name="stroke">`` +_rules[_nr].querySelector('inputcolortrazo').value+</CssParameter>
-	          	<CssParameter name="stroke-width">`+_rules[_nr].querySelector('inputanchotrazoRange').value+`</CssParameter>
-	        	</Stroke>
-	         </PolygonSymbolizer>
-	     </Rule>
-	     `;
-     
-  	}
-  	
-  	
-  	
-  	sld += ` 
-    	<Rule>
-      	<Title></Title>
-      	<PolygonSymbolizer>
-        	<Fill>
-          	<CssParameter name="fill">`+colorRelleno+`</CssParameter>
-          	<CssParameter name="fill-opacity">`+opacidadRelleno+`</CssParameter>
-        	</Fill>
-        	<Stroke>
-          	<CssParameter name="stroke">`+colorTrazo+`</CssParameter>
-          	<CssParameter name="stroke-width">`+anchoTrazo+`</CssParameter>
-        	</Stroke>
-      	</PolygonSymbolizer>
-    	</Rule>
-  	</FeatureTypeStyle>
-	</UserStyle>
-  </NamedLayer>
-</StyledLayerDescriptor>`;
-
-   	
-    	
-    }
-    var parametros = {
-        'codMarco': codMarco,
-        'idMarco': idMarco,
-        'id': document.getElementById('divCargaCapa').getAttribute('idcapa'),
-        'sld': sld
-    };
-    
-    editarCapa(parametros);
-}
-
-function cargarListadoCapasPublicadas(){
-	
-	limpiarMapa();
-    var _this = _this;
-    
-    var idMarco = getParameterByName('id');
-    var codMarco = getParameterByName('cod');
-    var zz_publicada = '1';
-    
-    var parametros = {
-        'codMarco': codMarco,
-        'idMarco': idMarco,
-        'zz_publicada': zz_publicada
-    };
-    
-    $.ajax({
-            url:   './app_capa/app_capa_consultar_listado.php',
-            type:  'post',
-            data: parametros,
-            success:  function (response)
-            {   
-                var _res = $.parseJSON(response);
-                console.log(_res);
-                for(_nm in _res.mg){alert(_res.mg[_nm]);}
-                if(_res.res=='exito'){
-                    cargarValoresCapasPublicadas(_res);
-                    mostrarListadoCapasPublicadas();
-                }else{
-                    alert('error asf0jg44ff0gh');
-                }
-            }
-    });
-}
 
 function cargarValoresCapasPublicadas(_res){
-    if (_res.data != null){
-        for (var elemCapa in _res.data){
-            var divRoot = document.getElementById('listacapaspublicadas');
-            var filaCapa = document.createElement('a');
-            filaCapa.setAttribute('idcapa', _res.data[elemCapa]["id"]);
-            filaCapa.setAttribute('class', 'filaCapaLista');
-            filaCapa.setAttribute('onclick', "accionCargarCapaPublicada(this,"+_res.data[elemCapa]["id"]+")" );
-            var capaId = document.createElement('div');
-            capaId.setAttribute('id','capaIdLista');
-            capaId.innerHTML = "ID <span class='idn'>" + _res.data[elemCapa]["id"]+'</span>';
-            var capaNombre = document.createElement('div');
-            capaNombre.setAttribute('id','capaNombreLista');
-            capaNombre.innerHTML = _res.data[elemCapa]["nombre"];
-            var capaAu = document.createElement('div');
-            capaAu.setAttribute('id','capaAutoriaLista');
-            capaAu.innerHTML ='por: '+ _res.data[elemCapa]["autornom"]+' '+_res.data[elemCapa]["autorape"];
-            var capaDescripcion = document.createElement('div');
-            capaDescripcion.setAttribute('id','capaDescripcionLista');
-            capaDescripcion.innerHTML = _res.data[elemCapa]["descripcion"];
-            filaCapa.appendChild(capaId);
-            filaCapa.appendChild(capaNombre);
-            filaCapa.appendChild(capaDescripcion);
-            filaCapa.appendChild(capaAu);
-            divRoot.appendChild(filaCapa);
-        }
-    } else {
-        alert('error asf0u23h0jg44ff0gh');
-    }   
+    
+    for (var elemCapa in _res.data){
+        var divRoot = document.getElementById('listacapaspublicadas');
+        var filaCapa = document.createElement('a');
+        filaCapa.setAttribute('idcapa', _res.data[elemCapa]["id"]);
+        filaCapa.setAttribute('class', 'filaCapaLista');
+        filaCapa.setAttribute('onclick', "accionCargarCapaPublicada(this,"+_res.data[elemCapa]["id"]+")" );
+        var capaId = document.createElement('div');
+        capaId.setAttribute('id','capaIdLista');
+        capaId.innerHTML = "ID <span class='idn'>" + _res.data[elemCapa]["id"]+'</span>';
+        var capaNombre = document.createElement('div');
+        capaNombre.setAttribute('id','capaNombreLista');
+        capaNombre.innerHTML = _res.data[elemCapa]["nombre"];
+        var capaAu = document.createElement('div');
+        capaAu.setAttribute('id','capaAutoriaLista');
+        capaAu.innerHTML ='por: '+ _res.data[elemCapa]["autornom"]+' '+_res.data[elemCapa]["autorape"];
+        var capaDescripcion = document.createElement('div');
+        capaDescripcion.setAttribute('id','capaDescripcionLista');
+        capaDescripcion.innerHTML = _res.data[elemCapa]["descripcion"];
+        
+        var capaDescarga = document.createElement('a');
+        capaDescarga.innerHTML='<img class="imgdescarga" src="./img/descargar.png"><img class="imgcargando" src="./img/cargando.gif">'
+        capaDescarga.setAttribute('onclick','event.stopPropagation();descargarSHP(this.parentNode.getAttribute("idcapa"))');
+        capaDescarga.setAttribute('class','botondescarga');
+        
+        filaCapa.appendChild(capaId);
+        filaCapa.appendChild(capaDescarga);
+        filaCapa.appendChild(capaNombre);
+        filaCapa.appendChild(capaDescripcion);
+        filaCapa.appendChild(capaAu);
+        divRoot.appendChild(filaCapa);
+    }
+   
 }
 
 
@@ -1311,17 +1097,23 @@ function cargarDatosCapaPublicada(idcapa){
             success:  function (response)
             {   
                 var _res = $.parseJSON(response);
-                console.log(_res);
+                //console.log(_res);
                 if(_res.res=='exito'){
+                	
                 	if(_res.data.autor==_IdUsu){
-                		document.querySelector('.formCargaCapaCuerpo #cargarGeometrias').style.display='inline-block';
+                		
+                		if(_res.data.zz_publicada=='1'){
+                			document.querySelector('.formCargaCapa #cargarGeometrias').style.display='none';
+                		}else{
+                			document.querySelector('.formCargaCapa #cargarGeometrias').style.display='inline-block';
+                		}
                 		document.querySelector('.formCargaCapa .accionesCapa #botonelim').style.display='inline-block';
                 		document.querySelector('.formCargaCapa .accionesCapa #botonguarada').style.display='inline-block';
                 		document.querySelector('.formCargaCapa .accionesCapa #botonpublica').style.display='inline-block';   
                 		
-	            		  if(_res.data.zz_publicada=='1'){
-	            		  		document.querySelector('.formCargaCapa .accionesCapa #botonpublica').style.display='none';
-	            		  }	
+            		  if(_res.data.zz_publicada=='1'){
+            		  		document.querySelector('.formCargaCapa .accionesCapa #botonpublica').style.display='none';
+            		  }
                 		
                 	}else{
                 		document.querySelector('.formCargaCapaCuerpo #cargarGeometrias').style.display='none';
@@ -1336,7 +1128,7 @@ function cargarDatosCapaPublicada(idcapa){
                 		}
                 	}else{
                     	cargarValoresCapaExist(_res);
-                   }
+                    }
                 }else{
                 	_Capa = {};
                     alert('error tf0jg44ff0gh');
@@ -1345,3 +1137,94 @@ function cargarDatosCapaPublicada(idcapa){
     });
 }
 
+function toglevalorSiNo(_this){
+	_nom=_this.getAttribute('for');	
+	if(_this.checked==true){
+		_val=_this.getAttribute('valorsi');
+	}else{
+		_val=_this.getAttribute('valorno');
+	}
+	_this.parentNode.querySelector("[name='"+_nom+"']").value=_val;
+}
+
+function toglevalorSiNoRev(_this){
+	_for=_this.getAttribute('name');
+	_val=_this.value;
+	_inp=_this.parentNode.querySelector('[for="'+_for+'"]');
+	if(_inp.getAttribute('valorsi')==_val){
+		_inp.checked=true;
+	}else{
+		_inp.checked=false;
+	}
+}
+
+
+
+function exportarCapaMenu(){
+	
+	document.querySelector('#exportarCapaMenu #lista').innerHTML='';
+	document.querySelector('#exportarCapaMenu').style.display='block';
+	
+	var parametros = {
+        'accion': 'app_capa'
+    };
+    
+    $.ajax({
+            url:   './sistema/sis_consulta_marcos.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                var _res = $.parseJSON(response);
+                //console.log(_res);
+                if(_res.res=='exito'){
+                	
+					for(_cod in _res.data){
+						_a=document.createElement('a');
+						_a.setAttribute('codigo',_cod);
+						_a.setAttribute('onclick','exportarCapa(this.getAttribute("codigo"))');
+						_a.innerHTML=_res.data[_cod].nombre+' - '+_res.data[_cod].nombre_oficial;
+						document.querySelector('#exportarCapaMenu #lista').appendChild(_a);								
+					}
+                }
+               
+            }
+        });
+}
+
+
+
+function exportarCapa(_codMarcDest){
+	
+	document.querySelector('#exportarCapaMenu').style.display='none';
+	
+	var parametros = {
+        'idCapa': document.querySelector('#divCargaCapa.formCargaCapa').getAttribute('idcapa'),
+        'codMarcoDestino': _codMarcDest,
+        'codMarco': getParameterByName('cod'),
+    };
+	
+	 $.ajax({
+        url:   './app_capa/app_capa_exportar.php',
+        type:  'post',
+        data: parametros,
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            if(_res.res=='exito'){
+            	
+				for(_cod in _res.data){
+					_a=document.createElement('a');
+					_a.setAttribute('codigo',_cod);
+					_a.setAttribute('onclick','exportarCapa(this.getAttribute("codigo"))');
+					_a.innerHTML=_res.data[_cod].nombre+' - '+_res.data[_cod].nombre_oficial;
+					document.querySelector('#exportarCapaMenu #lista').appendChild(_a);
+										
+				}
+            }
+           
+        }
+    });
+	
+}
