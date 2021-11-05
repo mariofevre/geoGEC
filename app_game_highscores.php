@@ -50,6 +50,8 @@ include($GeoGecPath."/includes/cadenas.php");
 // función de consulta de proyectoes a la base de datos 
 // include("./consulta_mediciones.php");
 $COD = isset($_GET['cod'])?$_GET['cod'] : '';
+$IDSESION = isset($_GET['idsesion'])?$_GET['idsesion'] : '';
+$PART = isset($_GET['partida'])?$_GET['partida'] : '';
 $Hoy_a = date("Y");$Hoy_m = date("m");$Hoy_d = date("d");
 $HOY = $Hoy_a."-".$Hoy_m."-".$Hoy_d;	
 // medicion de rendimiento lamp 
@@ -59,13 +61,10 @@ $starttime = microtime(true);
     <title>GEC - Plataforma Geomática</title>
     <?php include("./includes/meta.php");?>
     <link href="./css/mapauba.css" rel="stylesheet" type="text/css">
-    <link href="./css/BaseSonido.css" rel="stylesheet" type="text/css">
-    <link href="./css/ad_navega.css" rel="stylesheet" type="text/css">
-    <link href="./css/tablarelev.css" rel="stylesheet" type="text/css">
     <link rel="manifest" href="pantallahorizontal.json">
-    <link href="./css/BA_salidarelevamiento.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogecindex.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app_docs.css" rel="stylesheet" type="text/css">
+    
+    <link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app.css" rel="stylesheet" type="text/css">
     <link href="./css/geogec_app_game.css" rel="stylesheet" type="text/css">
     
     <style>
@@ -273,6 +272,34 @@ $starttime = microtime(true);
 			font-family: 'game';
 		}
 		
+		div.fila[selecto='selecto']{
+			background-color: #08afd9;
+		}
+		
+		.fila div.iniciales{
+			text-align:center;
+			width:200px;
+		}
+		
+		.fila div.iniciales .anonimo{
+			font-size:12px;
+		}
+		
+		
+		.fila div.orden{
+			text-align:right;
+			width:60px;
+		}
+		
+				
+		.fila div.puntaje{
+			text-align:right;
+		}
+		
+		.fila div.puntajePorc{
+			text-align:center;
+			font-size:16px;
+		}
 		
     </style>
 </head>
@@ -285,7 +312,7 @@ $starttime = microtime(true);
 
 <div id="pageborde">
     <div id="page">
-        <div id='cuadrovalores'>
+        <div id='encabezado'>
 			<a target='_blank' href='./index.php?est=est_02_marcoacademico&cod=<?php echo $COD;?>' class='fila' id='encabezado'>
                 <h2>geoGEC</h2>
                 <p>Plataforma Geomática del centro de Gestión de Espacios Costeros</p>
@@ -313,7 +340,7 @@ $starttime = microtime(true);
             	<p>La movilidad sostenible es uno de los temas urgentes en la adaptación al cambio climático.</p>
             	<p>Hoy en día los gobiernos Municipales deben brindar recursos que garanticen a la población la capacidad de desplazarse ante: <ul><li>suministro de combustible deficiente</li><li>amenazas inminentes a la salud en su lugar de residencia</li><li> falta de suministro de serviciós básicos.</li></ul></p>
             	
-            	<a id='press' href='./app_game_play.php?idsesion=1&cod=<?php echo $COD; ?>'> - PRESS START - </a>
+            	<a id='press' href='./app_game_play.php?idsesion=<?php echo $IDSESION;?>&cod=<?php echo $COD; ?>'> - PRESS START - </a>
             	
             </div>
 
@@ -324,6 +351,11 @@ $starttime = microtime(true);
 
  <script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema --> 
  <script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
+ 
+ <script type='text/javascript'>
+ 
+ 	var _Partida='<?php echo $PART;?>';	
+ </script>
  <script type="text/javascript" src="./app_game/app_game_highscores.js"></script> <!-- carga funciones de interaccion con el mapa -->
  
  

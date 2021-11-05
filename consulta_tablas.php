@@ -67,12 +67,6 @@ if(isset($_SESSION["geogec"]["usuario"]['id'])){
 	}
 }
 
-if(!isset($_POST['selecTabla'])){
-	$Log['tx'][]='no fue enviada la varaibla selecttabla indicando una tabla o un conjunto de estas';
-	$Log['res']='err';
-	terminar($Log);	
-}	
-
 
 	$query="
 	SELECT 
@@ -184,9 +178,6 @@ if(!isset($_POST['selecTabla'])){
 	}	
 	
 	
-if($_POST['selecTabla']==''){
-	
-}
 
 $Log['res']='exito';
 terminar($Log);		

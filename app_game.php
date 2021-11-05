@@ -65,13 +65,10 @@ $starttime = microtime(true);
     <title>GEC - Plataforma Geomática</title>
     <?php include("./includes/meta.php");?>
     <link href="./css/mapauba.css" rel="stylesheet" type="text/css">
-    <link href="./css/BaseSonido.css" rel="stylesheet" type="text/css">
-    <link href="./css/ad_navega.css" rel="stylesheet" type="text/css">
-    <link href="./css/tablarelev.css" rel="stylesheet" type="text/css">
     <link rel="manifest" href="pantallahorizontal.json">
-    <link href="./css/BA_salidarelevamiento.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogecindex.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app_docs.css" rel="stylesheet" type="text/css">
+    
+    <link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app.css" rel="stylesheet" type="text/css">
     <link href="./css/geogec_app_game.css" rel="stylesheet" type="text/css">
     
     <style>
@@ -123,24 +120,26 @@ $starttime = microtime(true);
 
 <div id="pageborde">
     <div id="page">
-        <div id='cuadrovalores'>
+        <div id='encabezado'>
 		<a href='./index.php?est=est_02_marcoacademico&cod=<?php echo $COD;?>' class='fila' id='encabezado'>
                 <h2>geoGEC</h2>
                 <p>Plataforma Geomática del centro de Gestión de Espacios Costeros</p>
             </a>
 
-            <div id='elemento'>
+            <div id='elemento' tipo='Accion'>
                 <img src='./img/app_game_hd.png' style='float:left;'>
-                <h2 id='titulo'>Gamificador de la Planificación</h2>
+                <h2 id='titulo'></h2>
                 <div id='descripcion'>
-                	Espacio de gamificaicón de variables urbanas. <br>
-                	Permite generar experiencias interactivas para el público en general a partir de variables urbano-ambiental reales.           	
-            	 </div>
+                	           	
+            	</div>
             </div>	
         </div>
         <div id='menutablas'>
             <h1 id='titulo'>- nombre de proyecto -</h1>
             <p id='descripcion'>- descripcion de proyecto -</p>
+        	<div id='menuacciones'>
+				<div id='lista'></div>	
+			</div>
         </div>	
         <div class="portamapa">
             <div id='titulomapa'>
@@ -156,9 +155,6 @@ $starttime = microtime(true);
             </div>
         </div>
         <div id="cuadrovalores">
-        	<div id='menuacciones'>
-				<div id='lista'></div>	
-			</div>
             <div id='sesionActiva' idindicador='0' class="elementoOculto"></div>
             <div class='capaEncabezadoCuadro tituloCuerpo'>
                 <h1>Sesiones</h1>

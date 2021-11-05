@@ -44,21 +44,25 @@ $Hoy_a = date("Y");$Hoy_m = date("m");$Hoy_d = date("d");
 $HOY = $Hoy_a."-".$Hoy_m."-".$Hoy_d;	
 // medicion de rendimiento lamp 
 $starttime = microtime(true);
-?>
+?><!DOCTYPE html>
 
 <head>
 	<title>GEC - Plataforma Geomática</title>
 	<?php include("./includes/meta.php");?>
 	<link href="./css/mapauba.css" rel="stylesheet" type="text/css">
-	<link href="./css/BaseSonido.css" rel="stylesheet" type="text/css">
-	<link href="./css/ad_navega.css" rel="stylesheet" type="text/css">	
-	<link href="./css/tablarelev.css" rel="stylesheet" type="text/css">
+	<!---<link href="./css/BaseSonido.css" rel="stylesheet" type="text/css">-->
+	
+	
+	<!---<link href="./css/ad_navega.css" rel="stylesheet" type="text/css">	-->
 	<link rel="manifest" href="pantallahorizontal.json">
-	<link href="./css/BA_salidarelevamiento.css" rel="stylesheet" type="text/css">
+	<!---<link href="./css/BA_salidarelevamiento.css" rel="stylesheet" type="text/css">-->
+	
+	
+	<link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
 	<link href="./css/geogecindex.css" rel="stylesheet" type="text/css">
 
 	<link href="./usuarios/usuarios.css" rel="stylesheet" type="text/css">	
-	<link href="./js/ol4.2/ol.css" rel="stylesheet" type="text/css">
+	<link href="./js/ol6.3/ol.css" rel="stylesheet" type="text/css">
 		
 	<style type='text/css'>
 		#menudatos #descripcion{
@@ -68,6 +72,46 @@ $starttime = microtime(true);
 		
 		div#cuadrovalores div#encabezado > h1 a{
 			display:none;			
+		}	
+		
+		
+		div#cuadrovalores #menupropios{
+			display:none;
+		}		
+		
+		div#cuadrovalores[acceso='si'] #menupropios{
+			display:block;
+		}		
+		
+		div#cuadrovalores[acceso='si'] #encabezado{
+			display:none;
+		}
+		
+		div#cuadrovalores[acceso='si'] #menupropios{
+			display:block;
+		}
+		
+		
+		div#cuadrovalores[acceso='si'] #elemento{
+			display:none;
+		}
+		
+		#menupropios[estado='cerrado']{
+			overflow:hidden;
+			font-size:14px;
+			height:14px;
+			transition: height 2s;	
+		}
+		#menupropios[estado='cerrado'] #btnMuestraPropios{
+			display:block;
+		}
+		#menupropios #btnMuestraPropios{
+			display:none;
+		}
+		
+		#menupropios #lista a[cargado='si']{
+			border: 1px solid rgba(255,25,55,1);
+    		background-color: rgba(228,25,55,0.8);
 		}	
 	</style>	
 	
@@ -85,7 +129,7 @@ $starttime = microtime(true);
 		}
 		
 		div#cuadrovalores[cargado='si'] div#menutablas{
-			display:none;
+			
 		}		
 
 		
@@ -98,7 +142,8 @@ $starttime = microtime(true);
 		}
 		div#cuadrovalores[cargado='si'] div#menuelementos #lista a{
 			display:none;
-		}				
+		}		
+		
 	</style>	
 </head>
 
@@ -106,7 +151,7 @@ $starttime = microtime(true);
 	
 <script type="text/javascript" src="./js/jquery/jquery-1.12.0.min.js"></script>	
 <script type="text/javascript" src="./js/qrcodejs/qrcode.js"></script>
-<script type="text/javascript" src="./js/ol4.2/ol-debug.js"></script>
+<script type="text/javascript" src="./js/ol6.3/ol.js"></script>
 
 
 <div id="pageborde">
@@ -121,12 +166,12 @@ $starttime = microtime(true);
 		        <div id="location"></div>
 		        <div id="scale"></div>
 		    </div>
-		</div>
+		</div><!---
 		
-		<div id='cuadrovalores'>
+		--><div id='cuadrovalores'>
 			<div class='fila' id='encabezado'>
 				<h1>geoGEC<a href='./index.php'>volver al inicio</a></h1>
-				<p>Plataforma Geomática del centro <a target='blanck' href="http://www.municipioscosteros.org/nuestros-principios.aspx">Gestión de Espacios Costeros</a></p>
+				<p>Plataforma Geomática del centro <a target='blank' href="http://www.municipioscosteros.org/nuestros-principios.aspx">Gestión de Espacios Costeros</a></p>
 				<p>En este espacio se incorporan datos estructurados para la visualización de las perspectivas de abordaje del GEC</p>
 				<p>Aquí proponemos tres niveles de información geográfica</p>
 				<ul>
@@ -140,9 +185,15 @@ $starttime = microtime(true);
 				<h1 id='titulo'>base de datos geoGEC</h1>
 				<div id='descripcion'>base de datos geográfica del GEC</div>
 			</div>	
-
+			
+			<div id='menupropios'>
+				<a id='btnMuestraPropios' onclick='mostrarProyectosPropios()'>Ir a proyectos propios</a>
+				<h2 id='titulo'>lista de tus proyectos</h2>
+				<div id='lista'></div>	
+			</div>	
+			
 			<div id='menutablas'>
-				<h2 id='titulo'>menu de capas estructurales</h2>
+				<h2 id='titulo'>Listados disponibles <span>capas estructurales</spna></h2>
 				<div id='lista'></div>	
 			</div>	
 			<div id='menuelementos'>
@@ -232,10 +283,10 @@ $starttime = microtime(true);
 	var _Est = getParameterByName('est');
     var _Cod = getParameterByName('cod');
     
-	consultarTablas();
+    actualizarPermisos();
 </script>
 
 <script type="text/javascript" src="./index_upload.js"></script> <!-- carga funciones de upload de SHP-->
-<script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
-
+<script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciones de carga de mapa general-->
+<script type="text/javascript" src="./index_mapa_funciones.js"></script> <!-- carga funciones de interaccioón con el mapa-->
 </body>

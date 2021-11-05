@@ -59,13 +59,10 @@ $starttime = microtime(true);
     <title>GEC - Plataforma Geomática</title>
     <?php include("./includes/meta.php");?>
     <link href="./css/mapauba.css" rel="stylesheet" type="text/css">
-    <link href="./css/BaseSonido.css" rel="stylesheet" type="text/css">
-    <link href="./css/ad_navega.css" rel="stylesheet" type="text/css">
-    <link href="./css/tablarelev.css" rel="stylesheet" type="text/css">
     <link rel="manifest" href="pantallahorizontal.json">
-    <link href="./css/BA_salidarelevamiento.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogecindex.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app_docs.css" rel="stylesheet" type="text/css">
+    
+    <link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app.css" rel="stylesheet" type="text/css">
     <link href="./css/geogec_app_game.css" rel="stylesheet" type="text/css">
     
     <style>
@@ -281,9 +278,8 @@ $starttime = microtime(true);
 			bottom:5px;
 			font-size:15px;
 			border-radius:5px;
-			
 			font-family:'game';
-			width:80px;
+			width:auto;
 		}	
 		
 		#gameover input{
@@ -306,7 +302,7 @@ $starttime = microtime(true);
 
 <div id="pageborde">
     <div id="page">
-        <div id='cuadrovalores'>
+        <div id='encabezado'>
 		<a target='_blank' href='./index.php?est=est_02_marcoacademico&cod=<?php echo $COD;?>' class='fila' id='encabezado'>
                 <h2>geoGEC</h2>
                 <p>Plataforma Geomática del centro de Gestión de Espacios Costeros</p>
@@ -345,7 +341,7 @@ $starttime = microtime(true);
             <div id='sesionActiva' idindicador='0' class="elementoOculto"></div>
             <div id='turnos'>
                 <h1>Turnos</h1>
-                <p id='actual'><span id='titulo'>turno actual:</span><span id='nturn'></span></p>
+                <p id='actual'><span id='titulo'>turno actual:</span><span id='nturn'></span>. Tenés otros <span id='nturndif'> turnos.</p>
                 <div id='historial'></div>
             </div>
             
@@ -356,10 +352,7 @@ $starttime = microtime(true);
             	
             	
             </div>
-            <div id='gifanimado'>
-            	<h1></h1>
-               
-            </div>
+           
             
         
         </div>
@@ -367,6 +360,12 @@ $starttime = microtime(true);
 </div>
 <div id='presentacion'></div>
 <div id='gameover'></div>
+<div id='gifanimado'>
+	<img src='./img/cargando.gif'>               
+</div>
+ <script type="text/javascript">
+ 
+</script>
 
  <script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
  <script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->

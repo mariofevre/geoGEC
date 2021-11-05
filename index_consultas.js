@@ -42,10 +42,57 @@ var _SelecTabla='';//define si la consulta de nuevas tablas estará referido al e
 var _SelecElemCod=null;//define el código invariable entre versiones de un elemento a consultar (alternativa a _SelElemId);
 var _SelecElemId=null;//define el id de un elemento a consultar (alternativa a _SelElemCod);
 
+var _SelecGeom=null;//guarda la geometría del último obteto selecconado. Formato WKT(), 'EPSG:3857'.
 
 function actualizarPermisos(){
 	//repite consultas y cargas en caso de actualizarse los permisos por acceso de usuario registrado
+	
+	
+	if(_UsuarioAcceso==null||_UsuarioA.id=='-1'){
+		document.querySelector('div#cuadrovalores').setAttribute('acceso','no');		
+		document.querySelector('div#cuadrovalores #menupropios #lista').innerHTML='';
+	}else{
+		document.querySelector('div#cuadrovalores').setAttribute('acceso','si');		
+		_lista=document.querySelector('div#cuadrovalores #menupropios #lista');
+		
+		console.log(_UsuarioA);
+		if(_UsuarioA.permisos==undefined){
+			_lista.innerHTML='- sin proyectos con acceso aun -';
+		}else if(Object.keys(_UsuarioA.permisos.marcos).length < 1){
+			_lista.innerHTML='- sin proyectos con acceso aun -';
+		}else{
+			_lista.innerHTML='';
+			for(_mcod in _UsuarioA.permisos.marcos){
+			
+				_dat=_UsuarioA.permisos.marcos[_mcod];
+				
+				if(_dat.maxacc==0){continue;}
+				
+				_aaa=document.createElement('a');
+				_aaa.setAttribute('cod',_mcod);
+				_aaa.setAttribute('onclick',"consultarPropio(this.getAttribute('cod'))");
+				_aaa.setAttribute('onmouseover',"cargarElementoPropio(this.getAttribute('cod'))");
+				_aaa.setAttribute('onmouseout',"desCargarElementoPropio(this.getAttribute('cod'))");
+				_lista.appendChild(_aaa);
+				
+				_spa=document.createElement('span');
+				_spa.setAttribute('class','nom');
+				_spa.innerHTML=_dat.nombre;
+				_aaa.appendChild(_spa);
+				
+				_spa2=document.createElement('span');
+				_spa2.setAttribute('class','cod');
+				_spa2.innerHTML=_mcod;
+				_aaa.appendChild(_spa2);
+				
+				
+			}
+		}
+	}
+	
 	consultarTablas();
+	
+	
 }
 
 function consultarTablas(){
@@ -59,12 +106,17 @@ function consultarTablas(){
 		'selecElemCod':_SelecElemCod,
 		'selecElemId':_SelecElemId		
 	};
+
 	
+	if(controlConsultando()){alert('Antes tiene que reslverse una consulta en curso');return;}
+	activarConsultando();
+		
 	$.ajax({
 		url:   'consulta_tablas.php',
 		type:  'post',
 		data: _parametros,
 		success:  function (response){
+			desactivarConsultando();
 			var _res = $.parseJSON(response);
 			for(_nm in _res.mg){alert(_res.mg[_nm]);}
 				//console.log(_res);
@@ -74,10 +126,14 @@ function consultarTablas(){
 				for(_nn in _Tablas['est']){			
 					
 					_aaa=document.createElement('a');
-					_aaa.innerHTML=_Tablas['est'][_nn];
+					
+					_aaa.innerHTML='';
 					if(_TablasConf[_Tablas['est'][_nn]] != undefined){
-						_aaa.innerHTML+=' - '+_TablasConf[_Tablas['est'][_nn]].nombre_humano;
+						_aaa.innerHTML+=_TablasConf[_Tablas['est'][_nn]].nombre_humano;
+					}else{
+						_aaa.innerHTML+=' <span>('+_Tablas['est'][_nn]+')</span>';
 					}
+					_aaa.title=_Tablas['est'][_nn];
 					_aaa.setAttribute('tabla',_Tablas['est'][_nn]);
 					_aaa.setAttribute('class','nombretabla');
 					_aaa.setAttribute('onclick','mostrartabla(this)');
@@ -145,8 +201,25 @@ function cargarAtabla(_this){
 }
 
 
-function mostrartabla(_this){	
+
+function ocultarProyectosPropios(){
+	document.querySelector('#menupropios').setAttribute('estado','cerrado');
+	
+}
+
+function mostrarProyectosPropios(){
+	document.querySelector('#menupropios').setAttribute('estado','abierto');
+	document.querySelector('#menuelementos #lista').innerHTML='';
+	limpiarListascarga();
+}
+
+function mostrartabla(_this){
+	
+	limpiarListascarga();
+	ocultarProyectosPropios();
+	document.querySelector('div#cuadrovalores').removeAttribute('cargado');
 	_lyrElemSrc.clear();
+	
 	//document.querySelector('#titulomapa').style.display='block';
 	document.querySelector('#menuelementos').style.display='block';
 	_tabla=_this.getAttribute('tabla');
@@ -165,6 +238,9 @@ function mostrartabla(_this){
 	
 function consultarCentroides(_tabla){
 	
+	if(controlConsultando()){alert('Antes tiene que reslverse una consulta en curso');return;}
+	activarConsultando();
+	
 	_parametros={
 		'tabla': _tabla
 	};
@@ -174,6 +250,7 @@ function consultarCentroides(_tabla){
 		url:   './consulta_centroides.php',
 		type:  'post',
 		success:  function (response){
+			desactivarConsultando();
 			var _res = $.parseJSON(response);			
 			console.log(_res);
 			for(_nm in _res.mg){alert(_res.mg[_nm]);}
@@ -278,6 +355,181 @@ function descargarSHP(_this,_ev){
 	_if.src=_this.getAttribute('link');
 }
 
+
+function limpiarListascarga(){
+	
+	_SelecElemCod=null;
+	
+	_elems = document.querySelectorAll('#menupropios #lista > a[cargado="si"]');
+	if(_elems!=null){
+	for(_nn in _elems){
+		if(typeof _elems[_nn] != 'object'){continue;}
+		_elems[_nn].removeAttribute('cargado');
+	}
+	}
+	
+	
+	_elems = document.querySelectorAll('#menuelementos #lista a[cargado="si"]');
+	if(_elems!=null){
+	for(_nn in _elems){
+		if(typeof _elems[_nn] != 'object'){continue;}
+		_elems[_nn].removeAttribute('cargado');
+	}
+	}
+	
+	
+}
+
+
+
+
+function consultarPropio(_codElem){
+	
+	document.querySelector('#menudatos #titulo').innerHTML='';
+	document.querySelector('#menudatos #lista').innerHTML='';
+	document.querySelector('#menudatos').removeAttribute('style');
+	document.querySelector('#menuacciones #titulo').innerHTML='';
+	document.querySelector('#menuacciones #lista').innerHTML='';
+	document.querySelector('#menuacciones').removeAttribute('style');
+	
+	limpiarListascarga();
+	
+	_SelecElemCod=_codElem;
+	_SelecTabla="est_02_marcoacademico";
+	
+	
+	if(_codElem==null){return;}
+	
+	document.querySelector('#menupropios #lista > a[cod="'+_codElem+'"]').setAttribute('cargado','si');
+	
+	_parametros = {
+		'id': '',
+		'cod': _codElem,
+		'tabla':_SelecTabla
+	};
+	
+	if(controlConsultando()){alert('Antes tiene que reslverse una consulta en curso');return;}
+	activarConsultando();
+	
+	$.ajax({
+		data: _parametros,
+		url:   './consulta_elemento.php',
+		type:  'post',
+		success:  function (response){
+			desactivarConsultando();
+			var _res = $.parseJSON(response);
+			console.log(_res);
+			for(_nm in _res.mg){
+				alert(_res.mg[_nm]);
+			}
+			if(_res.res!='exito'){	alert('error al consultar el servidor');return;}
+			
+			_DataElem=_res.data.elemento;
+			
+			_campocod=_res.data.tablasConf.campo_id_geo;
+			_camponom=_res.data.tablasConf.campo_id_humano;
+			_campodesc=_res.data.tablasConf.campo_desc_humano;
+							
+			document.querySelector('#menuacciones #titulo').innerHTML=_res.data.elemento.nombre;
+			document.querySelector('#menuacciones #titulo').innerHTML="acciones disponibles";
+			_lista=document.querySelector('#menuacciones #lista');	
+			
+			
+			for(_accnom in _res.data.tablasConf.acciones){
+				
+				_accndata=_res.data.tablasConf.acciones[_accnom];	
+				if(_res.data.elemento.accesoAccion[_accnom]>0){
+					document.querySelector('#menuacciones').style.display='block';
+					_li=document.createElement('a');
+					_li.setAttribute('href','./'+_accnom+'.php?cod='+_res.data.elemento[_campocod]);
+					_la=document.createElement('img');
+					_la.setAttribute('src','./img/'+_accnom+'.png');
+					_la.setAttribute('alt',_accnom);
+					_la.setAttribute('title',_accndata.resumen);
+					_li.appendChild(_la);
+					_lista.appendChild(_li);
+				}
+			}
+			
+			document.querySelector('#menudatos').style.display='block';
+			
+			document.querySelector('#menudatos #titulo').innerHTML=_res.data.elemento[_camponom];
+			
+			if(_campodesc==null){
+				_desc='';
+			}else{
+				_desc=_res.data.elemento[_campodesc];
+			}
+			document.querySelector('#menudatos #descripcion').innerHTML=_desc;
+			
+			
+			_lista=document.querySelector('#menudatos #lista');	
+			for(_nd in _res.data.elemento){
+				if(_nd == 'geo'){continue;}
+				if(_nd == 'accesoAccion'){continue;}
+				if(_nd == 'acceso'){continue;}
+				if(_nd == 'geotx'){continue;}
+				if(_nd == 'zz_obsoleto'){continue;}
+				if(_nd == 'zz_accesolibre'){continue;}
+				
+				_li=document.createElement('div');
+				_li.setAttribute('class','fila');
+				_la=document.createElement('label');
+				_la.setAttribute('class','variable');
+				_la.innerHTML=_nd+":";
+				_li.appendChild(_la);
+				_sp=document.createElement('div');
+				_sp.setAttribute('class','dato');
+				_sp.innerHTML=_res.data.elemento[_nd];
+				_li.appendChild(_sp);
+				_lista.appendChild(_li);	
+				
+			}
+			
+			_pe=$('#menupropios #lista').offset().top;
+			_sc=document.querySelector('#menupropios #lista').scrollTop;
+			console.log($('#menupropios #lista [cod="'+_res.data.elemento.codigo+'"]').offset().top+_sc);
+			
+			$('#menupropios #lista').animate({
+			        scrollTop: ($('#menupropios #lista [cod="'+_res.data.elemento.codigo+'"]').offset().top+_sc-_pe)
+			 }, 2000);
+			    
+			document.querySelector('#menudatos').style.display='block';
+			
+			_SelecGeom=_res.data.elemento.geotx;
+			
+			_lyrElemSrc.clear();
+			if(_res.data.elemento.geotx!=null){
+			
+				var format = new ol.format.WKT();	
+			    var _feat = format.readFeature(_res.data.elemento.geotx, {
+			        dataProjection: 'EPSG:3857',
+			        featureProjection: 'EPSG:3857'
+			    });
+			    
+			    _feat.setId(_res.data.elemento.id);
+			    
+			    _feat.setProperties({
+			    	'nom':_res.data.elemento[_camponom],
+			    	'cod':_res.data.elemento[_campocod],
+			    	'id':_res.data.elemento.id
+			    });
+			    
+				_lyrElemSrc.addFeature(_feat);
+				
+				_MapaCargado='si';
+				
+				_ext= _lyrElemSrc.getExtent();
+			
+				setTimeout(
+					function(){mapa.getView().fit(_ext, { duration: 1000 })},
+						200
+				);
+			}	
+		}
+	})
+}
+
 function consultarElemento(_idElem,_codElem,_tabla){
 	
 	document.querySelector('#menudatos #titulo').innerHTML='';
@@ -288,14 +540,10 @@ function consultarElemento(_idElem,_codElem,_tabla){
 	document.querySelector('#menuacciones').removeAttribute('style');
 	
 	
+	limpiarListascarga()
 	
-	_elems = document.querySelectorAll('#menuelementos #lista a[cargado="si"]');
-	if(_elems!=null){
-	for(_nn in _elems){
-		if(typeof _elems[_nn] != 'object'){continue;}
-		_elems[_nn].removeAttribute('cargado');
-	}
-	}
+	_SelecElemCod=_codElem;
+	_SelecTabla=_tabla;
 	
 	if(_codElem==null){return;}
 	
@@ -307,126 +555,132 @@ function consultarElemento(_idElem,_codElem,_tabla){
 		'tabla':_tabla
 	};
 	
+	if(controlConsultando()){alert('Antes tiene que reslverse una consulta en curso');return;}
+	activarConsultando();
+	
 	$.ajax({
 		data: _parametros,
 		url:   './consulta_elemento.php',
 		type:  'post',
 		success:  function (response){
+			desactivarConsultando();
 			var _res = $.parseJSON(response);
 			console.log(_res);
 			for(_nm in _res.mg){
 				alert(_res.mg[_nm]);
 			}
-			if(_res.res=='exito'){		
+			if(_res.res!='exito'){	alert('error al consultar el servidor');return;}
+			
+			
+			_campocod=_res.data.tablasConf.campo_id_geo;
+			_camponom=_res.data.tablasConf.campo_id_humano;
+			_campodesc=_res.data.tablasConf.campo_desc_humano;
+							
+			document.querySelector('#menuacciones #titulo').innerHTML=_res.data.elemento.nombre;
+			document.querySelector('#menuacciones #titulo').innerHTML="acciones disponibles";
+			_lista=document.querySelector('#menuacciones #lista');	
+			
+			
+			for(_accnom in _res.data.tablasConf.acciones){
 				
-				_campocod=_res.data.tablasConf.campo_id_geo;
-				_camponom=_res.data.tablasConf.campo_id_humano;
-				_campodesc=_res.data.tablasConf.campo_desc_humano;
-								
-				document.querySelector('#menuacciones #titulo').innerHTML=_res.data.elemento.nombre;
-				document.querySelector('#menuacciones #titulo').innerHTML="acciones disponibles";
-				_lista=document.querySelector('#menuacciones #lista');	
-				
-				
-				for(_accnom in _res.data.tablasConf.acciones){
-					
-					_accndata=_res.data.tablasConf.acciones[_accnom];	
-					if(_res.data.elemento.accesoAccion[_accnom]>0){
-						document.querySelector('#menuacciones').style.display='block';
-						_li=document.createElement('a');
-						_li.setAttribute('href','./'+_accnom+'.php?cod='+_res.data.elemento[_campocod]);
-						_la=document.createElement('img');
-						_la.setAttribute('src','./img/'+_accnom+'.png');
-						_la.setAttribute('alt',_accnom);
-						_la.setAttribute('title',_accndata.resumen);
-						_li.appendChild(_la);
-						_lista.appendChild(_li);
-					}
-				}
-				
-				document.querySelector('#menudatos').style.display='block';
-				
-				document.querySelector('#menudatos #titulo').innerHTML=_res.data.elemento[_camponom];
-				
-				if(_campodesc==null){
-					_desc='';
-				}else{
-					_desc=_res.data.elemento[_campodesc];
-				}
-				document.querySelector('#menudatos #descripcion').innerHTML=_desc;
-				
-				
-				_lista=document.querySelector('#menudatos #lista');	
-				for(_nd in _res.data.elemento){
-					if(_nd == 'geo'){continue;}
-					if(_nd == 'accesoAccion'){continue;}
-					if(_nd == 'acceso'){continue;}
-					if(_nd == 'geotx'){continue;}
-					if(_nd == 'zz_obsoleto'){continue;}
-					if(_nd == 'zz_accesolibre'){continue;}
-					
-					_li=document.createElement('div');
-					_li.setAttribute('class','fila');
-					_la=document.createElement('label');
-					_la.setAttribute('class','variable');
-					_la.innerHTML=_nd+":";
+				_accndata=_res.data.tablasConf.acciones[_accnom];	
+				if(_res.data.elemento.accesoAccion[_accnom]>0){
+					document.querySelector('#menuacciones').style.display='block';
+					_li=document.createElement('a');
+					_li.setAttribute('href','./'+_accnom+'.php?cod='+_res.data.elemento[_campocod]);
+					_la=document.createElement('img');
+					_la.setAttribute('src','./img/'+_accnom+'.png');
+					_la.setAttribute('alt',_accnom);
+					_la.setAttribute('title',_accndata.resumen);
 					_li.appendChild(_la);
-					_sp=document.createElement('div');
-					_sp.setAttribute('class','dato');
-					_sp.innerHTML=_res.data.elemento[_nd];
-					_li.appendChild(_sp);
-					_lista.appendChild(_li);	
-					
+					_lista.appendChild(_li);
 				}
-				
-				
-				document.querySelector('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').setAttribute('cargado','si');	
-				
-				_pe=$('#menuelementos #lista').offset().top;
-				_sc=document.querySelector('#menuelementos #lista').scrollTop;
-				console.log($('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').offset().top+_sc);
-				
-				$('#menuelementos #lista').animate({
-				        scrollTop: ($('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').offset().top+_sc-_pe)
-				 }, 2000);
-				    
-				document.querySelector('#menudatos').style.display='block';
-				
-				
-				_lyrElemSrc.clear();
-				if(_res.data.elemento.geotx!=null){
-				
-					var format = new ol.format.WKT();	
-				    var _feat = format.readFeature(_res.data.elemento.geotx, {
-				        dataProjection: 'EPSG:3857',
-				        featureProjection: 'EPSG:3857'
-				    });
-				    
-				    _feat.setId(_res.data.elemento.id);
-				    
-				    _feat.setProperties({
-				    	'nom':_res.data.elemento[_camponom],
-				    	'cod':_res.data.elemento[_campocod],
-				    	'id':_res.data.elemento.id
-				    });
-				    
-					_lyrElemSrc.addFeature(_feat);
-					
-					_MapaCargado='si';
-					
-					_ext= _lyrElemSrc.getExtent();
-				
-					setTimeout(
-						function(){mapa.getView().fit(_ext, { duration: 1000 })},
-							200
-					);
-				}	
-									
-				//generarItemsHTML();		
-				//generarArchivosHTML();
-			}else{
-				alert('error dsfg');
 			}
+			
+			document.querySelector('#menudatos').style.display='block';
+			
+			document.querySelector('#menudatos #titulo').innerHTML=_res.data.elemento[_camponom];
+			
+			if(_campodesc==null){
+				_desc='';
+			}else{
+				_desc=_res.data.elemento[_campodesc];
+			}
+			document.querySelector('#menudatos #descripcion').innerHTML=_desc;
+			
+			
+			_lista=document.querySelector('#menudatos #lista');	
+			for(_nd in _res.data.elemento){
+				if(_nd == 'geo'){continue;}
+				if(_nd == 'accesoAccion'){continue;}
+				if(_nd == 'acceso'){continue;}
+				if(_nd == 'geotx'){continue;}
+				if(_nd == 'zz_obsoleto'){continue;}
+				if(_nd == 'zz_accesolibre'){continue;}
+				
+				_li=document.createElement('div');
+				_li.setAttribute('class','fila');
+				_la=document.createElement('label');
+				_la.setAttribute('class','variable');
+				_la.innerHTML=_nd+":";
+				_li.appendChild(_la);
+				_sp=document.createElement('div');
+				_sp.setAttribute('class','dato');
+				_sp.innerHTML=_res.data.elemento[_nd];
+				_li.appendChild(_sp);
+				_lista.appendChild(_li);	
+				
+			}
+			
+			
+			document.querySelector('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').setAttribute('cargado','si');	
+			
+			_pe=$('#menuelementos #lista').offset().top;
+			_sc=document.querySelector('#menuelementos #lista').scrollTop;
+			console.log($('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').offset().top+_sc);
+			
+			$('#menuelementos #lista').animate({
+			        scrollTop: ($('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').offset().top+_sc-_pe)
+			 }, 2000);
+			    
+			document.querySelector('#menudatos').style.display='block';
+			
+			_SelecGeom=_res.data.elemento.geotx;
+			
+			_lyrElemSrc.clear();
+			if(_res.data.elemento.geotx!=null){
+			
+				var format = new ol.format.WKT();	
+			    var _feat = format.readFeature(_res.data.elemento.geotx, {
+			        dataProjection: 'EPSG:3857',
+			        featureProjection: 'EPSG:3857'
+			    });
+			    
+			    _feat.setId(_res.data.elemento.id);
+			    
+			    _feat.setProperties({
+			    	'nom':_res.data.elemento[_camponom],
+			    	'cod':_res.data.elemento[_campocod],
+			    	'id':_res.data.elemento.id
+			    });
+			    
+				_lyrElemSrc.addFeature(_feat);
+				
+				_MapaCargado='si';
+				
+				_ext= _lyrElemSrc.getExtent();
+			
+				setTimeout(
+					function(){mapa.getView().fit(_ext, { duration: 1000 })},
+						200
+				);
+			}	
+								
+			//generarItemsHTML();		
+			//generarArchivosHTML();
+		
+		
+			
 		}
 	})	
 }

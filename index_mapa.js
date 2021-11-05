@@ -70,9 +70,29 @@ var _lyrElem = new ol.layer.Vector({
 _lyrElem.setStyle(_CentSelStyle);
 
 
+_lyrPropiosStyle = new ol.style.Style({
+		fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
+		stroke: new ol.style.Stroke({color: 'rgba(255,102,0,0.8)',width: 2}),
+		zIndex:1
+    });
+var _lyrPropiosSrc = new ol.source.Vector(
+	{
+		attributions: ['contenidos: <a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>']
+  	}	
+);
+var _lyrPropios = new ol.layer.Vector({
+	name:'proyectos propios',
+	source: _lyrPropiosSrc,
+	style: _lyrPropiosStyle
+});   
+
+
+
 var _sMarco = new ol.source.Vector({        
   projection: 'EPSG:3857'      
 }); 
+
+
 
 function cargarMapa(){
 	
@@ -113,7 +133,8 @@ function cargarMapa(){
 		wrapX: false,   
     	projection: 'EPSG:3857' 
     }); 
-        
+    
+    
     var styleArea = new ol.style.Style({
 	    stroke: new ol.style.Stroke({color : 'rgba(255,50,100,1)', width : 2}),
 	    fill: new ol.style.Fill({color : 'rgba(255,150,150,0.4)'})
@@ -148,17 +169,17 @@ function cargarMapa(){
      });
      
     _lyrElemStyle = new ol.style.Style({
-         image: new ol.style.Circle({
-		       fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
-		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
-		       radius: 6
-		 }),
-		 fill: new ol.style.Fill({color: 'rgba(228,25,55,0.5)'}),
-		 stroke: new ol.style.Stroke({color: 'rgba(228,25,55,0.8)',width: 2}),
-		 zIndex:1
-     });
-     
-      
+        image: new ol.style.Circle({
+		      fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
+		      stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
+		      radius: 6
+		}),
+		fill: new ol.style.Fill({color: 'rgba(228,25,55,0.5)'}),
+		stroke: new ol.style.Stroke({color: 'rgba(228,25,55,0.8)',width: 2}),
+		zIndex:1
+    });
+
+
  	var _myStroke = new ol.style.Stroke({
 		color : 'rgba(255,0,0,1.0)',
 		width : 1,
@@ -166,65 +187,23 @@ function cargarMapa(){
 	var circle = new ol.style.Circle({
 	    radius: 5,
 	    stroke: _myStroke
-	});
-	 
+	}); 
 	var sy = new ol.style.Style ({
 	   image:circle
 	});
-    
 	var _sResalt = new ol.source.Vector({        
       projection: 'EPSG:3857'      
-    }); 
-    
+    });
     var _sCargado = new ol.source.Vector({        
       projection: 'EPSG:3857'      
-    }); 
-
+    });
     var _sCandidato = new ol.source.Vector({        
       projection: 'EPSG:3857'      
-    }); 
-    		    	    
+    });	    	    
 	var  _sArea = new ol.source.Vector({        
       projection: 'EPSG:3857'      
-    }); 
-	
-    var sobrePunto = function(pixel) {      
-		//if(_Dibujando=='si'){return;}	
-    	if(_mapaEstado=='dibujando'){return;}   
-        var feature = mapa.forEachFeatureAtPixel(pixel, function(feature, layer){
-	        if(layer.get('name')=='centroides'){	        	
-	          return feature;
-	        }else{
-	        	//console.log('no');
-	        }
-        });
-       
-       if(_lyrCent.getSource()!=null){
-       	
-	        if(feature==undefined){
-	        	
-	        	_features = _lyrCent.getSource().getFeatures();
-	        	for(_nn in _features){        		
-	        		_features[_nn].setStyle(_CentStyle);        		
-		    		document.querySelector('#tseleccion').innerHTML='';
-		    		document.querySelector('#tseleccion').style.display='none';	    	
-		    		document.querySelector('#tseleccion').removeAttribute('cod');
-		    		
-		    		document.querySelector('#menuelementos #lista a[centid="'+_features[_nn].getId()+'"]').removeAttribute('estado');
-	    		}
-	    		return;
-	        }
-	        
-	        feature.setStyle(_CentSelStyle);
-	        _pp=feature.getProperties('nom');
-	        document.querySelector('#tseleccion').setAttribute('cod',_pp.cod);
-			document.querySelector('#tseleccion').innerHTML=_pp.nom;
-			document.querySelector('#tseleccion').style.display='inline-block';
-			document.querySelector('#menuelementos #lista a[centid="'+feature.getId()+'"]').setAttribute('estado','selecto');
-		}   
-    }
+    });
     
- 
 	var _cargado='no';
 
 	vectorLayer = new ol.layer.Vector({
@@ -262,7 +241,6 @@ function cargarMapa(){
 		style: styleCandidato,
 		source: _sCandidato
 	});	
-	
 		
 	var areaLayer = new ol.layer.Vector({
 		style: styleArea,
@@ -277,6 +255,31 @@ function cargarMapa(){
       maxZoom:19	      
 	});
 
+
+	var _sMascaraMalvinas = new ol.source.Vector({});	
+    
+	var _layerMascaraMalvinas= new ol.layer.Vector({
+		/*style: new ol.style.Style({
+			stroke: new ol.style.Stroke({color : 'rgba(0,0,0,1)', width : 1}),
+	    	fill: new ol.style.Fill({color : 'rgb(0,0,0)'})
+		}),*/
+		style: null,		
+		source: _sMascaraMalvinas
+	});			
+	
+	_wkt='POLYGON((-7140000 -6400000 , -5600000 -6400000 , -5600000 -7000000 , -7140000 -7000000 , -7140000 -6400000 ))';
+	var _format = new ol.format.WKT();
+	var _ft = _format.readFeature(_wkt, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857'
+    });	    
+   	_sMascaraMalvinas.addFeature(_ft);
+	
+
+	   
+	
+
+	   	
 	var tablaRasLayer = new ol.layer.Image();
  /*
 	 var tablaRasLayer = new ol.layer.Image({
@@ -292,6 +295,9 @@ function cargarMapa(){
 	});
 	*/
 	//var _sourceBaseOSM=new ol.source.OSM();
+	
+	
+	
 	var _sourceBaseOSM=new ol.source.Stamen({
 		layer: 'toner'
 	});
@@ -311,8 +317,31 @@ function cargarMapa(){
 	)
 	
 	var layerOSM = new ol.layer.Tile({
-		 
+		 source: new ol.source.Stamen({layer: 'toner'}),	
 	});
+	
+	
+	_layerMascaraMalvinas.getSource().on('addfeature', function () {
+	  layerOSM.setExtent(_layerMascaraMalvinas.getSource().getExtent());
+	});  
+		 
+	
+	var style = new ol.style.Style ({
+	  fill: new ol.style.Fill({
+	    color: 'black',
+	  }),
+	});
+	
+	layerOSM.on('postrender', function (e) {
+	  var vectorContext = ol.render.getVectorContext(e);
+	  e.context.globalCompositeOperation = 'destination-out';
+	  _layerMascaraMalvinas.getSource().forEachFeature(function (feature) {
+	    vectorContext.drawFeature(feature, style);
+	  });
+	  e.context.globalCompositeOperation = 'source-over';
+	});
+	
+   	//_sMascaraMalvinas.addFeature(_ft);
 	
 	var layerBing = new ol.layer.Tile({
 		 
@@ -333,6 +362,7 @@ function cargarMapa(){
 	mapa = new ol.Map({
 	    layers: [
 			layerOSM,
+			_layerMascaraMalvinas,
 			layerBing,
 			seleccionLayer,
 			vectorLayer,
@@ -344,39 +374,23 @@ function cargarMapa(){
 			La_ExtraBaseWms,
 			_lyrCent,
 			_lyrElem,
+			_lyrPropios,
 			marcoLayer
 	    ],
 	    target: 'mapa',
 	    view: _view
 	});
-	 
-	 //_xy=new ol.Coordinate(-6500000,-4100000);
 	
-	
-	vectorLayer.setSource(_source);
-	
-	layerOSM.setSource(_sourceBaseOSM);		
-	 /* 
-	mapa.on('pointermove', function(evt) {
-		
-        if (evt.dragging) {
-        	
-        	//console.log(evt);
-        	//deltaX = evt.coordinate[0] - evt.coordinate_[0];
-  			//deltaY = evt.coordinate[1] - evt.coordinate_[1];
-			//console.log(deltaX);
-			
-          return;
-        }
-        var pixel = mapa.getEventPixel(evt.originalEvent);
+	if(document.querySelector('.ol-zoom.ol-unselectable.ol-control .ol-zoom-out')!=null){
+		//corrije el encode del zoom out
+    	document.querySelector('.ol-zoom.ol-unselectable.ol-control .ol-zoom-out').innerHTML='-';
+    }
+    
+	 //_xy=new ol.Coordinate(-6500000,-4100000);	
+	vectorLayer.setSource(_source);	
+	//layerOSM.setSource(_sourceBaseOSM);		
 
-        sobrePunto(pixel);
-    });
-/*
-    mapa.on('click', function(evt){    	
-      consultaPunto(evt.pixel,evt);       
-    });
-*/
+
 	_view.on('change:resolution', function(evt){
        
         if(_view.getZoom()>=19){
@@ -391,46 +405,6 @@ function cargarMapa(){
     });
 	
 	
-	
-	
-	function consultaPunto(pixel,_ev){
-		
-	    if(_MapaCargado=='no'){console.log('el mapa no se cargó aun');return;}
-	    
-	    
-	     var feature = mapa.forEachFeatureAtPixel(pixel, function(feature, layer){
-	        if(layer.get('name')!=undefined){
-	        	feature['layer']=layer.get('name');	        	
-	          	return feature;	        
-	        }else{
-	        	console.log('sin elementos en ese punto del mapa');
-	        	return null;	     
-	        	
-	        }
-        });
-	    
-	    if(feature==null){
-	    	return;
-	    }else if(feature.layer=='centroides'){
-			_cod=document.querySelector('#titulomapa #tseleccion').getAttribute('cod');		
-			_tabla=document.querySelector('#titulomapa #tnombre').innerHTML;	
-			consultarElemento('0',_cod,_tabla);
-		}else if(feature.layer=='seleccionLayer'){
-			
-			console.log(feature);
-			_cod=feature.get('cod');
-			_tabla=feature.get('tabla');
-			consultarSeleccion('',_cod,_tabla);
-			
-		}else{
-			console.log('sin acciones definidas para esa capa');
-		}
-
-	}
-	
-	
-
-	
 	function reiniciarMapa(){
 		_features=_sCargado.getFeatures();	
 		for (i = 0; i < _features.length; i++) {		
@@ -441,10 +415,8 @@ function cargarMapa(){
 		for (i = 0; i < _features.length; i++) {		
 			_sCandidato.removeFeature(_features[i]);
 		}
-		
 		//mostrarArea(parent._Adat);	
 	}
-
 
 		
 	function consultaPuntoAj(_Pid){
@@ -470,7 +442,6 @@ function mostrarTablaEnMapa(_tabla){
 }
 
 
-
 function cargarCapaMarco(){
 	
 	_sMarco.clear();
@@ -489,4 +460,27 @@ function cargarCapaMarco(){
 	    //_ft.setProperties(_geo);	    
 	   	_sMarco.addFeature(_ft);
    	} 
+}
+
+function cargarElementoPropio(_codSel){
+
+	_lyrPropiosSrc.clear();
+    //console.log(_source_ind.getFeatures());
+	_haygeom='no';
+	if(_UsuarioA.permisos.marcos[_codSel].geotx==''){return;}		
+	if(_UsuarioA.permisos.marcos[_codSel].geotx==null){return;}		
+	var _format = new ol.format.WKT();
+	var _ft = _format.readFeature(_UsuarioA.permisos.marcos[_codSel].geotx, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857',
+        id:_codSel
+    });
+    console.log(_codSel);
+    //_ft.setProperties(_geo);	    
+   	_lyrPropiosSrc.addFeature(_ft);   	
+}
+
+function desCargarElementoPropio(_codSel){
+
+	_lyrPropiosSrc.clear();
 }

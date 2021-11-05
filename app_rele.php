@@ -70,6 +70,8 @@ $starttime = microtime(true);
 	<link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
     <link href="./css/geogec_app.css" rel="stylesheet" type="text/css">
     <link href="./css/geogec_app_rele.css" rel="stylesheet" type="text/css">
+    
+    <link href="./js/ol6.3/ol.css" rel="stylesheet" type="text/css">
     <style>
     	
     </style>
@@ -79,7 +81,7 @@ $starttime = microtime(true);
 	
 <script type="text/javascript" src="./js/jquery/jquery-1.12.0.min.js"></script>	
 <script type="text/javascript" src="./js/qrcodejs/qrcode.js"></script>
-<script type="text/javascript" src="./js/ol4.2/ol-debug.js"></script>
+<script type="text/javascript" src="./js/ol6.3/ol.js"></script>
 
 <div id="pageborde">
     <div id="page">
@@ -131,31 +133,54 @@ $starttime = microtime(true);
 	            
 	            <div class='formCargaCampa' id='divCargaCampa' idcampa=''>
 	                <div id='avanceproceso'></div>
-	                <div class='elementoCarga accionesCampa'>
+	                <div class='elementoCarga accionesCampa cajaacciones'>
 	                    <h1>Acciones</h1>
 	                    <a onclick='accionCancelarCargarNuevaCampa(this)'>Cancelar</a></br>
 	                    <a id='botonelim' onclick='eliminarCandidatoCampa(this.parentNode);' title="Eliminar Campa">Eliminar</a></br>
 	                    <a id='botonedita' onclick='editarCampa(this.parentNode);' title="guardar esta campaña preliminarmente">Editar</a></br>
 	                    <a id='botonguarada' onclick='guardarCampa(this.parentNode);' title="guardar esta campaña preliminarmente">Guardar</a></br>
+	                    <a id='botonguarada' onclick='document.querySelector("#divReleACapa").style.display="block";' title="generar una capa a partir de este relevamiento">Generar Capa a partir de este relevamiento</a></br>
+	                    <a id='botoncampo' onclick='nuevoCampo()'>+ Añadir campo</a>
 	                </div>
 					
+					 <div style='display:none;' class='formReleACapa' id='divReleACapa' idcapa='' >
+                				
+		                <div class='formReleACapaCuerpo' id='ReleACapa'>
+		                	<div id='campos'>
+		                		
+		                		<p>campo1 nombre:<input name='nombrec_1'> fuente:<select name='fuentec_1'></select></p>
+		                		<p>campo2 nombre:<input name='nombrec_2'> fuente:<select name='fuentec_2'></select></p>
+		                		<p>campo3 nombre:<input name='nombrec_3'> fuente:<select name='fuentec_3'></select></p>
+		                		<p>campo4 nombre:<input name='nombrec_4'> fuente:<select name='fuentec_4'></select></p>
+		                		<p>campo5 nombre:<input name='nombrec_5'> fuente:<select name='fuentec_5'></select></p>                		
+		                	</div>    
+		                	<input type='submit' value='generar capa' onclick='event.preventDefault();ReleACapa()'>
+		                </div>
+		            </div>
+		            
 	                <div class='formCargaCampaCuerpo' id='carga'>
 	                    <div id='nombrecampa' class='elementoCarga'>
 	                        <h2>Nombre de la campaña</h2>
-	                        <input type="text" id="campaNombre" onkeypress="editarCampaNombre(event, this)"></input>
+	                        <input type="text" id="campaNombre"></input>
 	                    </div>
 	                    <div id='desccampa' class='elementoCarga'>
 	                        <h2>Descripción</h2>
-	                        <textarea type="text" id="campaDescripcion" onkeypress="editarCampaDescripcion(event, this)"></textarea>
+	                        <textarea type="text" id="campaDescripcion"></textarea>
 	                    </div>
 	                    
 	                    <div id='desccampa' class='elementoCarga'>
 	                        <h2>Unidad de Análisis</h2>
-	                        <label>Nombre</label><input value='simil manzana'><br>
-	                        <label>Tipo</label><select><option>poligono</option></select>
+	                        <label>Nombre</label><input name='unidadanalisis' value=''><br>
+	                        <label>Tipo</label>
+                        	<select name='tipogeometria'>
+                        		<option value=''>- elegir -</option>
+					  			<option value="Point">Puntos</option>
+					  			<option value="LineString">Lineas</option>
+					  			<option value="Polygon">Polígonos</option>
+					  		</select>
 	                    </div>
 	                    
-	                     <div id='geometrias' class='elementoCarga'>
+	                    <div id='geometrias' class='elementoCarga'>
 	                      	<h1>Geometrías</h1>   	
 	                      	<a id='botoncargar' onclick='activacargarGeometrias();' title="generar geometrias desde archivo (shp o dxf)">cargar geometrias</a>
 	                      	<a id='botoncargar' onclick='borrarGeometrias("propios");' title="generar geometrias desde archivo (shp o dxf)">borrar mis geometrías</a>
@@ -240,8 +265,43 @@ $starttime = microtime(true);
 	                	Datos completos UA: 
 	                	<input type='checkbox' for='n1' valorsi='1' valorno='0' onchange='toglevalorSiNo(this)'>
 	                	<input type='hidden' name='n1' value='0' onchange='toglevalorSiNoRev(this)'>
-	                	
 	                </div>
+	            </form>
+	            
+	            
+	            <form id='nuevocampo'>
+	            	<h2>Campo</h2>
+	            	<a onclick='guardarCampo()'>guardar campo</a>
+	            	<a onclick='eliminarCampo()'>eliminar campo</a>
+	            	<a onclick='cancelarCampo()'>cancelar</a>
+	            	<br>
+	            	<input name='idcampo' type='hidden' value=''>
+	            	<label>Nombre:</label><input name='nombre'>
+	            	<label>Ayuda:</label><textarea name='ayuda'></textarea>
+	            	<label>Tipo de campo:</label><select name='tipo' onchange='cambiaTipoCampo()'>
+	            		<option>- elegir -</option>
+	            		<option value='texto'>texto</option>
+	            		<option value='checkbox'>checkbox</option>
+	            		<option value='select'>menu desplegable</option>
+	            		<option value='numero'>numero</option>
+	            		<option value='coleccion_imagenes'>imagenes</option>
+	            	</select>
+	            	
+	            	<div para='select'>
+	            	<label>opciones (separar con slto de línea):</label><textarea name='opciones_select'></textarea>
+	            	</div>
+	            	
+	            	<div para='numero'>
+	            	<label>Unidad de Medida:</label><input name='unidademedida'>	            	
+	            	</div>
+	            	
+	            	<label>Incorporar a una matriz de campos</label>
+	            	<input para='matriz' type='checkbox' onchange='toogleCheck(this);cambiaMatrizCampo()'><input name='matriz' type='hidden' value='-1'>
+	            	<div para='matriz'>
+	            		<label>Nombre matriz (debe ser igual en todos sus campos):</label><input name='nombre_matriz'>
+	            		<label>Nombre columna:</label><input name='nombre_columna'>
+	            		<label>Nombre fila:</label><input name='nombre_fila'>	            		
+	            	</div>	
 	            </form>
 	       </div>     
         </div>

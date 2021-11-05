@@ -25,6 +25,26 @@
 *
 */
 
+
+var _ConsultaActiva='no';
+
+function controlConsultando(){
+	if(_ConsultaActiva=='si'){
+		return true;
+	}else{
+		return false;
+	}	
+}
+
+function activarConsultando(){
+	_ConsultaActiva='si';	
+}
+
+function desactivarConsultando(){
+	_ConsultaActiva='no';	
+}
+
+
 function consultarElementoAcciones(_idElem,_codElem,_tabla){
 	/*
 	document.querySelector('#menudatos #titulo').innerHTML='';
@@ -48,17 +68,23 @@ function consultarElementoAcciones(_idElem,_codElem,_tabla){
 	
 	document.querySelector('div#cuadrovalores').setAttribute('cargado','si');*/
 	
+
 	_parametros = {
 		'id': _idElem,
 		'cod': _codElem,
 		'tabla':_tabla
 	};
 	
+		
+	if(controlConsultando()){alert('Antes tiene que resolverse una consulta en curso');return;}
+	activarConsultando();
+	
 	$.ajax({
 		data: _parametros,
 		url:   './consulta_elemento.php',
 		type:  'post',
 		success:  function (response){
+			desactivarConsultando();
 			var _res = $.parseJSON(response);
 			console.log(_res);
 			for(_nm in _res.mg){
@@ -69,11 +95,11 @@ function consultarElementoAcciones(_idElem,_codElem,_tabla){
 				_campocod=_res.data.tablasConf.campo_id_geo;
 				_camponom=_res.data.tablasConf.campo_id_humano;
 				_campodesc=_res.data.tablasConf.campo_desc_humano;
+					
 								
 				/*document.querySelector('#menuacciones #titulo').innerHTML=_res.data.elemento.nombre;
 				document.querySelector('#menuacciones #titulo').innerHTML="acciones disponibles";*/
 				_lista=document.querySelector('#menuacciones #lista');
-					
 					
 				for(_accnom in _res.data.tablasConf.acciones){
 					

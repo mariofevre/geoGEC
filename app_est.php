@@ -164,7 +164,7 @@ $starttime = microtime(true);
             <a onclick="alert('función en desarrollo');accionCargarNuevaCapa(this)" id='botonAnadirCapa'>Subir un shapefile a la plataforma</a><br>
             <a onclick="accionCargarmunicipios(this)" id='botonAnadirCapa'>Seleccionar de un municipio costero</a>
             
-            
+            <div id='muestra'></div>
             
             <div class="formSeleccionCapa" id="divSeleccionCapa">
                 <div class='elementoCarga accionesCapa'>
@@ -244,7 +244,10 @@ $starttime = microtime(true);
 </script>
 <script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
 <script type="text/javascript" src="./app_est/app_est_consultas.js"></script> <!-- carga funciona de gestión de mapa-->
+
+
 <script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
+<script type="text/javascript" src="./app_est/app_est_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
 <script type="text/javascript" src="./app_est/app_est_pagina.js"></script> <!-- carga funciones de operacion de la pagina -->
 <script type="text/javascript" src="./app_est/app_est_Shapefile.js"></script> <!-- carga funciones de operacion del formulario central para la carga de SHP -->
 <script type="text/javascript">
