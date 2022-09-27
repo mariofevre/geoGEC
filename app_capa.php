@@ -66,10 +66,10 @@ $starttime = microtime(true);
     <link href="./css/mapauba.css" rel="stylesheet" type="text/css">
     <link rel="manifest" href="pantallahorizontal.json">
     
-    <link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app_docs.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app_capa.css" rel="stylesheet" type="text/css">
+    <link href="./css/geogecgeneral.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
+    <!---<link href="./css/geogec_app_docs.css" rel="stylesheet" type="text/css">-->
+    <link href="./css/geogec_app_capa.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
     
     <link href="./js/ol6.3/ol.css" rel="stylesheet" type="text/css">
     <style>
@@ -104,7 +104,7 @@ $starttime = microtime(true);
 				<div id='lista'></div>	
 			</div>
         </div>
-        <div class="portamapa">
+        <div id="portamapa">
             <div id='titulomapa'>
                 <p id='tnombre'></p>
                 <h1 id='tnombre_humano'></h1>
@@ -113,23 +113,28 @@ $starttime = microtime(true);
             </div>
             <div id='mapa' class="mapa"></div>
             <div id='auxiliar' mostrando=''><div id='cont'></div></div>
+            <div id='tarjetas' mostrando=''></div>
             <div id="wrapper">
                 <div id="location"></div>
                 <div id="scale"></div>
             </div>
+            
+            <div id='botonera_mapa'></div>
         </div>
         <div id="cuadrovalores">
         	
             <div class='capaEncabezadoCuadro'>
                 <h1>Capas Complementarias de Información</h1>
             </div>
-            
-            <a onclick="accionCargarNuevaCapa(this)" id='botonAnadirCapa'>Subir una nueva capa a la plataforma</a>
-            <a onclick="accionReleaCapa(this)" id='botonReleaCapa'>Crear una capa a partir de un relevamiento</a>
+            <div class='cajaacciones'>
+				<a onclick="accionCargarNuevaCapa(this)" id='botonAnadirCapa' title='Genera una capa a partir de un archivo shapefile'><img src='./img/agregar.png'> Subir shapefile</a>
+				<a onclick="accionReleaCapa(this)" id='botonReleaCapa' title='Genera una capa a partir del m{odulo de relevamientos'><img src='./img/agregar.png'> Importar Relevamiento</a>
+				<a onclick="accionMenuImportarCapaPublica(this)" id='botonImportarCapaPublica' title='Genera una capa a partir de una capa pública'><img src='./img/agregar.png'>Importar capa pública</a>
+            </div>
             
             <div class="formSeleccionCapa" id="divSeleccionCapa">
                 <div class='elementoCarga accionesCapa'>
-                    <a id="botonCancelarCarga"  onclick='accionCancelarSeleccionCapa(this)'>Cancelar</a></br>
+                   <!-- <a id="botonCancelarCarga"  onclick='accionCancelarSeleccionCapa(this)'>Cancelar</a></br>-->
                 </div>
                 <div class='formSeleccionCapaCuerpo' id='divSeleccionCapaCuerpo'>
                     <h1>Capas publicadas</h1>
@@ -164,13 +169,17 @@ $starttime = microtime(true);
                     
             <div class='formCargaCapa' id='divCargaCapa' idcapa=''>
                 <div id='avanceproceso'></div>
-                <div class='elementoCarga accionesCapa'>
+                <div class='accionesCapa'>
                     <h1>Acciones</h1>
-                    <a onclick='accionCancelarCargarNuevaCapa(this)'>Volver al listado de capas</a></br>
-                    <a id='botonexporta' onclick='exportarCapaMenu();'>Exportar a otro proyecto</a></br>
-                    <a id='botonelim' onclick='eliminarCandidatoCapa(this.parentNode);' title="Eliminar Capa">Eliminar</a></br>
-                    <a id='botonguarada' onclick='guardarCapa(this.parentNode);' title="guardar esta capa preliminarmente">Guardar</a></br>
-                    <a id='botonpublica' onclick='publicarCapa(this.parentNode);' >Publicar</a>
+                    <div class='cajaacciones'>
+						<a onclick='accionCancelarCargarNuevaCapa(this)'><img src='./img/boton_listado.png'>Volver al listado de capas</a>
+						<a id='botonexporta' onclick='exportarCapaMenu();'><img src='./img/dirigir_link.png'>Exportar a otro proyecto</a>
+						<a id='botonestadisticas' onclick='consultarEstadisticas();'>Ver estadísticas</a>
+						<a id='botonelim' onclick='eliminarCandidatoCapa(this.parentNode);' title="Eliminar Capa" class='elimina'><img src='./img/icon-delete-16.jpg'> Eliminar Capa</a>
+						<a id='botonelimreg' onclick='eliminarRegistrosCapa();' title="Eliminar Registros de la Capa" class='elimina'><img src='./img/icon-delete-16.jpg'> Eliminar registros</a>
+						<a id='botonguarada' onclick='guardarCapa(this.parentNode);' title="guardar esta capa preliminarmente"><img src='./img/disquito.png'> Guardar cambios</a>
+						<a id='botonpublica' onclick='publicarCapa(this.parentNode);' ><img src='./img/procesar.png'>Publicar</a>
+                    </div>
                 </div>
 				
 				<div id='exportarCapaMenu'>
@@ -195,11 +204,11 @@ $starttime = microtime(true);
 
 					<div id='tipo_fuente' class="elementoCarga">
 						
-						<p> modo WMS 
+						<p><span style='cursor:help' title='El modo WMS resta interacción a la capa pero permite cargar más registros (capas más pesadas) sin comprometer los recursos del cliente.'>modo WMS </span> 
 						<label class="switch">
-						  <input type="checkbox" for='modo_wms' valorsi="si" valorno="no" onclick="toglevalorSiNo(this)">
+						  <input type="checkbox" for='modo_defecto' valorsi="wms" valorno="vectorial" onclick="toglevalorSiNo(this)">
 						  <span class="slider round"></span>
-						  <input type="hidden" name='modo_wms' onchange='toglevalorSiNoRev(this)'>
+						  <input type="hidden" name='modo_defecto' onchange='toglevalorSiNoRev(this)'>
 						</label>
 						</p>	
 						
@@ -350,7 +359,11 @@ $starttime = microtime(true);
 	                        <div id='archivosacargar'>
 	                            <form id='shp' enctype='multipart/form-data' method='post' action='./ed_ai_adjunto.php'>			
 	                                <label style='position:relative;' class='upload'>							
-	                                <span id='upload' style='position:absolute;top:0px;left:0px;'>arrastre o busque aquí un archivo</span>
+	                                <span id='upload' style='position:absolute;top:0px;left:0px;'>
+										arrastre o busque aquí un archivo 
+										<span id='tipogeom'>(shp, shx, dbf, prj)</span>
+										<span id='tipotabla'>(xlsx)</span>
+									</span>
 	                                <input id='uploadinput' style='opacity:0;' type='file' multiple name='upload' value='' onchange='enviarArchivosSHP(event,this);'></label>
 	                                <select id='crs' onchange='ValidarProcesarBoton()'>
 	                                    <option value=''>- elegir -</option>
@@ -370,7 +383,7 @@ $starttime = microtime(true);
 	                    </div>
 	
 	                    <div id='earchivoscargados' class='elementoCarga'>
-	                        <h2>archivos cargados</h2>
+	                        <h2>archivos cargados <a class='boton eliminar' onclick='eliminarArchivosSHP()'>eliminar</a></h2>
 	                        <p id='txningunarchivo'>- ninguno -</p>
 	                        <div id='archivoscargados'></div>
 	                    </div>
@@ -410,22 +423,195 @@ $starttime = microtime(true);
                 </div>
             </div>
         </div>
+        
+
+
     </div>
 </div>
+
+<div class='formcent' id='form_estadisticas' estado='inactivo'>
+	
+	<div class='borde-contenido'>
+	<div class='contenido'>
+		<img id='imgcarga' src='./img/cargando.gif'>
+		<div class="cajaacciones">
+			<a class='' onclick='$("#form_estadisticas").attr("estado","inactivo")'>Cerrar</a>
+		</div>
+		
+		<table>
+			<tr estado='activo'>
+				<th>Campo</th>
+				<th>Suma</th>
+				<th>Promedio</th>
+				<th>Densidad <span id='uni_dens'></span></th>
+			</tr>
+			
+			<tr id='numero1'>
+				<td id='nom'></td>
+				<td id='sum'></td>
+				<td id='avg'></td>
+				<td id='den'></td>
+			</tr>
+			
+			<tr id='numero2'>
+				<td id='nom'></td>
+				<td id='sum'></td>
+				<td id='avg'></td>
+				<td id='den'></td>
+			</tr>
+			
+			<tr id='numero3'>
+				<td id='nom'></td>
+				<td id='sum'></td>
+				<td id='avg'></td>
+				<td id='den'></td>
+			</tr>
+			
+			<tr id='numero4'>
+				<td id='nom'></td>
+				<td id='sum'></td>
+				<td id='avg'></td>
+				<td id='den'></td>
+			</tr>
+			
+			<tr id='numero5'>
+				<td id='nom'></td>
+				<td id='sum'></td>
+				<td id='avg'></td>
+				<td id='den'></td>
+			</tr>
+			<tr id='superficie'>
+				<td id='nom'>superficie</td>
+				<td id='sum'></td>
+				<td id='avg'></td>
+				<td id='den'></td>
+			</tr>
+		</table>
+	</div>
+	</div>
+</div>
+		
+
+<div class='formcent' id='form_importar_capa_pub' estado='inactivo'>
+	
+	<div class='borde-contenido'>
+	<div class='contenido'>
+		<img id='imgcarga' src='./img/cargando.gif'>
+		<div class="cajaacciones">
+			<a class='' onclick='$("#form_importar_capa_pub").attr("estado","inactivo")'>Cerrar</a>
+			<a class='administra' id='botonimporta' onclick='accionImportarCapaPublica()'>Importar</a>
+		</div>
+		
+		<div id='seleccion'>
+			
+			<input name="id" type='hidden'>
+			
+			<h4>capas disponibles</h4>
+			buscar:<input>
+			<a id='botondeselecciona' onclick='limpiarSeleccionCapaImporta();'>Deseleccionar capa</a>
+			<div id='lista_capas'></div>
+						
+			<h4>Configuración de la importación</h4>
+
+			<div id='config_importar' class="row tag" id_tag="1" modo_recorte=''>
+				<input name="recorte" value="no" type="radio"  onchange='actualizaTiporecorte()'><label>No recortar la capa</label>
+				<input name="recorte" value="proyecto" type="radio" checked='checked'  onchange='actualizaTiporecorte()'><label>Recortar a la extensión de tu proyecto</label>
+				<input name="recorte" value="departamento" type="radio"  onchange='actualizaTiporecorte()'><label>Recortar con un departamento (partido)</label>
+				<input name="recorte" value="capa" type="radio"  onchange='actualizaTiporecorte()'><label>Recortar con una capa propia</label>
+				
+				<div id='opciones_rec_dto'>					
+						<select onchange="actualizaFormPerfil();formularDepartamentos();" class="form-select" aria-label="Estado de pertenencia" aria-describedby="paisHelp" name='provincia'>
+						  <option value='' selected>Provincia</option>					  
+						</select>
+					
+						<select onchange="actualizaFormPerfil()" class="form-select" aria-label="Estado de pertenencia" aria-describedby="paisHelp" name='id_depto_recorte'>
+						  <option value="__falta_provincia__">Departamento: Elegir primero una provincia</option>					  
+						</select>						
+				</div>
+				
+				<div id='opciones_rec_capa'>
+					<p>¡Función en desarrollo! Probá otro criterio de recore hasta que tengamos este fucnionando.</p>
+					<input name="id_capa_recorte" type='hidden'>
+					capa de recorte:<input name="nombre_capa_recorte" type='text' value='indefinida'>
+					
+					<div id='menu selector capa'>
+						
+					<input name="recorte_capa" type="checkbox"><label>Recortar a la extensión de tu objeto específico</label>
+					<input name="id_objeto_recorte" type='hidden'>
+					objeto de recorte:<input name="nombre_objeto_recorte" type='text' value='- indefinida -'>
+				</div>
+				
+
+			</div>
+			
+			
+		</div>
+		
+	</div>
+	</div>
+</div>
+
 
 <script type="text/javascript">
 	var _IdUsu='<?php echo $_SESSION["geogec"]["usuario"]['id'];?>';
 	var _Acc = "capa";
+
+	<?php if(!isset($_GET["idr"])){$_GET["idr"]='';} ?>	
+	var _idCapa = '<?php echo $_GET["idr"];?>';
+
+    //Variable de filtro en búsquedas de datos.
+    <?php if(!isset($_SESSION['geogec']['usuario']['recorte'])){$_SESSION['geogec']['usuario']['recorte']='';};?>
+    
+	_RecorteDeTrabajo=JSON.parse('<?php echo json_encode($_SESSION['geogec']['usuario']['recorte']);?>');
+	
 </script>
-<script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
-<script type="text/javascript" src="./app_capa/app_capa_consultas.js"></script> <!-- carga funciones de consultas ajax -->
-<script type="text/javascript" src="./app_capa/app_capa_interaccion.js"></script> <!-- carga funciones dei interacción -->
-<script type="text/javascript" src="./app_capa/app_capa_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
-<script type="text/javascript" src="./app_capa/app_capa_pagina.js"></script> <!-- carga funciones de operacion de la pagina -->
-<script type="text/javascript" src="./app_capa/app_capa_Shapefile.js"></script> <!-- carga funciones de operacion del formulario central para la carga de SHP -->
-<script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
+
+
+<script type="text/javascript" src="./comun_interac/comun_interac.js?t=<?php echo time();?>"></script> <!-- definicion de funcions comunes como la interpretacion de respuestas ajax-->
+
+<script type="text/javascript" src="./sistema/sistema_marco.js?t=<?php echo time();?>"></script> <!-- funciones de consulta general del sistema -->
+<script type="text/javascript" src="./sistema/sis_acciones.js?t=<?php echo time();?>"></script> <!-- carga funcion de consulta de acciones y ejecución, completa _Acciones -->
+
+<script type="text/javascript" src="./comun_mapa/comun_mapa_inicia.js?t=<?php echo time();?>"></script> <!-- definicion de variables comunes para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_recorte.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de recorte para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_selector_capas.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de selector de capa base y extras para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_localiz.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de localizacion de direcciones para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_tamano.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de agrandar mapa-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_descarga.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de descarga del mapa activo-->
+
+
+
+<script type="text/javascript" src="./app_capa/app_capa_consultas.js?t=<?php echo time();?>"></script> <!-- carga funciones de consultas ajax -->
+<script type="text/javascript" src="./app_capa/app_capa_interaccion.js?t=<?php echo time();?>"></script> <!-- carga funciones dei interacción -->
+<script type="text/javascript" src="./app_capa/app_capa_mapa.js?t=<?php echo time();?>"></script> <!-- carga funciona de gestión de mapa-->
+
+<script type="text/javascript" src="./app_capa/app_capa_pagina.js?t=<?php echo time();?>"></script> <!-- carga funciones de operacion de la pagina -->
+<script type="text/javascript" src="./app_capa/app_capa_Shapefile.js?t=<?php echo time();?>"></script> <!-- carga funciones de operacion del formulario central para la carga de SHP -->
+<script type="text/javascript" src="./comunes_consultas.js?t=<?php echo time();?>"></script> <!-- carga funciones de interaccion con el mapa -->
+
 <script type="text/javascript">
+	
+	baseMapaaIGN();//cargar mapa base IGN
+		
 	consultarElementoAcciones('','<?php echo $_GET['cod'];?>','est_02_marcoacademico');
+	
+	consultarPermisos();
+	
+	if(_idCapa!=''){
+		limpiarFormularioSeleccionCapa();
+		limpiarFormularioCapa();
+		document.querySelector('#cuadrovalores').setAttribute('modo','muestracapaexistente');   
+		cargarDatosCapaPublicada(_idCapa);
+	}else{
+		accionCargarCapaExist();
+	}
+
+
+	if(_RecorteDeTrabajo!=''){
+		console.log(_RecorteDeTrabajo);
+		cargaRecorteSession();
+	}
+	
 </script>
 
 </body>

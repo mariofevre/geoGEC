@@ -80,7 +80,8 @@ $query="SELECT  *
             id_p_ref_rele_campa = '".$_POST['idcampa']."'
     AND
     		id_p_ref_capas_registros='".$_POST['idregistrocapa']."'
-    
+ 	ORDER BY 
+			zz_archivada_fecha ASC   
  ";
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -96,34 +97,52 @@ if(pg_num_rows($Consulta)==0){
 	$Log['data']=null;
     terminar($Log);		
 }
-$row=pg_fetch_assoc($Consulta);
-foreach($row as $k => $v){	
-	$Log['data']['registro'][$k]=utf8_encode($v);
+
+
+
+
+$Log['data']['registro']=array();
+$Log['data']['campos']=array();
+$Log['data']['historicosOrden']=array();
+$Log['data']['historicos']=array();
+
+
+while($row=pg_fetch_assoc($Consulta)){
+	
+	if($row['zz_archivada']!=1){
+		$Log['data']['registro']=$row;
+	}else{
+		$Log['data']['historicosOrden'][]=$row['id'];
+		$Log['data']['historicos'][$row['id']]['registro']=$row;
+	}
 }
-$idRegrel=$row['id'];
+
+
+
+
 $query="
 	SELECT 	
-		id, 
-		id_p_ref_rele_campa, 
-		id_p_ref_rele_campos, 
-		id_p_ref_rele_registros, 
-		data_texto, 
-		data_numero, 
-		data_documento, 
-		ic_p_est_02_marcoacademico, 
-		zz_superado, 
-		zz_auto_supera_id, 
-		zz_borrada
+		ref_rele_registros_datos.id, 
+		ref_rele_registros_datos.id_p_ref_rele_campa, 
+		ref_rele_registros_datos.id_p_ref_rele_campos, 
+		ref_rele_registros_datos.id_p_ref_rele_registros, 
+		ref_rele_registros_datos.data_texto, 
+		ref_rele_registros_datos.data_numero, 
+		ref_rele_registros_datos.data_documento
 	FROM 
 		geogec.ref_rele_registros_datos
+	LEFT JOIN
+		geogec.ref_rele_registros 
+		ON ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
 	WHERE
-		zz_borrada='0'
+		ref_rele_registros_datos.zz_borrada='0'
 	AND
-		zz_superado='0'
+		ref_rele_registros_datos.zz_superado='0'
 	AND
-		id_p_ref_rele_registros='".$idRegrel."'
+		ref_rele_registros_datos.ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
 	AND
-		ic_p_est_02_marcoacademico='".$_POST['codMarco']."'
+		ref_rele_registros.id_p_ref_capas_registros='".$_POST['idregistrocapa']."'
+
 	";
 	
 $Consulta = pg_query($ConecSIG, $query);
@@ -135,11 +154,22 @@ if(pg_errormessage($ConecSIG)!=''){
     terminar($Log);	
 }
 //$Log['mg'][]='encontramos datos para '.pg_num_rows($Consulta).' campos.';
-$Log['data']['campos']=array();
+
+
 while ($row=pg_fetch_assoc($Consulta)){
-	foreach($row as $k => $v){	
-		$Log['data']['campos'][$row['id_p_ref_rele_campos']][$k]=utf8_encode($v);
+	
+	if(isset($Log['data']['registro']['id'])){
+		if($Log['data']['registro']['id']==$row['id_p_ref_rele_registros']){
+			$Log['data']['campos'][$row['id_p_ref_rele_campos']]=$row;
+			continue;
+		}	
 	}
+	
+	if(!isset($Log['data']['historicos'][$row['id_p_ref_rele_registros']])){continue;}
+	
+	$Log['data']['historicos'][$row['id_p_ref_rele_registros']]['campos'][$row['id_p_ref_rele_campos']]=$row;
+	
+	
 }
 
 //$Log['mg'][]='consulta exitosa.';

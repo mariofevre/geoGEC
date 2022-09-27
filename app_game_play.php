@@ -291,6 +291,13 @@ $starttime = microtime(true);
 			font-family:'game';
 			width:80px;
 		}		
+		
+		#menucapas{
+			display:none;
+		}
+		#botonrecorte{
+			display:none;
+		}
     </style>
 </head>
 
@@ -314,7 +321,7 @@ $starttime = microtime(true);
             <p id='descripcion'>- presentacion de la sesion -</p>
             <div id='ayuda'>ayuda extendida</div>
         </div>	
-        <div class="portamapa">
+        <div id="portamapa">
         	
         	<div id='ayuda' class='senales'>
 				<div id='func'>click:</div> inicia traza<br>
@@ -367,16 +374,38 @@ $starttime = microtime(true);
  
 </script>
 
- <script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
- <script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
+
+
+<script type="text/javascript" src="./comun_interac/comun_interac.js"></script> <!-- definicion de funcions comunes como la interpretacion de respuestas ajax-->
+
+<script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
+<!---<script type="text/javascript" src="./sistema/sis_acciones.js"></script> <!-- funciones de consulta general del sistema: acciones -->
+
+<script type="text/javascript" src="./comun_mapa/comun_mapa_inicia.js"></script> <!-- definicion de variables comunes para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_recorte.js"></script> <!-- definicion de variables y funciones de recorte para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_selector_capas.js"></script> <!-- definicion de variables y funciones de selector de capa base y extras para mapas en todos los módulos-->
+<!---<script type="text/javascript" src="./comun_mapa/comun_mapa_localiz.js"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de localizacion de direcciones para mapas en todos los módulos-->
+
+
+
+
  <script type="text/javascript" src="./app_game/app_game_play_pagina.js"></script> <!-- carga funciones de operacion de la pagina -->
  <script type="text/javascript" src="./app_game/app_game_play_queries.js"></script> <!-- carga funciones de consulta de base de datos -->
  
  <script type="text/javascript" src="./app_game/app_game_mapa.js"></script> <!-- carga funciones de interaccion con el mapa -->
  
- <script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
+<script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
+
 
  <script type="text/javascript" src="./js/jsts/jsts.js"></script> <!-- geoprocesos del lado del cliente -->
  
  
+<script type="text/javascript">
+	
+	
+		baseMapaaIGN();//cargar mapa base IGN
+
+ 
+	avanzarTurno();
+
 </body>

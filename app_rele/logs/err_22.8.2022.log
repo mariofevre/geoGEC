@@ -1,0 +1,249 @@
+User: 186.137.154.83 - August 22, 2022, 9:47 am
+User: 105
+-------------------------
+Array
+(
+    [0] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22741'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='113'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [1] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22742'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='114'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [2] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22743'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='115'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [3] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22744'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='116'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [4] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22745'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='117'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [5] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22746'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='118'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [6] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22747'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='119'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [7] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22748'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='120'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [8] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22749'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 815
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2222231'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='29'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='121'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+)

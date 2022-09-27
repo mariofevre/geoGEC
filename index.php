@@ -48,6 +48,7 @@ $starttime = microtime(true);
 
 <head>
 	<title>GEC - Plataforma Geomática</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<?php include("./includes/meta.php");?>
 	<link href="./css/mapauba.css" rel="stylesheet" type="text/css">
 	<!---<link href="./css/BaseSonido.css" rel="stylesheet" type="text/css">-->
@@ -99,20 +100,29 @@ $starttime = microtime(true);
 		#menupropios[estado='cerrado']{
 			overflow:hidden;
 			font-size:14px;
-			height:14px;
+			height:24px;
 			transition: height 2s;	
 		}
 		#menupropios[estado='cerrado'] #btnMuestraPropios{
-			display:block;
+			display:inline-block;
 		}
 		#menupropios #btnMuestraPropios{
 			display:none;
+			height: 14px;
+			margin: 4px;
+			padding:2px;
+			color:#000;	
+			border: 1px solid #ff6600;		
+		}
+		#menupropios #btnMuestraPropios:hover{
+			background-color: rgba(255, 102, 0, 0.2);
 		}
 		
 		#menupropios #lista a[cargado='si']{
 			border: 1px solid rgba(255,25,55,1);
     		background-color: rgba(228,25,55,0.8);
 		}	
+		
 	</style>	
 	
 	<style id='elementoSeleccionado' type='text/css'>
@@ -187,13 +197,13 @@ $starttime = microtime(true);
 			</div>	
 			
 			<div id='menupropios'>
-				<a id='btnMuestraPropios' onclick='mostrarProyectosPropios()'>Ir a proyectos propios</a>
-				<h2 id='titulo'>lista de tus proyectos</h2>
+				<a id='btnMuestraPropios' onclick='mostrarProyectosPropios()'>Ver Tus Proyectos</a>
+				<h2 id='titulo'>Tus proyectos</h2>
 				<div id='lista'></div>	
 			</div>	
 			
 			<div id='menutablas'>
-				<h2 id='titulo'>Listados disponibles <span>capas estructurales</spna></h2>
+				<h2 id='titulo'>Índices disponibles <span>capas estructurales</spna></h2>
 				<div id='lista'></div>	
 			</div>	
 			<div id='menuelementos'>
@@ -201,7 +211,7 @@ $starttime = microtime(true);
 				<div id='lista'></div>	
 			</div>	
 			<div id='menuacciones'>
-				<h3 id='titulo'>menu de acciones disponibles</h3>
+				<h3 id='titulo'>menu de módulos disponibles</h3>
 				<div id='lista'></div>	
 			</div>					
 			<div id='menudatos'>
@@ -268,7 +278,7 @@ $starttime = microtime(true);
 		</div>
 		
 		<div class='componentecarga'>
-			<h1>Acciones</h1>
+			<h1>Módulos</h1>
 			<a onclick='eliminarCandidatoVersion(this.parentNode);'>eliminar esta versión candidata</a>
 			<a onclick='guardarVer(this.parentNode);'>guardar esta versión preliminarmente</a>
 			<a id='procesarBoton' onclick='procesarVersion(this.parentNode)'>procesar la carga de esta versión</a>
@@ -283,10 +293,32 @@ $starttime = microtime(true);
 	var _Est = getParameterByName('est');
     var _Cod = getParameterByName('cod');
     
+    var _DataElem={};
+    
+    //Variable de filtro en búsquedas de datos.
+    <?php if(!isset($_SESSION['geogec']['usuario']['recorte'])){$_SESSION['geogec']['usuario']['recorte']='';};?>
+	_RecorteDeTrabajo=JSON.parse('<?php echo json_encode($_SESSION['geogec']['usuario']['recorte']);?>');
+    
     actualizarPermisos();
+    
 </script>
 
 <script type="text/javascript" src="./index_upload.js"></script> <!-- carga funciones de upload de SHP-->
+
+<script type="text/javascript" src="./comun_mapa/comun_mapa_inicia.js"></script> <!-- definicion de variables comunes para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_recorte.js"></script> <!-- definicion de variables y funciones de recorte para mapas en todos los módulos-->
+
+
 <script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciones de carga de mapa general-->
-<script type="text/javascript" src="./index_mapa_funciones.js"></script> <!-- carga funciones de interaccioón con el mapa-->
+<script type="text/javascript" src="./index_mapa_funciones.js"></script> <!-- carga funciones de interacción con el mapa-->
+
+<script>
+
+
+
+	if(_RecorteDeTrabajo!=''){
+		cargaRecorteSession();
+	}
+
+</script>
 </body>

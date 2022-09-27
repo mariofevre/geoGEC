@@ -328,22 +328,17 @@ $starttime = microtime(true);
         	<h1>HIGHSCORES</h1>
         </div>
         <div id="cuadrovalores">
-        	
             <div id='sesionActiva' idindicador='0' class="elementoOculto"></div>
             <div id='turnos'>
                 <h1>Ciclovias!</h1>
-                
             	<p>En busca de la adaptación al cambío climático, deberás construir ciclovías en el Partido de Vicente López.</p>
-            	
+
             	<h2>Movilidad sostenible</h2>
-            	
             	<p>La movilidad sostenible es uno de los temas urgentes en la adaptación al cambio climático.</p>
             	<p>Hoy en día los gobiernos Municipales deben brindar recursos que garanticen a la población la capacidad de desplazarse ante: <ul><li>suministro de combustible deficiente</li><li>amenazas inminentes a la salud en su lugar de residencia</li><li> falta de suministro de serviciós básicos.</li></ul></p>
-            	
-            	<a id='press' href='./app_game_play.php?idsesion=<?php echo $IDSESION;?>&cod=<?php echo $COD; ?>'> - PRESS START - </a>
-            	
-            </div>
 
+            	<a id='press' href='./app_game_play.php?idsesion=<?php echo $IDSESION;?>&cod=<?php echo $COD; ?>'> - PRESS START - </a>	
+            </div>
         </div>
     </div>
 </div>

@@ -239,6 +239,7 @@ function procesarCampaDXF(_avance){
         'idcampa': _DataRele.id,
         'avance': _avance,
         'codMarco':_CodMarco,
+        'usu_crs':document.querySelector('#cargarGeometrias select#crs').value,
         'archivo_nom':_file
     };
     

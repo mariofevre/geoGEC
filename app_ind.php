@@ -64,59 +64,47 @@ $starttime = microtime(true);
 <head>
     <title>GEC - Plataforma Geomática</title>
     <?php include("./includes/meta.php");?>
-    <link href="./css/mapauba.css" rel="stylesheet" type="text/css">
+    <link href="./css/mapauba.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
     <link rel="manifest" href="pantallahorizontal.json">
     
-    <link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app_ind.css" rel="stylesheet" type="text/css">
+    <link href="./css/geogecgeneral.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app_ind.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
     
     <style>
-	    #botonCrearGeom{
-	    	display:none;
-	    }
-	    #formcalculo{
-	    	display:none;
-	    }
-	     #botonDuplicarGeom{
-	    	display:none;
-	    }
-	    #periodo > #selectorPeriodo div #valor{
-	    	height:15px;
-	    }
-	     #periodo > #selectorPeriodo{
-	    	vertical-align:top;
-	    }
-	    #periodo > #selectorPeriodo div{
-	    	vertical-align: top;
-	    	text-align:center;
-	    }
-	    #tipodeometriaNuevaGeometria{
-	    	display:none;
-	    }
-	    
-	    .unidad input.renombra {
-			border:none;
-			width:200px;
-			font-size:11px;
-			font-weight:bold;
-			color:#000;
-			cursor:pointer;
+	  
+		#ventanagrafico{
+			display:none;
+			background-color:#fff;
+			position:fixed;
+			top:max(80px, calc(50vh - 400px));
+			left:max(80px, calc(50vw - 500px));
+			border:2px solid #08afd9;
+			box-shadow:10px 10px 20px rgba(0,0,0,0.5);
+			z-index:2000
+		}
+		#ventanagrafico[estado='activo']{
+			display:block;
 		}
 		
-		.unidad input.renombra[editando='si'] {
-			color:red;
-			background-color:pink;
+		#ventanagrafico a{
+			position:absolute;
+			top:10px;
+			left:10px;
 		}
-		
-		
+		#ventanagrafico a#botondescargar{
+			top:60px;			
+		}
+			
     </style>
 </head>
 
 <body>   
 <script type="text/javascript" src="./js/jquery/jquery-1.12.0.min.js"></script>	
 <script type="text/javascript" src="./js/qrcodejs/qrcode.js"></script>
-<script type="text/javascript" src="./js/ol4.2/ol-debug.js"></script>
+<script type="text/javascript" src="./js/ol6.3/ol.js"></script>
+
+
 
 <div id="pageborde">
     <div id="page">
@@ -142,7 +130,7 @@ $starttime = microtime(true);
 				<div id='lista'></div>	
 			</div>
         </div>	
-        <div class="portamapa">
+        <div id="portamapa">
             <div id='titulomapa'>
                 <p id='tnombre'></p>
                 <h1 id='tnombre_humano'></h1>
@@ -154,6 +142,7 @@ $starttime = microtime(true);
                 <div id="location"></div>
                 <div id="scale"></div>
             </div>
+            <div id='botonera_mapa'></div>
         </div>
         <div id="cuadrovalores">
         	
@@ -161,16 +150,28 @@ $starttime = microtime(true);
             <div class='capaEncabezadoCuadro tituloCuerpo'>
                 <h1>Indicadores</h1>
             </div>
-            
-            <a onclick="accionCrearIndicador(this)" id='botonCrearIndicador'>Crear nuevo indicador</a>
-            <a onclick='accionCargaCancelar(this)'  id="botonCancelarCarga">Volver al listado de indicadores</a>
-            
+             <div class="cajaacciones">
+				<a onclick="accionCrearIndicador(this)" id='botonCrearIndicador'><img src="./img/agregar.png"> Crear indicador</a>
+				<a onclick="accionCrearModelo()" id='botonCrearModelo'><img src="./img/agregar.png"> Crear Modelo</a>
+				<a onclick='accionCargaCancelar(this)'  id="botonCancelarCarga">Volver al listado de indicadores</a>
+				<a onclick='cargarListadoModelo()'  id="botonIndicadoresModelo">Mostrar indicadores modelo</a>
+				<a onclick='formularCruce()'  id="botonFormularCruce">Cruzar indicadores</a>
+			</div>	
             <div id="formSeleccionInd" class="elementoOculto">   
                 <div class='formSeleccionIndCuerpo' id='divSeleccionIndCuerpo'>
                     <h1>Indicadores publicados</h1>
                     <div id='barrabusqueda'><input id='barrabusquedaI' autocomplete='off' value='' onkeyup="actualizarBusqueda(event);"><a onclick='limpiaBarra(event);'>x</a></div>
                     <p id='txningunind'>- ninguno -</p>
                     <div id='listaindpublicadas'></div>
+                </div>
+            </div>
+            
+            <div id="formSeleccionMod" class="elementoOculto">   
+                <div class='formSeleccionModCuerpo' id='divSeleccionModCuerpo'>
+                    <h1>Modelos disponibles</h1>
+                    <div id='barrabusqueda'><input id='barrabusquedaM' autocomplete='off' value='' onkeyup="actualizarBusqueda(event);"><a onclick='limpiaBarra(event);'>x</a></div>
+                    <p id='txningunmod'>- ninguno -</p>
+                    <div id='listamodpublicadas'></div>
                 </div>
             </div>
             
@@ -181,6 +182,7 @@ $starttime = microtime(true);
 	                <a onclick='accionCreaEliminar(this)' id="botonEliminar">Eliminar</a>
 	                <a onclick='accionCreaGuardar(this)' id="botonGuardar">Guardar</a>
 	                <a onclick='accionCreaPublicar(this)' id="botonPublicar">Publicar</a>
+	                <a onclick='formularioAmpliado("indicador")' id="botonAmpliar">Formulario Completo</a>
 	            </div>
             
                 <div class='elementoCarga'>
@@ -194,13 +196,17 @@ $starttime = microtime(true);
                 <div class='elementoCarga'>
                     <h1>Funcionalidad</h1>
                     <select onchange="editarIndFuncionalidad(event, this)" id="funcionalidadSelector">
-                        <option value="elegir" selected>-elegir-</option>
-                        <option value="geometriaExistente">Asignar valores a las geometrías de una capa existente</option>
-                        <option value="nuevaGeometria">Asignar valores a nuevas geometrías en una capa de trabajo</option>
+						
+                        <option value="elegir">-elegir-</option>
+                        <option value="sinGeometria">Asignar un único valor para toda el área</option>
+                        <option value="geometriaExistente">Asignar valores a geometrías fijas</option>
+                        <option value="nuevaGeometria">Asignar valores a nuevas cambiantes</option>
                         <option value="otrosIndicadores">Calcular valores a partir de otros indicadores (no disponible)</option>
                         <option value="archivosGeograficos">Cargar valores subiendo archivos geográficos (no disponible)</option>
                         <option value="vinculosExternos">Obtener valores de vínculos externos (no disponible)</option>
                     </select>
+                    
+                    
                     <p id="tipodeometriaNuevaGeometria">
                     <select onchange="" id='inputTipoGeom'>
                         <option value="Point">Puntos</option>
@@ -213,6 +219,7 @@ $starttime = microtime(true);
                     <h1>Periodicidad</h1>
                     <select onchange="editarIndPeriodicidad(event, this)" id="periodicidadSelector">
                         <option value="elegir" selected>-elegir-</option>
+                        <option value="diario">Diario</option>
                         <option value="mensual">Mensual</option>
                         <option value="anual">Anual</option>
                     </select>
@@ -228,8 +235,26 @@ $starttime = microtime(true);
                 <div class='elementoCargaLargo'>
                     <h1>Capa</h1>
                     <div id="AccionesSeleccionCapa">
-                        <a onclick="accionSeleccionarCapa(this)" id='botonSeleccionarCapa'>Seleccionar Capa </a></br>
+						tipo de geometría: 
+						<select name='tipogeometria'>
+						  	<option value=''>-elegir-</option>	
+						  	<option value='Point'>Point</option>
+						  	<option value='LineString'>LineString</option>
+						  	<option value='Polygon'>Polygon</option>
+						</select>
+						<a 
+							title='la capa auxiliar aloja las UA del indicador pero no es visible en el menu de capas' 
+							onclick="accionCrearCapaAux(this)" id='botonCrearCapaAux'
+							>Crear Capa Auxiliar</a>
+						</br>
+                        <a 
+							title='En lugar de usar una capa auxiliar (no visible) se puede utilizar una capa ya cargada' 
+							onclick="accionSeleccionarCapa(this)" id='botonSeleccionarCapa'
+							>Seleccionar Capa de referencia </a>
+						</br>
                         <a onclick='accionCancelarSeleccionCapa(this)' id="botonCancelarSeleccionarCapa" class="elementoOculto">Cancelar seleccion de capa</a></br>
+                                        
+                        
                     </div>
                     <div id="capaseleccionada" idcapa="0" class="elementoOculto">
                         <div>
@@ -345,7 +370,10 @@ $starttime = microtime(true);
                     <label>Periodicidad</label>
                     <div id="indCargaPeriodicidad" class="divValor"></div>
                 </div>
-	           
+                <div>
+                    <label>Capa alojando geometrias</label>
+                    <div id="indCapaGeom" class="divValor"></div>
+                </div>	           
 	                
                 <div class='elementoCargaLargo' id='periodo'>
                 	<h2>Datos Cargados</h2>
@@ -362,11 +390,30 @@ $starttime = microtime(true);
                             <div id="indCargaPeriodoLabel" class="divValor"></div>
                         </div>
                         
-                        <div class="menuAcciones" id="divMenuAccionesEditarValor" style="display: inline-block;">
+                        <div class="menuAcciones cajaacciones" id="divMenuAccionesEditarValor" style="display: inline-block;">
                             <a onclick='accionEditarValorGuardar(this)' id="botonGuardar">Guardar</a>
                             <a onclick='accionEditarCrearGeometria(this)' id="botonCrearGeom">Añadir geometría</a>
                             <a onclick='accionCopiarGeometriaAnterior(this)' id="botonDuplicarGeom">Copiar geometría del período anterior</a>
+                            <a onclick='formularCopiarGeometriaCapa(this)' id="botonCopiarGeomCapa">Copiar geometrías de una capa</a>
+                            <a 
+								title='Puede generar una capa auxiliar a partir de los datos de un relevamiento' 
+								onclick="formularCopiarGeometriaRele(this)" id='botonImporatrRele'
+								>Importar datos de un relevamiento</a>
+						</br>     
                         </div>
+                        <form id='formImportarRele'>
+							<div id='listarelesfuente'></div>
+							<div id='selectorCamposRele'>
+							<p>campo 1:<select name='campo_importar_1'></select></p>
+							<p>campo 2:<select name='campo_importar_2'></select></p>
+							<p>campo 3:<select name='campo_importar_3'></select></p>
+							<p>campo 4:<select name='campo_importar_4'></select></p>
+							<a id='accionImportarRele' id_rele='' onclick='importarRele()'>Importar</a>
+							</div>
+                        </form>
+                        <form>
+							<div id='listacapasfuente'></div>
+                        </form>
 						<div id='listaUnidadesInd'></div>
 							
                         
@@ -379,15 +426,335 @@ $starttime = microtime(true);
 </div>
 
 
+<div class='formcent' id='form_ind_exp'>
+	<div class='borde-contenido'>
+	<div class='contenido'>
+		<div class="cajaacciones">
+			<a class='' onclick='$("#form_ind_exp").attr("estado","inactivo")'>Cerrar</a>
+			<a class='eliminar' onclick='accionEliminarFormCent()'>Eliminar</a>
+		</div>
+		<div id='esmodelo' class='cajaacciones'>
+			<a class='administra' onclick='accionGuardaMod()'>Guardar Cambios</a>
+			<a>Generar Indicador desde este modelo</a>
+		</div>
+		
+		<div id='esindicador' class='cajaacciones'>
+			<a>Guardar Cambios</a>	
+			<a class='administra'>Generar un modelo desde este indicador</a>
+		</div>
+		
+		<div id='características_generales'>
+			
+			<input name="id" type='hidden'>
+			
+			<h4>Definición teórica</h4>
+			
+			
+			<div class="row">
+				<div class="col">
+					<label>nombre</label><input name="nombre" type='text'>
+				</div>	
+					
+				<div class="col">	
+					<label>unidad_medida</label><input name="unidad_medida" type='text'>
+				</div>
+				
+				<div class="col">
+					<label>escala_espacial</label><input name="escala_espacial" type='text'>
+				</div>
+				
+				<div class="col">
+					<label>desagrgacion</label><input name="desagrgacion" type='text'>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col">
+					<label>descripcion</label><textarea name="descripcion"></textarea>
+				</div>	
+					
+				<div class="col">	
+					<label>relevancia_acc</label><textarea name="relevancia_acc"></textarea>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col">
+					<label>limitaciones</label><textarea name="limitaciones"></textarea>
+				</div>	
+					
+				<div class="col">	
+				<label>ejemplo</label><textarea name="ejemplo"></textarea>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col">
+					<label>Datos necesarios para su generación</label><textarea name="datos_input"></textarea>
+				</div>
+				
+				<div class="col">
+					<label>Fuentes posibles para la obteción de datos</label><textarea name="fuentes_input"></textarea>
+				</div>
+			</div>
+			
+			<div class="row">
+				
+				<div class="col">
+				<label>calculo</label><textarea name="calculo"></textarea>
+				</div>
 
-<script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
-<script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
-<script type="text/javascript" src="./app_ind/app_ind_queries.js"></script> <!-- carga funciones de consulta de base de datos -->
-<script type="text/javascript" src="./app_ind/app_ind_pagina.js"></script> <!-- carga funciones de operacion de la pagina -->
-<script type="text/javascript" src="./app_ind/app_ind_mapa.js"></script> <!-- carga funciones de interaccion con el mapa -->
-<script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
+				
+				<div class="col">
+				<label>valoracion</label><textarea name="valoracion"></textarea>
+				</div>
+			</div>
+			
+			<h4>Configuración general en la plataforma</h4>
+
+			<div class="row">
+				<div class="col">
+				<label>funcionalidad</label><select name="funcionalidad">
+					<option value="elegir" selected>-elegir-</option>
+					<option value="geometriaExistente">Asignar valores a las geometrías de una capa existente</option>
+					<option value="nuevaGeometria">Asignar valores a nuevas geometrías en una capa de trabajo</option>
+					<option value="otrosIndicadores">Calcular valores a partir de otros indicadores (no disponible)</option>
+					<option value="archivosGeograficos">Cargar valores subiendo archivos geográficos (no disponible)</option>
+					<option value="vinculosExternos">Obtener valores de vínculos externos (no disponible)</option>                    
+				</select>
+				</div>
+				
+				<div class="col">
+				<label>periodicidad</label><select name="periodicidad">
+					<option value="elegir" selected>-elegir-</option>
+					<option value="mensual">Mensual</option>
+					<option value="anual">Anual</option>
+				</select>		
+				</div>
+			</div>
+			
+			<div class="row">
+				
+				<div class="col">		
+					<label>representar_campo</label><select name="representar_campo">
+						<option value="elegir" selected>-elegir-</option>			
+					</select>
+				</div>
+				
+				<div class="col">	
+					<label>representar_val_max</label><input name="representar_val_max" type='text'>
+				</div>
+								
+				<div class="col">	
+					<label>representar_val_min</label><input name="representar_val_min" type='text'>
+				</div>
+			</div>
+		
+			<h4>Configuración particular en la plataforma</h4>
+			
+			<div class="row">
+				
+				<div class="col">	
+					<label>Capa a la cual se superpondrá</label><select name="calc_superp">
+						<option value="elegir" selected>-elegir-</option>
+						<option value="mensual">Mensual</option>
+						<option value="anual">Anual</option>
+					</select>	
+				</div>
+			
+				<div class="col">		
+					<label>Distancia de cobertura</label><input name="calc_buffer" type='calc_buffer'>
+				</div>
+				
+				<div class="col">	
+					<label>Campo de valoración de la cobertura</label><select name="calc_superp_campo">
+						<option value="elegir" selected>-elegir-</option>
+						<option value="mensual">Mensual</option>
+						<option value="anual">Anual</option>
+					</select>			
+				</div>
+				
+				<div class="col">		
+					<label>Capa de zonas de agregación</label><select name="calc_zonificacion">
+						<option value="elegir" selected>-elegir-</option>
+						<option value="mensual">Mensual</option>
+						<option value="anual">Anual</option>
+					</select>	
+				</div>
+						
+				<div class="col">
+					<label>fechadesde</label><input name="fechadesde" type='date'>
+				</div>
+				
+				<div class="col">
+					<label>fechahasta</label><input name="fechahasta" type='date'>
+				</div>				
+			</div>			
+		</div>
+		
+		<div id='matriz_clasif'>
+			<h4>Categorización del modelo</h4>
+			<div id='categorias' class="row">
+			</div>
+		</div>
+		
+		<div id='requerimientos'>
+			<h4>Requerimientos</h4>
+			<div id='requerimientos_app' class="row">
+			</div>
+		</div>		
+	</div>
+	</div>
+</div>
+
+
+
+<div class='formcent' id='form_cruce'>
+	<div class='borde-contenido'>
+	<div class='contenido'>
+		<div class="cajaacciones">
+			<a class='' onclick='$("#form_cruce").attr("estado","inactivo")'>Cerrar</a>
+		</div>
+		<div id='esmodelo' class='cajaacciones'>
+			<a class='administra' onclick='generarGrafico()'>Guardar Cambios</a>
+			<a onclick='generarCruce("grafico");'>Generar gráfico de análisis cruzado</a>
+		</div>
+		
+		<div>			
+			
+			<input name="id" type='hidden'>
+			
+			<h4>Definición teórica</h4>
+			
+			
+			<h2>Variable principal</h2>
+			<i>* obligatorio</i>
+			<p>El indicador elegido definirá las unidades de salida (geográficas y temporales)</p>
+			<p>Se aceptan geometrías de tipo punto y polígono</p>
+			<select name='inicador_1' onchange='actualizarFormCruceSi1()'></select>
+			<select name='campo_i_1'></select>
+			
+			
+			<h2>Variable secundaria</h2>
+			<i>* opcional</i>
+			<p>El indicador elegido se aplicará a la variable principal deacuedoa su superposición</p>
+			<p>se aceptan puntos y polígonos (deber superponerse a la variable principal y ser de tipo de geometría diferente)</p>
+			<p>si la temporalidad es menor a la principal, se promediarán los valores</p>
+			
+			<select name='inicador_2' onchange='actualizarFormCruceSi1Campos2()'></select>
+			<select name='campo_i_2'></select>
+			
+			
+			<h2>Caficiación por factor</h2>
+			<i>* opcional</i>
+			<p>Se puede incoroprar una capa con simbología, en la medida que las unidades principales estén contenidas en un polígono de esta capa se el aplicará es código de color correspondiente</p>
+			<p>Solo acepta polígonos</p>
+			<p>Solo se acepta para indicadore principales de tipo punto</p>
+			
+			<select name='capa_3'></select>
+			
+						
+		</div>		
+	</div>
+	</div>
+</div>
+
+
+<div id='ventanagrafico'>
+<a id='botoncerrar' class='boton' onclick="this.parentNode.setAttribute('estado','inactivo')">cerrar</a>
+<a id='botondescargar' class='boton' onclick="descargarImagen()">descargar imagen</a>
+<canvas height="800" width="1000">
+
+</canvas>
+	
+
+</div>			
+
 <script type="text/javascript">
+	
+	var _IdUsu='<?php echo $_SESSION["geogec"]["usuario"]['id'];?>';
+	var _Acc = "capa";
+	
+	<?php if(!isset($_GET["idr"])){$_GET["idr"]='';} ?>		
+	var _idInd = '<?php echo $_GET["idr"];?>';
+
+    //Variable de filtro en búsquedas de datos.
+    <?php if(!isset($_SESSION['geogec']['usuario']['recorte'])){$_SESSION['geogec']['usuario']['recorte']='';};?>
+    
+	_RecorteDeTrabajo=JSON.parse('<?php echo json_encode($_SESSION['geogec']['usuario']['recorte']);?>');
+
+  	
+  	<?php if(!isset($_GET['id'])){$_GET['id']='';} ?>	
+  	<?php if(!isset($_GET['cod'])){$_GET['cod']='';} ?>	
+  	var _IdMarco = '<?php echo $_GET['id'];?>';
+	var _CodMarco = '<?php echo $_GET['cod'];?>';
+	var _DataUsuaries={};
+	
+  	var _DataIndicador={};
+	var _DataPeriodo=Array();
+	var _DataCapa=Array();
+	
+	var _DataListaIndicadores={};
+	var _DataListaModelos={};
+	
+	
+	var _Data_reles={}; //variable para almacenar información de relevamientos (otro módulo) en caso de quere importar datos de un relevamiento.
+	var _DataCapas={}; //variable para almacenar información de capas (otro módulo) en caso de quere cruzar indicadores con capas
+	
+	var _Acciones={}; //completada por "./sistema/sis_acciones.js"
+	
+	
+	var _Id_Modelo_Editando=''; // si está definido lo muestra tras una consulta general.
+
+	
+	_fechaHoy = new Date();
+	var _Select_Fecha={
+		'ano':_fechaHoy.getFullYear(),
+		'mes':_fechaHoy.getMonth()+1,
+		'dia':_fechaHoy.getDate()
+	}
+	//console.log(_Select_Fecha);
+	
+</script>
+
+
+<script type="text/javascript" src="./comun_interac/comun_interac.js?t=<?php echo time();?>"></script> <!-- definicion de funcions comunes como la interpretacion de respuestas ajax-->
+
+<script type="text/javascript" src="./sistema/sistema_marco.js?t=<?php echo time();?>"></script> <!-- funciones de consulta general del sistema -->
+<script type="text/javascript" src="./sistema/sis_acciones.js?t=<?php echo time();?>"></script> <!-- carga funcion de consulta de acciones y ejecución, completa _Acciones -->
+
+<script type="text/javascript" src="./comun_mapa/comun_mapa_inicia.js?t=<?php echo time();?>"></script> <!-- definicion de variables comunes para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_recorte.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de recorte para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_selector_capas.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de selector de capa base y extras para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_localiz.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de localizacion de direcciones para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_tamano.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de agrandar mapa-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_descarga.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de descarga del mapa activo-->
+
+
+<script type="text/javascript" src="./app_ind/app_ind_mapa.js?t=<?php echo time();?>"></script> <!-- carga funciones de interaccion con el mapa -->
+<script type="text/javascript" src="./app_ind/app_ind_queries.js?t=<?php echo time();?>"></script> <!-- carga funciones de consulta de base de datos -->
+<script type="text/javascript" src="./app_ind/app_ind_pagina.js?t=<?php echo time();?>"></script> <!-- carga funciones de operacion de la pagina -->
+<script type="text/javascript" src="./comunes_consultas.js?t=<?php echo time();?>"></script> <!-- carga funciones de interaccion con el mapa -->
+
+
+
+
+<script type="text/javascript">
+	
+	baseMapaaIGN();//cargar mapa base IGN
+	
 	consultarElementoAcciones('','<?php echo $_GET['cod'];?>','est_02_marcoacademico');
+	
+	
+	if(_RecorteDeTrabajo!=''){
+		cargaRecorteSession();
+	}
+
+	if(_idInd!=''){
+		accionIndicadorPublicadoSeleccionado(this,_idInd);
+	}
+	
+ 
 </script>
 
 </body>

@@ -137,14 +137,56 @@ $query="
 	
 	while($fila=pg_fetch_assoc($ConsultaProy)){
 		$Log['data']['tablasConf']['acciones'][$fila['accion']]=$fila;
+		$Log['data']['tablasConf']['acciones'][$fila['accion']]['activo']='1';//por defecto se asume que el marco academico tiene activa la acción.	
 		//if($fila=='categoria_tabla_geogec'){continue;}
 	}	
 
+	
+		
+	
+	
+	$Log['tx'][]=$_POST['tabla'];
+	if($_POST['tabla']=='est_02_marcoacademico'){
+		     $Log['tx'][]=$_POST['cod'];     
+		$query="
+			SELECT 
+				id, 
+				ic_p_est_02_marcoacademico, 
+				codigo_p_sis_acciones, 
+				activo
+			FROM 
+				geogec.ref_02_marcoacademico_link_acciones
+		    WHERE 
+		    	ic_p_est_02_marcoacademico = '".$_POST['cod']."'
+		";
+		
+		$Consulta = pg_query($ConecSIG, $query);
+		if(pg_errormessage($ConecSIG)!=''){
+			$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+			$Log['tx'][]='query: '.$query;
+			$Log['mg'][]='error interno';
+			$Log['res']='err';
+			terminar($Log);	
+		}
+		
+		$Log['tx'][]='consultado';
+		while($row = pg_fetch_assoc($Consulta)){
+			$Log['tx'][]=$row['codigo_p_sis_acciones'];
+			
+			if(!isset($Log['data']['tablasConf']['acciones'][$row['codigo_p_sis_acciones']])){continue;}
+			
+			$Log['tx'][]='esta';
+			$Log['data']['tablasConf']['acciones'][$row['codigo_p_sis_acciones']]['activo']=$row['activo'];	
+		}
+	}
+	
+	
+	$llamadageo="ST_AsText(geo) as geotx";
 		
 	$query="
 		SELECT 
 			*,
-			ST_AsText(geo) as geotx
+			$llamadageo
 		FROM 
 			geogec.".$_POST['tabla']."
 		WHERE 

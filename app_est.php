@@ -70,11 +70,16 @@ $starttime = microtime(true);
     <link href="./css/tablarelev.css" rel="stylesheet" type="text/css">
     <link rel="manifest" href="pantallahorizontal.json">
     <link href="./css/BA_salidarelevamiento.css" rel="stylesheet" type="text/css">
+    <link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
     <link href="./css/geogecindex.css" rel="stylesheet" type="text/css">
     <link href="./css/geogec_app_docs.css" rel="stylesheet" type="text/css">
     <link href="./css/geogec_app_capa.css" rel="stylesheet" type="text/css">
     <style>
-    	
+    	#mapa{width:600px;}
+    	#page > div#cuadrovalores{
+			display: inline-block;
+			width: 400px;
+		}
     </style>
 </head>
 
@@ -103,7 +108,7 @@ $starttime = microtime(true);
             <h1 id='titulo'>- nombre de proyecto -</h1>
             <p id='descripcion'>- descripcion de proyecto -</p>
         </div>
-        <div class="portamapa">
+        <div id="portamapa">
             <div id='titulomapa'>
                 <p id='tnombre'></p>
                 <h1 id='tnombre_humano'></h1>

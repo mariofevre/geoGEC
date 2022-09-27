@@ -67,23 +67,38 @@ if(!isset($_POST['archivo_nom'])){
 	$Log['tx'][]='falta nombre del archivo';	
 	terminar($Log);
 }
+
+if(!isset($_POST['usu_crs'])){
+	$Log['res']='err';
+	$Log['tx'][]='falta seleccionar sistema decoordenadas';	
+	terminar($Log);
+}
+
 if($_POST['archivo_nom']==''){
 	$Log['res']='err';
 	$Log['tx'][]='falta nombre del archivo';	
 	terminar($Log);
 }
 
-
+/*
+	col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, col_numero1_nom, col_numero2_nom,
+	 col_numero3_nom, col_numero4_nom, col_numero5_nom, col_texto1_unidad, 
+	 col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, 
+	 col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, 
+	 col_numero5_unidad, 
+	 * col_texto6_nom, col_texto7_nom, col_texto8_nom, col_texto9_nom, col_texto10_nom
+	 */
 $query="
 SELECT 
-	id, nombre, descripcion, id_p_ref_capasgeo, ic_p_est_02_marcoacademico, 
-	fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada, 
-	col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, col_numero1_nom, col_numero2_nom, col_numero3_nom, col_numero4_nom, col_numero5_nom, col_texto1_unidad, col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, col_numero5_unidad, representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime, col_texto6_nom, col_texto7_nom, col_texto8_nom, col_texto9_nom, col_texto10_nom
-	FROM geogec.ref_rele_campa
+		id, nombre, descripcion, id_p_ref_capasgeo, ic_p_est_02_marcoacademico, 
+		fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada, 
+		representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime
+	FROM 
+		geogec.ref_rele_campa
 	WHERE
-	id = '".$_POST['idcampa']."'
-	AND
-	ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+		id = '".$_POST['idcampa']."'
+		AND
+		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
 ";
 $Consulta = pg_query($ConecSIG,utf8_encode($query));
 //$Log['tx'][]=$query;
@@ -95,6 +110,15 @@ if(pg_errormessage($ConecSIG)!=''){
     terminar($Log);
 }	
 $f=pg_fetch_assoc($Consulta);
+
+
+if($_POST['usu_crs']==''){
+	$Log['data']['crs']='3857';
+}else{
+	$Log['data']['crs']=$_POST['usu_crs'];
+}
+
+
 
 if($f['id_p_ref_capasgeo']>0){
 	
@@ -435,7 +459,7 @@ if(
 function guardarGeometria($coords,$tipo){
 	global $Log, $ConecSIG, $IdCapa, $avancep, $carga, $idUsuario;
  	
-	$geomTX= "ST_GeomFromText('".$coords."', 22175)";
+	$geomTX= "ST_GeomFromText('".$coords."', ".$Log['data']['crs'].")";
     $geomTX= "ST_Transform(".$geomTX.", 3857)";
 
     if($tipo == 'Polygon'){

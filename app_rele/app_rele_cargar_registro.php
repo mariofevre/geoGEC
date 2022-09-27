@@ -42,6 +42,7 @@ $Usu = validarUsuario(); // en ./usu_valudacion.php
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
 
+ini_set('display_errors', 0);
 global $PROCESANDO;
 $PROCESANDO='si';
 
@@ -108,9 +109,78 @@ if(!isset($_POST['n1'])){
 
 
 if(!isset($_POST['personalizados'])){
-	$Log['res']='err';
-	$Log['tx'][]='falta la variable personalizados';	
-	terminar($Log);
+	$_POST['personalizados']=array();
+}
+
+
+$Log['data']['archivar']=$_POST['archivar'];
+
+
+if($_POST['id_registro']==''||$_POST['id_registro']=='undefined'){
+	$query="
+		INSERT INTO
+			geogec.ref_rele_registros(
+			
+				id_p_ref_rele_campa,
+				zz_auto_crea_usu
+			)
+		
+			VALUES(
+				'".$_POST['idcampa']."',
+				'".$idUsuario."'
+			
+			)
+		RETURNING	id			
+	";
+	$Consulta = pg_query($ConecSIG,utf8_encode($query));
+	//$Log['tx'][]=$query;
+	if(pg_errormessage($ConecSIG)!=''){
+		$Log['res']='error';
+		$Log['tx'][]='error al insertar registro en la base de datos';
+		$Log['tx'][]=pg_errormessage($ConecSIG);
+		$Log['tx'][]=$query;
+		terminar($Log);
+	}	
+
+	$fila=pg_fetch_assoc($Consulta);
+	$_POST['id_registro']=$fila['id'];
+	$Log['data']['registro_nuevo']='si';
+}else{
+	$Log['data']['registro_nuevo']='no';
+}
+	
+	$Log['data']['id_registro']=$_POST['id_registro'];
+	
+	
+$query="
+	SELECT 
+		id, id_p_ref_rele_campa, zz_auto_crea_usu, zz_superado, zz_borrado, col_texto1_dato, col_texto2_dato, col_texto3_dato, 
+		col_texto4_dato, col_texto5_dato, col_texto6_dato, col_texto7_dato, col_texto8_dato, col_texto9_dato, col_texto10_dato, 
+		col_numero1_dato, col_numero2_dato, col_numero3_dato, col_numero4_dato, col_numero5_dato, col_numero6_dato, col_numero7_dato, 
+		col_numero8_dato, col_numero9_dato, col_numero10_dato, id_p_ref_capas_registros, zz_auto_supera_id, zz_auto_crea_fechau, 
+		zz_archivada, zz_archivada_fecha
+	FROM 
+		geogec.ref_rele_registros
+		
+	WHERE
+	id = '".$_POST['id_registro']."'
+	AND
+	id_p_ref_rele_campa ='".$_POST['idcampa']."'
+";
+$Consulta = pg_query($ConecSIG,utf8_encode($query));
+//$Log['tx'][]=$query;
+if(pg_errormessage($ConecSIG)!=''){
+    $Log['res']='error';
+    $Log['tx'][]='error al insertar registro en la base de datos';
+    $Log['tx'][]=pg_errormessage($ConecSIG);
+    $Log['tx'][]=$query;
+    terminar($Log);
+}	
+$Registro=pg_fetch_assoc($Consulta);
+
+
+if($Registro['zz_archivada_fecha']==''||$Registro['zz_archivada_fecha']==null){
+	$Registro['zz_archivada_fecha']='0001-01-01';
 }
 
 
@@ -118,8 +188,7 @@ if(!isset($_POST['personalizados'])){
 $query="
 SELECT 
 	id, nombre, descripcion, id_p_ref_capasgeo, ic_p_est_02_marcoacademico, 
-	fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada, 
-	col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, col_numero1_nom, col_numero2_nom, col_numero3_nom, col_numero4_nom, col_numero5_nom, col_texto1_unidad, col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, col_numero5_unidad, representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime, col_texto6_nom, col_texto7_nom, col_texto8_nom, col_texto9_nom, col_texto10_nom
+	usu_autor, zz_borrada, zz_publicada
 	FROM geogec.ref_rele_campa
 	WHERE
 	id = '".$_POST['idcampa']."'
@@ -157,13 +226,18 @@ $query="
 		id_p_ref_rele_campa, 	zz_auto_crea_usu, 		zz_auto_crea_fechau, 
 		col_texto1_dato, 		col_texto2_dato, 		col_texto3_dato, 	col_texto4_dato, 	col_texto5_dato, 	col_texto6_dato, 	col_texto7_dato, 	col_texto8_dato, 	col_texto9_dato, 	col_texto10_dato, 
 		col_numero1_dato, 		col_numero2_dato, 		col_numero3_dato, 	col_numero4_dato, 	col_numero5_dato, 	col_numero6_dato, 	col_numero7_dato, 	col_numero8_dato, 	col_numero9_dato, 	col_numero10_dato, 
-		id_p_ref_capas_registros
+		id_p_ref_capas_registros,
+		zz_archivada,
+		zz_archivada_fecha
 		)
 	VALUES (
 		'".$_POST['idcampa']."', '".$idUsuario."', 		'".time()."', 
-		'".$_POST['t1']."', 	'', 					'', 				'', 				'', 				'', 				'', 				'', 				'', 				'', 
-		'".$_POST['n1']."', 	null, 					null, 				null, 				null, 				null, 				null, 				null, 				null, 				null, 
-		'".$_POST['idgeom']."'
+		'".utf8_decode($_POST['t1'])."', 	'', 					'', 				'', 				'', 				'', 				'', 				'', 				'', 				'', 
+		'".utf8_decode($_POST['n1'])."', 	null, 					null, 				null, 				null, 				null, 				null, 				null, 				null, 				null, 
+		'".$_POST['idgeom']."',
+		'".$Registro['zz_archivada']."',
+		'".$Registro['zz_archivada_fecha']."'
+		
 		)
 	RETURNING id
 		
@@ -203,7 +277,8 @@ UPDATE
 		AND
 		id_p_ref_capas_registros='".$_POST['idgeom']."'
 		AND
-		id!='".$nid."'
+		id='".$Registro['id']."'
+		
 ";
 $Consulta = pg_query($ConecSIG,utf8_encode($query));
 $row=pg_fetch_assoc($Consulta);
@@ -249,12 +324,12 @@ while($row=pg_fetch_assoc($Consulta)){
 
 
 foreach($_POST['personalizados'] as $k => $v){
-	$_POST['personalizados'][$k]=$v;   //encode?
+	$_POST['personalizados'][$k]=utf8_decode($v);   //encode?
 }
 
 foreach($_POST['personalizados'] as $k => $v){
 	
-	$_POST['personalizados'][$k]=$v;   //encode?
+	$_POST['personalizados'][$k]=utf8_decode($v);   //encode?
 	
 	
 	if(!isset($Campos[$k])){
@@ -286,9 +361,38 @@ foreach($_POST['personalizados'] as $k => $v){
 			data_numero,
 			data_documento
 		";
+		
+		
+		if(strpos($v, ',')!==false){		 
+			if(strpos($v, '.')!==false){		 		
+				if(strpos($v, '.') > strpos($v, ',')){		 
+					$v=str_replace(',','',$v);
+				}else{
+					$v=str_replace('.','',$v);
+					$v=str_replace(',','.',$v);					
+				}
+			}else{
+				$v=str_replace(',','.',$v);	
+			}
+		}
+		
 		$setcampo="
 			null,
-			".$v.",
+			".(float)$v.",
+			null
+		";
+	}elseif($Campos[$k]['tipo']=='fecha'){
+		if($v===null||$v===''){
+			$v= "null";
+		}
+		$defcampo="
+			data_texto,  
+			data_numero,
+			data_documento
+		";
+		$setcampo="
+			'".$v."',
+			null,
 			null
 		";
 	}elseif($Campos[$k]['tipo']=='coleccion_imagenes'){
@@ -374,6 +478,8 @@ foreach($_POST['personalizados'] as $k => $v){
 		AND
 			ref_rele_registros.id != $nid
 		AND
+			ref_rele_registros.id='".$Registro['id']."'			
+		AND
 			ref_rele_registros.id_p_ref_capas_registros = '".$_POST['idgeom']."'
 		AND
 			ref_rele_registros_datos.zz_superado='0'
@@ -385,6 +491,8 @@ foreach($_POST['personalizados'] as $k => $v){
 			ref_rele_registros_datos.id_p_ref_rele_campos='".$k."'
 		AND
 			ref_rele_registros_datos.ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'		
+
+		
 	";
 	//$Log['tx'][]=$query;
 	$Consulta = pg_query($ConecSIG,utf8_encode($query));

@@ -1,0 +1,1059 @@
+User: 181.231.39.165 - November 13, 2019, 11:49 pm
+User: 72
+-------------------------
+Array
+(
+    [0] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11837'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='1'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [1] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11838'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='2'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [2] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11839'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='3'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [3] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11840'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='4'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [4] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11841'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='5'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [5] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11842'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='6'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [6] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11843'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='7'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [7] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11844'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='8'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [8] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11845'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='9'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [9] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11846'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='10'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [10] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11847'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='11'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [11] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11848'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='12'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [12] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11849'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='13'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [13] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11850'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='14'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [14] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11851'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='15'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [15] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11852'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='16'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [16] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11853'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='17'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [17] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11854'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='18'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [18] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11855'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='19'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [19] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11856'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='20'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [20] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11857'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='21'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [21] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11858'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='22'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [22] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11859'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='23'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [23] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11860'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='24'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [24] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11861'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='25'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [25] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11862'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='26'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [26] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11863'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='27'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [27] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11864'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='28'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [28] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11865'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='29'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [29] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11866'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='30'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [30] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11867'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='32'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [31] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11868'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='33'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [32] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11869'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='35'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [33] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11870'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='36'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [34] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11871'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='37'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [35] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11872'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='38'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [36] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11873'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='39'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [37] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11874'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='40'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+    [38] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='11875'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 393
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '554993'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='3'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='41'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'RELAMBA2019'		
+	
+)

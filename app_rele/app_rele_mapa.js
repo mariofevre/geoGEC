@@ -21,6 +21,302 @@
 */
 
 
+
+function cargarMapa(){
+	
+	document.getElementById('mapa').innerHTML='';
+    document.getElementById('mapa').setAttribute('estado','activo');
+    
+   	_yStroke = new ol.style.Stroke({
+		color : 'rgba(0,100,255,0.8)',
+		width : 2,
+	});
+	_yFill = new ol.style.Fill({
+	   color: 'rgba(0,100,255,0.6)'
+	}); 
+	var cRes = new ol.style.Circle({
+	    radius: 5,
+	    fill: _yFill,
+	    stroke: _yStroke
+	});
+    var styleMapResalt = new ol.style.Style({
+	     image:cRes
+    });
+    
+    var styleDef = new ol.style.Style({
+	     image:	new ol.style.Circle({
+			    radius: 5,
+			    fill: _yFill,
+			    stroke: _yStroke
+			})
+    });
+    
+	_source = new ol.source.Vector({ 
+		wrapX: false,   
+    	projection: 'EPSG:3857' 
+    }); 
+
+	_sourceSeleccion = new ol.source.Vector({ 
+		wrapX: false,   
+    	projection: 'EPSG:3857' 
+    }); 
+    
+    
+    var styleArea = new ol.style.Style({
+	    stroke: new ol.style.Stroke({color : 'rgba(255,50,100,1)', width : 2}),
+	    fill: new ol.style.Fill({color : 'rgba(255,150,150,0.4)'})
+    });
+ 
+    var styleCandidato = new ol.style.Style({	    
+	    image: new ol.style.Circle({ radius: 5,
+		    stroke: new ol.style.Stroke({color : 'rgba(255,100,50,1)', width : 1}),
+	    	fill: new ol.style.Fill({color : 'rgba(200,250,100,0.5)'}) 
+		})
+    });
+    
+    _CentStyle = new ol.style.Style({
+         image: new ol.style.Circle({
+		       fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
+		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5}),
+		       radius: 3
+		 }),
+		 fill: new ol.style.Fill({color: 'rgba(255,155,155,1)'}),
+		 stroke: new ol.style.Stroke({color: '#ff3333',width: 0.5})
+     });
+     
+   	_CentSelStyle = new ol.style.Style({
+         image: new ol.style.Circle({
+		       fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
+		       stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
+		       radius: 6
+		 }),
+		 fill: new ol.style.Fill({color: 'rgba(255,102,0,1)'}),
+		 stroke: new ol.style.Stroke({color: '#ff3333',width: 1.8}),
+		 zIndex:100
+     });
+     
+    _lyrElemStyle = new ol.style.Style({
+        image: new ol.style.Circle({
+		      fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
+		      stroke: new ol.style.Stroke({color: '#ff3333',width: 0.8}),
+		      radius: 6
+		}),
+		fill: new ol.style.Fill({color: 'rgba(228,25,55,0.5)'}),
+		stroke: new ol.style.Stroke({color: 'rgba(228,25,55,0.8)',width: 2}),
+		zIndex:1
+    });
+
+
+ 	var _myStroke = new ol.style.Stroke({
+		color : 'rgba(255,0,0,1.0)',
+		width : 1,
+	});
+	var circle = new ol.style.Circle({
+	    radius: 5,
+	    stroke: _myStroke
+	}); 
+	var sy = new ol.style.Style ({
+	   image:circle
+	});
+	var _sResalt = new ol.source.Vector({        
+      projection: 'EPSG:3857'      
+    });
+    var _sCargado = new ol.source.Vector({        
+      projection: 'EPSG:3857'      
+    });
+    var _sCandidato = new ol.source.Vector({        
+      projection: 'EPSG:3857'      
+    });	    	    
+	var  _sArea = new ol.source.Vector({        
+      projection: 'EPSG:3857'      
+    });
+    
+	var _cargado='no';
+
+	vectorLayer = new ol.layer.Vector({
+		name: 'vectorLayer',
+		style: styleArea,
+		zIndex:100
+	    //source: _source
+	});
+
+	seleccionLayer = new ol.layer.Vector({
+		name: 'seleccionLayer',
+		style: _CentStyle,
+	    source: _sourceSeleccion,
+	    zIndex:108
+	});
+	
+	var marcoLayer = new ol.layer.Vector({
+		style: new ol.style.Style({
+			stroke: new ol.style.Stroke({color : 'rgba(200,50,50,1)', width : 1, lineDash: [2,3]}),
+	    	fill: new ol.style.Fill({color : 'rgba(250,255,250,0)'})
+		}),
+		source: _sMarco,
+		zIndex:10
+	});
+
+	
+	var resaltadoLayer = new ol.layer.Vector({
+		style: styleMapResalt,
+		source: _sResalt,
+		zIndex:105
+	});
+
+	var cargadoLayer = new ol.layer.Vector({
+		style: styleMapResalt,
+		source: _sCargado,
+		zIndex:100
+	});
+
+	var candidatoLayer = new ol.layer.Vector({
+		style: styleCandidato,
+		source: _sCandidato,
+		zIndex:110
+	});	
+		
+	var areaLayer = new ol.layer.Vector({
+		style: styleArea,
+		source: _sArea,
+		zIndex:102
+	});
+	
+	_view =	new ol.View({
+      projection: 'EPSG:3857',
+      center: [-7000000,-4213000],
+      zoom: 5,
+      minZoom:2,
+      maxZoom:19	      
+	});
+
+	var tablaRasLayer = new ol.layer.Image();
+
+	_lyrCent.setStyle(_CentStyle);
+
+	var style = new ol.style.Style ({
+	  fill: new ol.style.Fill({
+	    color: 'black',
+	  }),
+	});
+
+	
+     
+    _lyrElem.setStyle(_lyrElemStyle);
+    La_ExtraBaseWms = new ol.layer.Tile({
+        visible: true,
+        source: _ExtraBaseWmsSource
+    });
+    
+	mapa = new ol.Map({
+	    layers: [
+			seleccionLayer,
+			vectorLayer,
+			resaltadoLayer,
+			candidatoLayer,
+			cargadoLayer,
+			areaLayer,
+			tablaRasLayer,
+			La_ExtraBaseWms,
+			_lyrCent,
+			_lyrElem,
+			_lyrPropios,
+			_layerRecorte,
+			_layerLocat,
+			marcoLayer
+	    ],
+	    target: 'mapa',
+	    view: _view
+	});
+	
+	
+	if(document.querySelector('.ol-zoom.ol-unselectable.ol-control .ol-zoom-out')!=null){
+		//corrije el encode del zoom out
+    	document.querySelector('.ol-zoom.ol-unselectable.ol-control .ol-zoom-out').innerHTML='-';
+    }
+    
+	vectorLayer.setSource(_source);	
+
+	
+	function reiniciarMapa(){
+		_features=_sCargado.getFeatures();	
+		for (i = 0; i < _features.length; i++) {		
+			_sCargado.removeFeature(_features[i]);
+		}
+		
+		_features=_sCandidato.getFeatures();	
+		for (i = 0; i < _features.length; i++) {		
+			_sCandidato.removeFeature(_features[i]);
+		}
+		//mostrarArea(parent._Adat);	
+	}
+
+		
+	function consultaPuntoAj(_Pid){
+		console.log(_Pid);
+		formAI(_Pid);
+		
+	}
+}
+
+cargarMapa();
+$("#mapa").css("height", $(window).height() - 150); this.mapa.updateSize();
+
+function mostrarTablaEnMapa(_tabla){
+	_ExtraBaseWmsSource= new ol.source.TileWMS({
+        url: 'http://190.111.246.33:8080/geoserver/geoGEC/wms',
+        params: {
+	        'VERSION': '1.1.1',
+	        tiled: true,
+	        LAYERS: _tabla,
+	        STYLES: '',
+        }
+   });
+	La_ExtraBaseWms.setSource(_ExtraBaseWmsSource);
+}
+
+function cargarCapaMarco(){
+	_sMarco.clear();
+    //console.log(_source_ind.getFeatures());
+	_haygeom='no';
+	if(_DataMarco.geotx==''){return;}		
+	
+	//console.log('+ um geometria: campo'+_campo+'. valor:'+_val);
+	//console.log(_DataMarco.geotx);
+	if(_DataMarco.geotx!=null){
+		console.log('carga marco');
+		var _format = new ol.format.WKT();
+		var _ft = _format.readFeature(_DataMarco.geotx, {
+	        dataProjection: 'EPSG:3857',
+	        featureProjection: 'EPSG:3857'
+	    });
+	    //_ft.setProperties(_geo);	    
+	   	_sMarco.addFeature(_ft);
+   	} 
+}
+
+
+function cargarElementoPropio(_codSel){
+	_lyrPropiosSrc.clear();
+    //console.log(_source_ind.getFeatures());
+	_haygeom='no';
+	if(_UsuarioA.permisos.marcos[_codSel].geotx==''){return;}		
+	if(_UsuarioA.permisos.marcos[_codSel].geotx==null){return;}	
+	console.log('carga elmento porpio');	
+	var _format = new ol.format.WKT();
+	var _ft = _format.readFeature(_UsuarioA.permisos.marcos[_codSel].geotx, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857',
+        id:_codSel
+    });
+    console.log(_codSel);
+    //_ft.setProperties(_geo);	    
+   	_lyrPropiosSrc.addFeature(_ft);   	
+}
+
+function desCargarElementoPropio(_codSel){
+	_lyrPropiosSrc.clear();
+}
+
 //layer de superposicion a layer buffer
 var _source_rele_superp= new ol.source.Vector({
 	wrapX: false,   
@@ -35,9 +331,8 @@ var _layer_rele_superp= new ol.layer.Vector({
 		 zIndex:1
 	})    
 });
-mapa.addLayer(_layer_rele_superp);
 
-//layer de geometría del indicador
+//layer de geometría del relevamiento
 var _source_rele= new ol.source.Vector({
 	wrapX: false,   
 	projection: 'EPSG:3857' 
@@ -47,48 +342,89 @@ var _color='rgba(0,200,256,0.2)';
 var _colorb='rgba(0,0,100,1)';
 var _ancho='0.5';
 
-
-
-
-
-
-
 var labelStyle = new ol.style.Style({
-		image: new ol.style.Circle({
-		       fill: new ol.style.Fill({color: _color}),
-		       stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
-		       radius: 6
+	image: new ol.style.Circle({
+		   fill: new ol.style.Fill({color: _color}),
+		   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+		   radius: 12
+	}),
+	fill: new ol.style.Fill({color: _color}),
+	stroke: new ol.style.Stroke({color: _colorb,width: _ancho}),
+	zIndex:1000,
+	text: new ol.style.Text({
+		font: '12px Calibri,sans-serif',
+		overflow: true,
+		offsetX:8,
+		offsetY:-4,
+		fill: new ol.style.Fill({
+		color: '#000'
 		}),
-		fill: new ol.style.Fill({color: _color}),
-		stroke: new ol.style.Stroke({color: _colorb,width: _ancho}),
-		zIndex:100,
-		text: new ol.style.Text({
-	    	font: '12px Calibri,sans-serif',
-	    	overflow: true,
-	    	fill: new ol.style.Fill({
-	      	color: '#000'
-		    }),
-		    stroke: new ol.style.Stroke({color: '#fff', width: 2})
+		stroke: new ol.style.Stroke({color: '#fff', width: 2})
 	})
 });
+
+
+var _mudoStyle = new ol.style.Style({
+	image: new ol.style.Circle({
+		   fill: new ol.style.Fill({color: _color}),
+		   stroke: new ol.style.Stroke({color: _colorb,width: 2}),
+		   radius: 12
+	}),
+	fill: new ol.style.Fill({color: _color}),
+	stroke: new ol.style.Stroke({color: _colorb,width: _ancho}),
+	zIndex:1000
+});
+
 
 var _layer_rel= new ol.layer.Vector({
 	name: 'relevamiento',
     source: _source_rele,
-	style: function(feature) {
+    zIndex:5000,
+    //style:_mudoStyle,
+    
+	style: function(feature){
 		if(feature.get('name')!=null){
-	    	labelStyle.getText().setText(feature.get('name'));
-	    	
+	    	labelStyle.getText().setText(feature.get('name'));	    	
 	   	}else{
-	   		labelStyle.getText().setText('');
+	   		labelStyle.getText().setText('s/n');
 	   	}
 	   //console.log(feature.get('estado'));
 	   	if(feature.get('estado')==='0'){
 	   		labelStyle.getFill().setColor("rgba(255,0,0,0.5)");
+	   		console.log(labelStyle.getImage().getFill());
+	   		//labelStyle.getImage().setColor("rgba(0,255,100,0.8)");
+	   		
+	   		labelStyle.setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: "rgba(255,0,0,0.5)"}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   		
 	   	}else if(feature.get('estado')==='1'){
 	   		labelStyle.getFill().setColor("rgba(0,255,100,0.8)");
+	   		labelStyle.setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: "rgba(0,255,100,0.8)"}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   		
+	   		
 	   	}else{
 	   		labelStyle.getFill().setColor(_color);
+	   		labelStyle.setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: _color}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
 	   	}
 	   
 		return labelStyle;
@@ -109,7 +445,7 @@ var _st_rel_sel=new ol.style.Style({
 	       radius: 6
 	 }),
 	 stroke: new ol.style.Stroke({color: 'rgb(8, 175, 217)',width: 1}),
-	 zIndex:200
+	 zIndex:2000
 });
 var _layer_rel_sel= new ol.layer.Vector({
 	name: 'indicador: elemento selecto',
@@ -142,6 +478,7 @@ function consultaPuntoRel(pixel,_event) {
     
     _prop=feature.getProperties();
     
+     console.log('carga punto rel');
     var _format = new ol.format.WKT();
 	var _ft = _format.readFeature(_prop.geotx, {
         dataProjection: 'EPSG:3857',
@@ -154,7 +491,8 @@ function consultaPuntoRel(pixel,_event) {
          image: new ol.style.Circle({
 		       fill: new ol.style.Fill({color: _color}),
 		       stroke: new ol.style.Stroke({color: _colors,width: 0.5}),
-		       radius: 6
+		       radius: 6,
+			   zIndex:100
 		 }),
 		 fill: new ol.style.Fill({color: _color}),
 		 stroke: new ol.style.Stroke({color: _colors,width: 0.5}),
@@ -168,15 +506,6 @@ function consultaPuntoRel(pixel,_event) {
 }
 
 
-
-
-
-
-
-
-
-
-
 var _rmax = 228;
 var _gmax = 25;
 var _bmax = 55;
@@ -188,9 +517,6 @@ var _bmin = 204;
 var _encuadrado='no';
 
 var _mapaEstado ='';
-
-
-
 
 
 
@@ -300,6 +626,7 @@ function dibujarReleMapa(_res){
 		}		
 		
 		//console.log('+ um geometria: campo'+_campo+'. valor:'+_val);
+		 console.log('carga regeom rele');
 		var _format = new ol.format.WKT();
 		var _ft = _format.readFeature(_geo.geotx, {
 	        dataProjection: 'EPSG:3857',
@@ -325,7 +652,12 @@ function dibujarReleMapa(_res){
 	    //_ft.setStyle(_estilo);//por ahora usamos el estilo del mapa
 	    
 	    _ft.setProperties(_geo);
-		_ft.set('name',_geo.t1);
+	    if(_geo.t1!=''){
+			_ft.set('name',_geo.t1);
+		}else{
+			_ft.set('name','s/n');
+		}
+		
 		_ft.set('estado',_geo.n1);
 	   	_source_rele.addFeature(_ft);
 	   	
@@ -357,9 +689,10 @@ function dibujarReleMapa(_res){
 			}),
 			fill: new ol.style.Fill({color: _color}),
 			stroke: new ol.style.Stroke({color: _colorb,width: _ancho}),
-			zIndex:100,
+			zIndex:1000,
 			text: new ol.style.Text({
 		    	font: '12px Calibri,sans-serif',
+		    	offsetX:5,
 		    	overflow: true,
 		    	fill: new ol.style.Fill({
 		      	color: '#000'
@@ -373,9 +706,10 @@ function dibujarReleMapa(_res){
 	
 	if(_haygeom=='si'){
 		_ext= _source_rele.getExtent();	
-		//console.log(_ext);
+		console.log(_ext);
 		if(_encuadrado=='no'){
-			mapa.getView().fit(_ext, { duration: 1000 });
+			mapa.getView().fit(_ext, { duration: 1000 , padding: [50, 50, 50, 50]});
+			
 			_encuadrado='si';
 		}
 	}
@@ -415,7 +749,7 @@ function dibujarReleMapa(_res){
 
 
 
-
+/*
 var xmlDoc;
 function dibujarCapaSuperp(_res){
 	_source_rele_superp.clear();
@@ -569,7 +903,6 @@ function dibujarCapaSuperp(_res){
 			            width: document.getElementById('inputanchotrazoNumber').value
 			          })
 			        });
-			        console.log('lll:'+_st);
 			        for(_nc in _condiciones){
 						if(
 							Number(_features[elem][_campoMM]) >= Number(_condiciones[_nc].valorMM)
@@ -590,7 +923,7 @@ function dibujarCapaSuperp(_res){
 					            color: _condiciones[_nc].colorTrazo,
 					            width: _condiciones[_nc].anchoTrazo
 					          }),
-					          zIndex:1
+					          zIndex:50
 					        });
 						}
 					}
@@ -629,14 +962,14 @@ function dibujarCapaSuperp(_res){
 		}
     }
 }
-
+*/
 
 var drawL={};
 var _nnelem=0;
 function accionEditarCrearGeometria(_idgeom){    
 	
 	_typeGeom=_DataCapa.tipogeometria;
-	_typeGeom='Polygon';//TODO resolver este hardcoded
+	//_typeGeom='Polygon';//TODO resolver este hardcoded
 	mapa.removeInteraction(drawL);
     drawL = new ol.interaction.Draw({
         source: _source_rel_sel,
@@ -693,7 +1026,7 @@ function accionEditarCrearGeometria(_idgeom){
 var selecP={};
 var _nnelem=0;
 function accionSeleccionarGeometria(){    
-	_DataCapa.tipogeometria='Polygon';
+	//_DataCapa.tipogeometria='Polygon';
 	_typeGeom=_DataCapa.tipogeometria;
 	mapa.removeInteraction(drawL);
     drawL = new ol.interaction.Draw({
@@ -769,13 +1102,16 @@ function activarDibujarGeomatria(){
 	
 }
 
-function descargarMapaDXF(_event){
+function descargarMapaDXF(){
+	/* esto no funciona ya en openlayers6
 	mapa.once('postcompose', function(event) {
+	console.log(event);
+		
       var canvas = event.context.canvas;
       //exportPNGElement.href = canvas.toDataURL('image/png');
       _ext=mapa.getView().calculateExtent();
       _img={
-      	'png':canvas.toDataURL('image/png'),
+      	'png':canvas.toDataURL('image/png'),//para que esta acción no sea frenada por insegura, los wms tienen que tener cors. las capas OSM y vectoriales no tiebnen problema.
       	'minx':_ext[0],
       	'miny':_ext[1],
       	'maxx':_ext[2],
@@ -786,5 +1122,68 @@ function descargarMapaDXF(_event){
       guardarDXFfondo(_img);
     });
     mapa.renderSync();
-}
+    */
+   
+	   
+	  mapa.once('rendercomplete', function () {
+	    const mapCanvas = document.createElement('canvas');
+	    const size = mapa.getSize();
+	    mapCanvas.width = size[0];
+	    mapCanvas.height = size[1];
+	    const mapContext = mapCanvas.getContext('2d');
+	    Array.prototype.forEach.call(
+	      document.querySelectorAll('.ol-layer canvas'),
+	      function (canvas) {
+	        if (canvas.width > 0) {
+	          const opacity = canvas.parentNode.style.opacity;
+	          mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+	          const transform = canvas.style.transform;
+	          // Get the transform parameters from the style's transform matrix
+	          const matrix = transform
+	            .match(/^matrix\(([^\(]*)\)$/)[1]
+	            .split(',')
+	            .map(Number);
+	          // Apply the transform to the export map context
+	          CanvasRenderingContext2D.prototype.setTransform.apply(
+	            mapContext,
+	            matrix
+	          );
+	          mapContext.drawImage(canvas, 0, 0);
+	        }
+	      }
+	    );
+	    if (navigator.msSaveBlob) {
+	      // link download attribute does not work on MS browsers
+	      navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.png');
+	    } else {
+	  
+	  		_ext=mapa.getView().calculateExtent();
 
+	    	_img={
+	      	'png':mapCanvas.toDataURL(),//para que esta acción no sea frenada por insegura, los wms tienen que tener cors. las capas OSM y vectoriales no tiebnen problema.
+	      	'minx':_ext[0],
+	      	'miny':_ext[1],
+	      	'maxx':_ext[2],
+	      	'maxy':_ext[3],
+	      }
+	      guardarDXFfondo(_img);
+	    }
+	  });
+	  mapa.renderSync();
+
+
+}
+/*
+function exportPNGElement() {
+  mapa.once('postcompose', function(event) {
+      var canvas = event.context.canvas;
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(canvas.msToBlob(), 'map.png');
+      } else {
+        canvas.toBlob(function(blob) {
+          saveAs(blob, 'map.png');
+        });
+      }
+    });
+    map.renderSync();
+}*/

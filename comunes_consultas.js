@@ -110,6 +110,7 @@ function consultarElementoAcciones(_idElem,_codElem,_tabla){
 						document.querySelector('#menuacciones').style.display='block';
 						_li=document.createElement('a');
 						_li.setAttribute('href','./'+_accnom+'.php?cod='+_res.data.elemento[_campocod]);
+						_li.setAttribute('activa',_accndata.activo);
 						_la=document.createElement('img');
 						_la.setAttribute('src','./img/'+_accnom+'.png');
 						_la.setAttribute('alt',_accnom);

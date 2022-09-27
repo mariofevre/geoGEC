@@ -63,17 +63,27 @@ $starttime = microtime(true);
 <!DOCTYPE html>
 <head>
     <title>GEC - Plataforma Geomática</title>
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	
     <?php include("./includes/meta.php");?>
-    <link href="./css/mapauba.css" rel="stylesheet" type="text/css">
+    <link href="./css/mapauba.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
     <link rel="manifest" href="pantallahorizontal.json">
     
-	<link href="./css/geogecgeneral.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app.css" rel="stylesheet" type="text/css">
-    <link href="./css/geogec_app_rele.css" rel="stylesheet" type="text/css">
+	<link href="./css/geogecgeneral.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
+    <link href="./css/geogec_app_rele.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">
     
     <link href="./js/ol6.3/ol.css" rel="stylesheet" type="text/css">
+    
+    
+	<link href="./usuarios/usuarios.css?t=<?php echo time();?>" rel="stylesheet" type="text/css">	
     <style>
-    	
+    	#inputbuscadatos,#botonconfig,#botonusuario{
+			display:none !important;
+		}
+		
+		
     </style>
 </head>
 
@@ -85,8 +95,12 @@ $starttime = microtime(true);
 
 <div id="pageborde">
     <div id="page">
+		
+		<?php include('./usuarios/usu_acceso.php');?>
+				
         <div id='encabezado'>
         	
+        
 		<a href='./index.php?est=est_02_marcoacademico&cod=<?php echo $COD;?>' class='fila' id='encabezado'>
                 <h2>geoGEC</h2>
                 <p>Plataforma Geomática del centro de Gestión de Espacios Costeros</p>
@@ -105,7 +119,7 @@ $starttime = microtime(true);
 				<div id='lista'></div>	
 			</div>
         </div>
-        <div class="portamapa">
+        <div id="portamapa">
             <div id='titulomapa'>
                 <p id='tnombre'></p>
                 <h1 id='tnombre_humano'></h1>
@@ -118,6 +132,7 @@ $starttime = microtime(true);
                 <div id="location"></div>
                 <div id="scale"></div>
             </div>
+            <div id='botonera_mapa'></div>
         </div>
         <div id="cuadrovalores">
         	<div id="contenido">
@@ -134,20 +149,23 @@ $starttime = microtime(true);
 	            <div class='formCargaCampa' id='divCargaCampa' idcampa=''>
 	                <div id='avanceproceso'></div>
 	                <div class='elementoCarga accionesCampa cajaacciones'>
-	                    <h1>Acciones</h1>
-	                    <a onclick='accionCancelarCargarNuevaCampa(this)'>Cancelar</a></br>
-	                    <a id='botonelim' onclick='eliminarCandidatoCampa(this.parentNode);' title="Eliminar Campa">Eliminar</a></br>
-	                    <a id='botonedita' onclick='editarCampa(this.parentNode);' title="guardar esta campaña preliminarmente">Editar</a></br>
-	                    <a id='botonguarada' onclick='guardarCampa(this.parentNode);' title="guardar esta campaña preliminarmente">Guardar</a></br>
-	                    <a id='botonguarada' onclick='document.querySelector("#divReleACapa").style.display="block";' title="generar una capa a partir de este relevamiento">Generar Capa a partir de este relevamiento</a></br>
-	                    <a id='botoncampo' onclick='nuevoCampo()'>+ Añadir campo</a>
+	                    <h1 id='titulorarlev'></h1>
+	                    <a id='botoncancelaedita' onclick='cancelarEditarCampa();' >- cerrar -</a>
+	                    <a id='botonedita' onclick='editarCampa();' title="editar esta campaña"><img src='./img/editar.png'></a>
+	                    <div class='cajaacciones' id='accionesCampa'>
+							<a onclick='cancelarEditarCampa()'>Cancelar</a>
+							<a class='elimina' id='botonelim' onclick='eliminarCampa();' title="Eliminar Campa">Eliminar</a>
+							<a id='botonguarada' onclick='guardarCampa(this.parentNode);' title="guardar esta campaña preliminarmente">Guardar</a>
+							<a id='botonguarada' onclick='document.querySelector("#divReleACapa").style.display="block";' title="generar una capa a partir de este relevamiento">Generar Capa a partir de este relevamiento</a>
+							
+							<a id='botoncampo' onclick='editarCampos()'>Editar campos</a>
+	                    </div>
 	                </div>
 					
 					 <div style='display:none;' class='formReleACapa' id='divReleACapa' idcapa='' >
                 				
 		                <div class='formReleACapaCuerpo' id='ReleACapa'>
 		                	<div id='campos'>
-		                		
 		                		<p>campo1 nombre:<input name='nombrec_1'> fuente:<select name='fuentec_1'></select></p>
 		                		<p>campo2 nombre:<input name='nombrec_2'> fuente:<select name='fuentec_2'></select></p>
 		                		<p>campo3 nombre:<input name='nombrec_3'> fuente:<select name='fuentec_3'></select></p>
@@ -158,7 +176,7 @@ $starttime = microtime(true);
 		                </div>
 		            </div>
 		            
-	                <div class='formCargaCampaCuerpo' id='carga'>
+	                <div class='formCargaCampaCuerpo' id='edicionCampa'>
 	                    <div id='nombrecampa' class='elementoCarga'>
 	                        <h2>Nombre de la campaña</h2>
 	                        <input type="text" id="campaNombre"></input>
@@ -181,7 +199,7 @@ $starttime = microtime(true);
 	                    </div>
 	                    
 	                    <div id='geometrias' class='elementoCarga'>
-	                      	<h1>Geometrías</h1>   	
+	                      	<h2>Geometrías</h2>   	
 	                      	<a id='botoncargar' onclick='activacargarGeometrias();' title="generar geometrias desde archivo (shp o dxf)">cargar geometrias</a>
 	                      	<a id='botoncargar' onclick='borrarGeometrias("propios");' title="generar geometrias desde archivo (shp o dxf)">borrar mis geometrías</a>
 	                      	<a id='botoncargar' onclick='borrarGeometrias("todos");' title="generar geometrias desde archivo (shp o dxf)">borrar toda geometrías</a></br>
@@ -241,64 +259,103 @@ $starttime = microtime(true);
 	                </div>
 	            </div>
 	            
-	            <form class='elementoCargaLargo' style='display:none;' id='FormularioNuevaUA' onsubmit='event.preventDefault();enviarDatosRegistro()'()>
-	            	<div class='campo' id=''><input onclick="enviarCreaRegistroCapa()" type='button' value='dibujar nueva UA'></div>
-	            	<div class='campo' id=''><input onclick="descargarMapaDXF()" type='button' value='descargar mapa DXF'></div>
+	            
+	            <form class='cajaacciones' id='FormularioNuevaUA' onsubmit='event.preventDefault();enviarDatosRegistro()'()>
+	            	<a onclick="enviarCreaRegistroCapa()"><img src='./img/agregar.png'> UA</a>
+	            	<a onclick="descargarMapaDXF()">descargar captura DXF</a>
+	            	<div id='selectorarchivo' modo='inactivo'>
+						<span id='titulo'>Registros archivados</span>
+						<div id='historicos'></div>
+						<a class="historico" id_reg_hist='actual' onclick="cargarRegistroHistorico('actual')" selecto='si'>registro<br>actual</a>
+	            	</div>
 	            </form>
 	            
 	            
 	            
-	            <form class='elementoCargaLargo' style='display:none;' id='FormularioRegistro' onsubmit='event.preventDefault();enviarDatosRegistro()'()>
+	            <form class='elementoCargaLargo' id='FormularioRegistro' onsubmit='event.preventDefault()'>
 	            	
-	            	<h2>Datos Cargados</h2>
+	            	<h2>
+						UA consultada 
+						<input type='hidden' name='id_registro'>
+						<span class='aux'>#:<input name='idgeom' readonly='readonly'></span>
+						
+						<a onclick='cambiarGeometria(this.parentNode.querySelector("[name=\"idgeom\"]").value)' title="dibujar / redibujar geometría"><img src='./img/dibujar.png'></a>
+						<input type='hidden' idgeom='' id='nuevageometria'>
+						<a onclick='borrarGeometrias("registro",this.parentNode.querySelector("[name=\"idgeom\"]").value)' title='borrar UA'><img src='./img/icon-delete-16.jpg'></a>
+					</h2>
 	                <div id='autoria'>por: <span id='usu'></span><br><span id='fecha'></span></div>
-	                <div class='campo' id='secid'><label>id db:</label>:<input name='idgeom' readonly='readonly'></div>
 	                <div class='campo' id='sect1'><label>nombre</label>:<input name='t1'></div>
 	                
-	                <div class='campo'>
-	                	<input onclick='cambiarGeometria(this.parentNode.parentNode.querySelector("#secid [name=\"idgeom\"]").value)' type='button' value="redibujar geometría">
-	                	<input type='hidden' idgeom='' id='nuevageometria'>
-	                	<input onclick='borrarGeometrias("registro",this.parentNode.parentNode.querySelector("#secid [name=\"idgeom\"]").value)' type='button' value="eliminar UA"></div>
+	                
 	                <div id='campospersonalizados'></div>
-	                <input type='submit' value='guardar valores'>
 	                <div>
 	                	Datos completos UA: 
 	                	<input type='checkbox' for='n1' valorsi='1' valorno='0' onchange='toglevalorSiNo(this)'>
 	                	<input type='hidden' name='n1' value='0' onchange='toglevalorSiNoRev(this)'>
 	                </div>
+	                
+	                <input 
+						type='button' 
+						value='guardar registro'
+						onclick='enviarDatosRegistro();'
+					>
+	                
+	                <input 
+						type='button' 
+						title='al archivar un registro, este queda referido a una fecha específica y permite cargar otros registros para una nueva UA.'  
+						id='botonarchivar' 
+						onclick='enviarDatosRegistro("si")' 
+						value='guardar registro y archivar'
+					>
+	                <input type='button'  id='botondesarchivar' onclick='enviarDatosRegistro();archivarRegistro(0)' value='Desarchivar'>
+	                	
 	            </form>
 	            
-	            
+	            <form id='campos'>
+					<h2>Campos Existentes</h2>
+					<a onclick='cancelarCamposExistentes()'>X</a>
+					<a id='botoncampo' onclick='nuevoCampo()'>+ Añadir campo</a>
+					<div id='listadecampos'>
+						Sin Campos Disponibles
+					</div>
+					
+	            </form>
+					
 	            <form id='nuevocampo'>
-	            	<h2>Campo</h2>
-	            	<a onclick='guardarCampo()'>guardar campo</a>
-	            	<a onclick='eliminarCampo()'>eliminar campo</a>
-	            	<a onclick='cancelarCampo()'>cancelar</a>
+	            	<h2>Nuevo Campo</h2>
+	            	<div id='accionescampo'>
+						<a onclick='guardarCampo(this)'><img src='img/disquito.png'></a>
+						<a onclick='eliminarCampo(this)' class='elimina'>Eliminar</a>
+						<a id='botoncancelacampo' onclick='cancelarCampo(this)'>X</a>
+	            	</div>
 	            	<br>
 	            	<input name='idcampo' type='hidden' value=''>
 	            	<label>Nombre:</label><input name='nombre'>
 	            	<label>Ayuda:</label><textarea name='ayuda'></textarea>
-	            	<label>Tipo de campo:</label><select name='tipo' onchange='cambiaTipoCampo()'>
+	            	<label>Tipo:</label><select name='tipo' onchange='cambiaTipoCampo(this)'>
 	            		<option>- elegir -</option>
 	            		<option value='texto'>texto</option>
 	            		<option value='checkbox'>checkbox</option>
 	            		<option value='select'>menu desplegable</option>
 	            		<option value='numero'>numero</option>
+	            		<option value='fecha'>fecha</option>
 	            		<option value='coleccion_imagenes'>imagenes</option>
 	            	</select>
 	            	
 	            	<div para='select'>
-	            	<label>opciones (separar con slto de línea):</label><textarea name='opciones_select'></textarea>
+						<label>opciones (separar con salto de línea):</label><textarea class='chico' name='opciones_select'></textarea>
 	            	</div>
 	            	
 	            	<div para='numero'>
-	            	<label>Unidad de Medida:</label><input name='unidademedida'>	            	
+						<label>Unidad de Medida:</label><input name='unidademedida'>	            	
 	            	</div>
-	            	
-	            	<label>Incorporar a una matriz de campos</label>
-	            	<input para='matriz' type='checkbox' onchange='toogleCheck(this);cambiaMatrizCampo()'><input name='matriz' type='hidden' value='-1'>
+	            	<div para='fecha'>
+						<label>fecha de archivado:</label><input type='checkbox' name='es_fecha_archivo'>	            	
+	            	</div>
+	            	<label >en tabla</label>
+					<input para='matriz' type='checkbox' onchange='toogleCheck(this);cambiaMatrizCampo(this)'><input name='matriz' type='hidden' value='-1'>
 	            	<div para='matriz'>
-	            		<label>Nombre matriz (debe ser igual en todos sus campos):</label><input name='nombre_matriz'>
+	            		<label class=''>Nombre tabla: <br><span class='aux'> (igual en todos sus campos)</span></label><input name='nombre_matriz'><br>
 	            		<label>Nombre columna:</label><input name='nombre_columna'>
 	            		<label>Nombre fila:</label><input name='nombre_fila'>	            		
 	            	</div>	
@@ -312,18 +369,104 @@ $starttime = microtime(true);
 
 	var _Acc = "rele";
 	var _IdUsu='<?php echo $_SESSION["geogec"]["usuario"]['id'];?>';
-</script>
-<script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
-<script type="text/javascript" src="./sistema/sis_acciones.js"></script> <!-- funciones de consulta general del sistema: acciones -->
+	
+	<?php if(!isset($_GET["idr"])){$_GET["idr"]='';} ?>
+	var _idCampa = '<?php echo $_GET["idr"];?>';
+		
+	//Variable de filtro en búsquedas de datos.
+    <?php if(!isset($_SESSION['geogec']['usuario']['recorte'])){$_SESSION['geogec']['usuario']['recorte']='';};?>
+	_RecorteDeTrabajo=JSON.parse('<?php echo json_encode($_SESSION['geogec']['usuario']['recorte']);?>');
+	
+	
+	//funciones para consultar datos y mostrarlos
+	var _Tablas={};
+	var _TablasConf={};
+	var _SelecTabla='';//define si la consulta de nuevas tablas estará referido al elmento existente de una pabla en particular; 
+	var _SelecElemCod=null;//define el código invariable entre versiones de un elemento a consultar (alternativa a _SelElemId);
+	var _SelecElemId=null;//define el id de un elemento a consultar (alternativa a _SelElemCod);
 
-<script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
-<script type="text/javascript" src="./app_rele/app_rele_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
-<script type="text/javascript" src="./app_rele/app_rele_consultas.js"></script> <!-- carga funciones de operacion de la pagina -->
-<script type="text/javascript" src="./app_rele/app_rele_pagina.js"></script> <!-- carga funciones de operacion de la pagina -->
-<script type="text/javascript" src="./app_rele/app_rele_uploads.js"></script> <!-- carga funciones de operacion del formulario central para la carga de SHP -->
-<script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
+
+	var _IdMarco = getParameterByName('id');
+	var _CodMarco = getParameterByName('cod');	
+	var _DataUsuaries={};
+
+	var _Features={};
+	var _DataRele={};
+	var _DataCapa=Array();
+	var _DataRegistro={}; //archivo los datos vigentes de registro para una geometría (actuales e históricos);
+	
+	var _DataFormAgurp = {};
+	var _ColumnasNumericasUsadas = [];
+	var _ColumnasTextoUsadas = [];
+	
+	var _idRele = '';
+	
+</script>
+
+<script type="text/javascript" src="./comun_interac/comun_interac.js?t=<?php echo time();?>"></script> <!-- definicion de funcions comunes como la interpretacion de respuestas ajax-->
+
+<script type="text/javascript" src="./sistema/sistema_marco.js?t=<?php echo time();?>"></script> <!-- funciones de consulta general del sistema -->
+<script type="text/javascript" src="./sistema/sis_acciones.js?t=<?php echo time();?>"></script> <!-- carga funcion de consulta de acciones y ejecución, completa _Acciones -->
+
+<script type="text/javascript" src="./comun_mapa/comun_mapa_inicia.js?t=<?php echo time();?>"></script> <!-- definicion de variables comunes para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_recorte.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de recorte para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_selector_capas.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de selector de capa base y extras para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_localiz.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de localizacion de direcciones para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_tamano.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de agrandar mapa-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_descarga.js?t=<?php echo time();?>"></script> <!-- definicion de variables y funciones de descarga del mapa activo-->
+
+<script type="text/javascript" src="./app_rele/app_rele_mapa.js?t=<?php echo time();?>"></script> <!-- carga funciona de gestión de mapa-->
+<script type="text/javascript" src="./app_rele/app_rele_consultas.js?t=<?php echo time();?>"></script> <!-- carga funciones de operacion de la pagina -->
+<script type="text/javascript" src="./app_rele/app_rele_pagina.js?t=<?php echo time();?>"></script> <!-- carga funciones de operacion de la pagina -->
+<script type="text/javascript" src="./app_rele/app_rele_uploads.js?t=<?php echo time();?>"></script> <!-- carga funciones de operacion del formulario central para la carga de SHP -->
+<script type="text/javascript" src="./comunes_consultas.js?t=<?php echo time();?>"></script> <!-- carga funciones de interaccion con el mapa -->
 <script type="text/javascript">
-	consultarElementoAcciones('','<?php echo $_GET['cod'];?>','est_02_marcoacademico');
+	
+	baseMapaaIGN();//cargar mapa base IGN
+	 
+	inicializarColumnas(); //en app_rele_pagina.js define variables en estado false.
+
+	if(_IdUsu<"1"){
+		
+		formUsuario("accede");	
+		
+	}else{
+
+		consultarPermisos();
+		consultarUsuaries();
+
+		cargarListadoCampa();
+		
+		consultarElementoAcciones('','<?php echo $_GET['cod'];?>','est_02_marcoacademico');
+		
+		if(_RecorteDeTrabajo!=''){
+			cargaRecorteSession();
+		}
+	
+		if(_idRele!=''){
+			cargarDatosCampa(_idCampa);
+		}
+		
+	}
+	
+	function reingresaGeneral(){
+
+		consultarPermisos();
+		consultarUsuaries();
+
+		cargarListadoCampa();
+		
+		consultarElementoAcciones('','<?php echo $_GET['cod'];?>','est_02_marcoacademico');
+		
+		if(_RecorteDeTrabajo!=''){
+			cargaRecorteSession();
+		}
+	
+		if(_idRele!=''){
+			cargarDatosCampa(_idCampa);
+		}
+		
+	}
 </script>
 
 </body>

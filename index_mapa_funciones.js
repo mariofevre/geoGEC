@@ -48,6 +48,7 @@ mapa.on('click', function(_ev){
 
 var sobrePunto = function(pixel) {
 	if(_mapaEstado=='dibujando'){return;}
+	
 		_feat = mapa.forEachFeatureAtPixel(pixel, function(_feat, _layer){
 	    if(_layer.get('name')=='centroides'){
 			limpiarCentroidesResaltados();

@@ -1,0 +1,33 @@
+User: 157.92.136.17 - July 7, 2022, 4:25 pm
+User: 52
+-------------------------
+Array
+(
+    [0] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='22607'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 768
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2008577'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='25'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='97'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+	
+)

@@ -141,7 +141,7 @@ $starttime = microtime(true);
 				<div id='lista'></div>	
 			</div>
         </div>	
-        <div class="portamapa">
+        <div id="portamapa">
             <div id='titulomapa'>
                 <p id='tnombre'></p>
                 <h1 id='tnombre_humano'></h1>
@@ -223,13 +223,26 @@ $starttime = microtime(true);
 </div>
 
 
+
+<script type="text/javascript" src="./comun_interac/comun_interac.js"></script> <!-- definicion de funcions comunes como la interpretacion de respuestas ajax-->
+
 <script type="text/javascript" src="./sistema/sistema_marco.js"></script> <!-- funciones de consulta general del sistema -->
-<script type="text/javascript" src="./index_mapa.js"></script> <!-- carga funciona de gestión de mapa-->
+<!---<script type="text/javascript" src="./sistema/sis_acciones.js"></script> <!-- funciones de consulta general del sistema: acciones -->
+
+<script type="text/javascript" src="./comun_mapa/comun_mapa_inicia.js"></script> <!-- definicion de variables comunes para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_recorte.js"></script> <!-- definicion de variables y funciones de recorte para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_selector_capas.js"></script> <!-- definicion de variables y funciones de selector de capa base y extras para mapas en todos los módulos-->
+<script type="text/javascript" src="./comun_mapa/comun_mapa_localiz.js"></script> <!-- definicion de variables y funciones de definicion de variables y funciones de localizacion de direcciones para mapas en todos los módulos-->
+
+
 <script type="text/javascript" src="./app_game/app_game_queries.js"></script> <!-- carga funciones de consulta de base de datos -->
 <script type="text/javascript" src="./app_game/app_game_pagina.js"></script> <!-- carga funciones de operacion de la pagina -->
 <script type="text/javascript" src="./app_game/app_game_mapa.js"></script> <!-- carga funciones de interaccion con el mapa -->
 <script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
 <script type="text/javascript">
+	
+		baseMapaaIGN();//cargar mapa base IGN
+			
 	consultarElementoAcciones('','<?php echo $_GET['cod'];?>','est_02_marcoacademico');
 </script>
 

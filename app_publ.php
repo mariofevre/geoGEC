@@ -105,7 +105,7 @@ $starttime = microtime(true);
 				<div id='lista'></div>	
 			</div>
         </div>	
-        <div class="portamapa">
+        <div id="portamapa">
             <div id='titulomapa'>
                 <p id='tnombre'></p>
                 <h1 id='tnombre_humano'></h1>
@@ -238,7 +238,6 @@ $starttime = microtime(true);
 <script type="text/javascript" src="./app_publ/app_publ_consultas.js"></script> <!-- carga funciones de consulta de base de datos -->
 <script type="text/javascript" src="./app_publ/app_publ_pagina.js"></script> <!-- carga funciones de operacion de la pagina -->
 <script type="text/javascript" src="./app_publ/app_publ_mapa_funciones.js"></script> <!-- carga funciones de operacion de la pagina -->
-<script type="text/javascript" src="./app_ind/app_ind_mapa.js"></script> <!-- carga funciones de interaccion con el mapa -->
 <script type="text/javascript" src="./comunes_consultas.js"></script> <!-- carga funciones de interaccion con el mapa -->
 <script type="text/javascript">
 	consultarElementoAcciones('','<?php echo $_GET['cod'];?>','est_02_marcoacademico');

@@ -1,0 +1,285 @@
+User: 181.114.145.43 - September 5, 2022, 3:37 pm
+User: 92
+-------------------------
+Array
+(
+    [0] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23365'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='100'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [1] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23366'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='101'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [2] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23367'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='102'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [3] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23368'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='103'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [4] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23369'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='104'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [5] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23370'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='105'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [6] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23371'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='106'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [7] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23372'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='107'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+    [8] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23373'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 964
+		AND
+			ref_rele_registros.id='963'			
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2225270'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='28'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='108'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'PIUBACCGEC2022'		
+
+		
+	
+)

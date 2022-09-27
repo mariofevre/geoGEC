@@ -1,0 +1,114 @@
+User: 186.137.154.83 - August 26, 2022, 11:39 am
+User: 1
+-------------------------
+Array
+(
+    [0] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23100'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 893
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2224529'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='33'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='136'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [1] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23101'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 893
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2224529'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='33'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='137'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [2] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23102'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 893
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2224529'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='33'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='138'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+    [3] => 
+	
+		UPDATE 
+			geogec.ref_rele_registros_datos
+		SET
+			zz_superado='1',
+			zz_auto_supera_id='23103'
+			
+		FROM 
+			geogec.ref_rele_registros
+		WHERE
+			ref_rele_registros_datos.id_p_ref_rele_registros = ref_rele_registros.id
+		AND
+			ref_rele_registros.id != 893
+		AND
+			ref_rele_registros.id_p_ref_capas_registros = '2224529'
+		AND
+			ref_rele_registros_datos.zz_superado='0'
+		AND
+			ref_rele_registros_datos.zz_borrada='0'
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campa='33'		
+		AND
+			ref_rele_registros_datos.id_p_ref_rele_campos='139'
+		AND
+			ref_rele_registros_datos.ic_p_est_02_marcoacademico = 'VECPC2022'		
+	
+)

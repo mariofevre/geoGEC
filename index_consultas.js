@@ -56,41 +56,50 @@ function actualizarPermisos(){
 		_lista=document.querySelector('div#cuadrovalores #menupropios #lista');
 		
 		console.log(_UsuarioA);
-		if(_UsuarioA.permisos==undefined){
-			_lista.innerHTML='- sin proyectos con acceso aun -';
-		}else if(Object.keys(_UsuarioA.permisos.marcos).length < 1){
-			_lista.innerHTML='- sin proyectos con acceso aun -';
-		}else{
-			_lista.innerHTML='';
-			for(_mcod in _UsuarioA.permisos.marcos){
+		
+		if(_lista !=null){
+			// solo se usa en index.php
 			
-				_dat=_UsuarioA.permisos.marcos[_mcod];
+			if(_UsuarioA.permisos==undefined){
+				_lista.innerHTML='- sin proyectos con acceso aun -';
+			}else if(Object.keys(_UsuarioA.permisos.marcos).length < 1){
+				_lista.innerHTML='- sin proyectos con acceso aun -';
+			}else{
+				_lista.innerHTML='';
+				for(_mcod in _UsuarioA.permisos.marcos){
 				
-				if(_dat.maxacc==0){continue;}
-				
-				_aaa=document.createElement('a');
-				_aaa.setAttribute('cod',_mcod);
-				_aaa.setAttribute('onclick',"consultarPropio(this.getAttribute('cod'))");
-				_aaa.setAttribute('onmouseover',"cargarElementoPropio(this.getAttribute('cod'))");
-				_aaa.setAttribute('onmouseout',"desCargarElementoPropio(this.getAttribute('cod'))");
-				_lista.appendChild(_aaa);
-				
-				_spa=document.createElement('span');
-				_spa.setAttribute('class','nom');
-				_spa.innerHTML=_dat.nombre;
-				_aaa.appendChild(_spa);
-				
-				_spa2=document.createElement('span');
-				_spa2.setAttribute('class','cod');
-				_spa2.innerHTML=_mcod;
-				_aaa.appendChild(_spa2);
-				
-				
+					_dat=_UsuarioA.permisos.marcos[_mcod];
+					
+					if(_dat.maxacc==0){continue;}
+					
+					_aaa=document.createElement('a');
+					_aaa.setAttribute('cod',_mcod);
+					_aaa.setAttribute('onclick',"consultarPropio(this.getAttribute('cod'))");
+					_aaa.setAttribute('onmouseover',"cargarElementoPropio(this.getAttribute('cod'))");
+					_aaa.setAttribute('onmouseout',"desCargarElementoPropio(this.getAttribute('cod'))");
+					_lista.appendChild(_aaa);
+					
+					_spa=document.createElement('span');
+					_spa.setAttribute('class','nom');
+					_spa.innerHTML=_dat.nombre;
+					_aaa.appendChild(_spa);
+					
+					_spa2=document.createElement('span');
+					_spa2.setAttribute('class','cod');
+					_spa2.innerHTML=_mcod;
+					_aaa.appendChild(_spa2);
+					
+					
+				}
 			}
+		
+		consultarTablas(); // solo se ejecuta en index.php
+			
 		}
 	}
 	
-	consultarTablas();
+	
+	
 	
 	
 }
@@ -136,7 +145,7 @@ function consultarTablas(){
 					_aaa.title=_Tablas['est'][_nn];
 					_aaa.setAttribute('tabla',_Tablas['est'][_nn]);
 					_aaa.setAttribute('class','nombretabla');
-					_aaa.setAttribute('onclick','mostrartabla(this)');
+					_aaa.setAttribute('onclick','_Est="";_Cod="";mostrartabla(this)');
 					_cont.appendChild(_aaa);
 					
 					
@@ -184,6 +193,7 @@ function consultarTablas(){
 				
 			if(_Est!=null && _Est!=''){
 				console.log(_Est);
+				//consultarElemento("0",_Cod,_Est);
 				mostrartabla(document.querySelector('#lista > a.nombretabla[tabla="'+_Est+'"]'));
 			}
 		
@@ -230,7 +240,9 @@ function mostrartabla(_this){
 		document.querySelector('#titulomapa #tdescripcion').innerHTML=_TablasConf[_tabla].resumen;
 	}
 	
-	mostrarTablaEnMapa(_tabla);	
+	if(_Est==''){
+		mostrarTablaEnMapa(_tabla);	
+	}
 	consultarCentroides(_tabla);
 }
 
@@ -301,11 +313,9 @@ function consultarCentroides(_tabla){
 									
 				}
 				
-				if(_MapaCargado=='si'){
-					
+				if(_MapaCargado=='si'){					
 					_ext= _lyrCentSrc.getExtent();
-					mapa.getView().fit(_ext, { duration: 1000 });
-					
+					mapa.getView().fit(_ext, { duration: 1000 });					
 				}
 				
 				if(_Cod != ''){							
@@ -384,6 +394,7 @@ function limpiarListascarga(){
 
 
 function consultarPropio(_codElem){
+
 	
 	document.querySelector('#menudatos #titulo').innerHTML='';
 	document.querySelector('#menudatos #lista').innerHTML='';
@@ -425,13 +436,14 @@ function consultarPropio(_codElem){
 			if(_res.res!='exito'){	alert('error al consultar el servidor');return;}
 			
 			_DataElem=_res.data.elemento;
+			_DataConf=_res.data.tablasConf;
 			
 			_campocod=_res.data.tablasConf.campo_id_geo;
 			_camponom=_res.data.tablasConf.campo_id_humano;
 			_campodesc=_res.data.tablasConf.campo_desc_humano;
 							
 			document.querySelector('#menuacciones #titulo').innerHTML=_res.data.elemento.nombre;
-			document.querySelector('#menuacciones #titulo').innerHTML="acciones disponibles";
+			document.querySelector('#menuacciones #titulo').innerHTML="Módulos disponibles";
 			_lista=document.querySelector('#menuacciones #lista');	
 			
 			
@@ -442,6 +454,7 @@ function consultarPropio(_codElem){
 					document.querySelector('#menuacciones').style.display='block';
 					_li=document.createElement('a');
 					_li.setAttribute('href','./'+_accnom+'.php?cod='+_res.data.elemento[_campocod]);
+					_li.setAttribute('activa',_accndata.activo);
 					_la=document.createElement('img');
 					_la.setAttribute('src','./img/'+_accnom+'.png');
 					_la.setAttribute('alt',_accnom);
@@ -531,7 +544,7 @@ function consultarPropio(_codElem){
 }
 
 function consultarElemento(_idElem,_codElem,_tabla){
-	
+		
 	document.querySelector('#menudatos #titulo').innerHTML='';
 	document.querySelector('#menudatos #lista').innerHTML='';
 	document.querySelector('#menudatos').removeAttribute('style');
@@ -540,7 +553,7 @@ function consultarElemento(_idElem,_codElem,_tabla){
 	document.querySelector('#menuacciones').removeAttribute('style');
 	
 	
-	limpiarListascarga()
+	limpiarListascarga();
 	
 	_SelecElemCod=_codElem;
 	_SelecTabla=_tabla;
@@ -571,23 +584,24 @@ function consultarElemento(_idElem,_codElem,_tabla){
 			}
 			if(_res.res!='exito'){	alert('error al consultar el servidor');return;}
 			
+			_DataElem=_res.data.elemento;
+			_DataConf=_res.data.tablasConf;
 			
 			_campocod=_res.data.tablasConf.campo_id_geo;
 			_camponom=_res.data.tablasConf.campo_id_humano;
 			_campodesc=_res.data.tablasConf.campo_desc_humano;
 							
 			document.querySelector('#menuacciones #titulo').innerHTML=_res.data.elemento.nombre;
-			document.querySelector('#menuacciones #titulo').innerHTML="acciones disponibles";
+			document.querySelector('#menuacciones #titulo').innerHTML="Módulos disponibles";
 			_lista=document.querySelector('#menuacciones #lista');	
 			
-			
 			for(_accnom in _res.data.tablasConf.acciones){
-				
 				_accndata=_res.data.tablasConf.acciones[_accnom];	
 				if(_res.data.elemento.accesoAccion[_accnom]>0){
 					document.querySelector('#menuacciones').style.display='block';
 					_li=document.createElement('a');
 					_li.setAttribute('href','./'+_accnom+'.php?cod='+_res.data.elemento[_campocod]);
+					_li.setAttribute('activa',_accndata.activo);
 					_la=document.createElement('img');
 					_la.setAttribute('src','./img/'+_accnom+'.png');
 					_la.setAttribute('alt',_accnom);
@@ -598,7 +612,6 @@ function consultarElemento(_idElem,_codElem,_tabla){
 			}
 			
 			document.querySelector('#menudatos').style.display='block';
-			
 			document.querySelector('#menudatos #titulo').innerHTML=_res.data.elemento[_camponom];
 			
 			if(_campodesc==null){
@@ -607,7 +620,6 @@ function consultarElemento(_idElem,_codElem,_tabla){
 				_desc=_res.data.elemento[_campodesc];
 			}
 			document.querySelector('#menudatos #descripcion').innerHTML=_desc;
-			
 			
 			_lista=document.querySelector('#menudatos #lista');	
 			for(_nd in _res.data.elemento){
@@ -628,10 +640,8 @@ function consultarElemento(_idElem,_codElem,_tabla){
 				_sp.setAttribute('class','dato');
 				_sp.innerHTML=_res.data.elemento[_nd];
 				_li.appendChild(_sp);
-				_lista.appendChild(_li);	
-				
+				_lista.appendChild(_li);					
 			}
-			
 			
 			document.querySelector('#menuelementos #lista [centid="'+_res.data.elemento.id+'"]').setAttribute('cargado','si');	
 			
@@ -675,10 +685,16 @@ function consultarElemento(_idElem,_codElem,_tabla){
 						200
 				);
 			}	
+			
+			
+			
 								
 			//generarItemsHTML();		
 			//generarArchivosHTML();
 		
+			if(_Est!=''){
+				_lyrCentSrc.clear();
+			}
 		
 			
 		}

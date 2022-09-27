@@ -24,73 +24,36 @@
 * 
 * Si usted no cuenta con una copia de dicha licencia puede encontrarla aquí: <http://www.gnu.org/licenses/>.
 */
-//funciones para el control del mapa
-
-var _MapaCargado='no';
-var _mapaEstado='';
-var mapa={};
-var vectorLayer={};
-var seleccionLayer={};
-var _source={};
-var _souceSeleccion={};
-var _AIsel='';
-var _view={};
-var _Dibujando='no';
 
 
-var	_ExtraBaseWmsSource = new ol.source.TileWMS();//variable source utilizada por la capa extra base wms para mostar un url asignado dinámicamente.
-var La_ExtraBaseWms = new ol.layer.Tile();
-
-//definicion de variables para el layer de centroides
-var _lyrCentSrc = new ol.source.Vector(
-	{
-		attributions: ['contenidos: <a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>']
-  	}
-);
-
-
-var _lyrCent = new ol.layer.Vector({
-	name:'centroides'
-});   
-var _CentSelStyle = new ol.style.Style();
-var _CentStyle = new ol.style.Style();
-//definicion de variables para el layer de elemento consultado
-var _lyrElemSrc = new ol.source.Vector(
-	{
-		attributions: ['contenidos: <a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>']
-  	}	
-);
-
-var _lyrElemStyle = new ol.style.Style();
-var _lyrElem = new ol.layer.Vector({
-	name:'elemento consultado',
-	source: _lyrElemSrc
-
-});   
-_lyrElem.setStyle(_CentSelStyle);
-
-
-_lyrPropiosStyle = new ol.style.Style({
-		fill: new ol.style.Fill({color: 'rgba(255,102,0,0.5)'}),
-		stroke: new ol.style.Stroke({color: 'rgba(255,102,0,0.8)',width: 2}),
-		zIndex:1
-    });
-var _lyrPropiosSrc = new ol.source.Vector(
-	{
-		attributions: ['contenidos: <a href="http://www.municipioscosteros.org/nuestros-principios.aspx">GEC</a>']
-  	}	
-);
-var _lyrPropios = new ol.layer.Vector({
-	name:'proyectos propios',
-	source: _lyrPropiosSrc,
-	style: _lyrPropiosStyle
-});   
-
-
-
-var _sMarco = new ol.source.Vector({        
-  projection: 'EPSG:3857'      
+var _styleMP = new ol.style.Style({
+	stroke: new ol.style.Stroke({color : '#08afd9', width : 1, lineDash: [3,2]}),
+	fill: new ol.style.Fill({color : 'rgba(255,150,150,0.0)'})
+});
+var _sourceMarcoPropuesto = new ol.source.Vector({        
+	projection: 'EPSG:3857',
+	wrapX: false // sin este set no funciona el draw ¨\:i/¨
 }); 
+var _layerMarcoPropuesto = new ol.layer.Vector({
+	style:_styleMP,
+	source: _sourceMarcoPropuesto,
+		zIndex:9
+});
+
+var _dibujandoMarcoPropuesto='no';
+_sourceMarcoPropuesto.on('change', function(evt){		
+	if(_dibujandoMarcoPropuesto=='no'){return;}
+	_dibujandoMarcoPropuesto=='no';
+	mapa.removeInteraction(_drawMarcoPropuesto);
+	_features=_sourceMarcoPropuesto.getFeatures();
+	
+	var _format = new ol.format.WKT();
+	_geometriatx=_format.writeGeometry(_features[0].getGeometry());
+	
+	document.querySelector('#crearMarco [name="geomtx"]').value=_geometriatx;
+	document.querySelector('#formconfig').setAttribute('modo','nomal');	
+	
+});
 
 
 
@@ -254,29 +217,6 @@ function cargarMapa(){
       minZoom:2,
       maxZoom:19	      
 	});
-
-
-	var _sMascaraMalvinas = new ol.source.Vector({});	
-    
-	var _layerMascaraMalvinas= new ol.layer.Vector({
-		/*style: new ol.style.Style({
-			stroke: new ol.style.Stroke({color : 'rgba(0,0,0,1)', width : 1}),
-	    	fill: new ol.style.Fill({color : 'rgb(0,0,0)'})
-		}),*/
-		style: null,		
-		source: _sMascaraMalvinas
-	});			
-	
-	_wkt='POLYGON((-7140000 -6400000 , -5600000 -6400000 , -5600000 -7000000 , -7140000 -7000000 , -7140000 -6400000 ))';
-	var _format = new ol.format.WKT();
-	var _ft = _format.readFeature(_wkt, {
-        dataProjection: 'EPSG:3857',
-        featureProjection: 'EPSG:3857'
-    });	    
-   	_sMascaraMalvinas.addFeature(_ft);
-	
-
-	   
 	
 
 	   	
@@ -298,14 +238,18 @@ function cargarMapa(){
 	
 	
 	
-	var _sourceBaseOSM=new ol.source.Stamen({
-		layer: 'toner'
+	_sourceIGN= new ol.source.TileWMS({
+        url: 'https://wms.ign.gob.ar/geoserver/mapabase_gris/gwc/service/wms',
+        params: {
+	        'VERSION': '1.1.1',
+	        tiled: true,
+	        LAYERS: 'mapabase_gris',
+	        STYLES: '',
+        }
 	});
-	
-	_sourceBaseOSM.setAttributions(
-		['base: <a href="http://stamen.com/">Stamen Design</a>, <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>']
-	)
-
+	_layerBase = new ol.layer.Tile({
+		 source: _sourceIGN,	
+	});
 	
 	var _sourceBaseBING=new ol.source.BingMaps({
 	 	key: 'CygH7Xqd2Fb2cPwxzhLe~qz3D2bzJlCViv4DxHJd7Iw~Am0HV9t9vbSPjMRR6ywsDPaGshDwwUSCno3tVELuob__1mx49l2QJRPbUBPfS8qN',
@@ -315,24 +259,18 @@ function cargarMapa(){
 	_sourceBaseBING.setAttributions(
 		['base satelital: <a target="blank" href="https://www.microsoft.com/en-us/maps/product"><img src="https://dev.virtualearth.net/Branding/logo_powered_by.png"> Microsoft</a>']
 	)
-	
-	var layerOSM = new ol.layer.Tile({
-		 source: new ol.source.Stamen({layer: 'toner'}),	
-	});
-	
-	
-	_layerMascaraMalvinas.getSource().on('addfeature', function () {
-	  layerOSM.setExtent(_layerMascaraMalvinas.getSource().getExtent());
-	});  
-		 
+
+        
+	_lyrCent.setStyle(_CentStyle);
+
 	
 	var style = new ol.style.Style ({
 	  fill: new ol.style.Fill({
 	    color: 'black',
 	  }),
 	});
-	
-	layerOSM.on('postrender', function (e) {
+	/*
+	_layerOSM.on('postrender', function (e) {
 	  var vectorContext = ol.render.getVectorContext(e);
 	  e.context.globalCompositeOperation = 'destination-out';
 	  _layerMascaraMalvinas.getSource().forEachFeature(function (feature) {
@@ -342,6 +280,7 @@ function cargarMapa(){
 	});
 	
    	//_sMascaraMalvinas.addFeature(_ft);
+	*/
 	
 	var layerBing = new ol.layer.Tile({
 		 
@@ -361,8 +300,9 @@ function cargarMapa(){
     
 	mapa = new ol.Map({
 	    layers: [
-			layerOSM,
-			_layerMascaraMalvinas,
+			_layerBase,
+			//_layerIGN,
+			//_layerMascaraMalvinas,
 			layerBing,
 			seleccionLayer,
 			vectorLayer,
@@ -375,6 +315,8 @@ function cargarMapa(){
 			_lyrCent,
 			_lyrElem,
 			_lyrPropios,
+			_layerRecorte,
+			_layerMarcoPropuesto,
 			marcoLayer
 	    ],
 	    target: 'mapa',
@@ -418,6 +360,10 @@ function cargarMapa(){
 		//mostrarArea(parent._Adat);	
 	}
 
+
+	
+	
+	
 		
 	function consultaPuntoAj(_Pid){
 		console.log(_Pid);
@@ -461,6 +407,23 @@ function cargarCapaMarco(){
 	   	_sMarco.addFeature(_ft);
    	} 
 }
+
+
+
+function cargarMascaraIGN(){
+	$.ajax({
+		data: _parametros,
+		url:   './mascaraIGN.geojson',
+		type:  'post',
+		success:  function (response){
+			desactivarConsultando();
+			var _res = $.parseJSON(response);
+			console.log(_res);
+			
+		}
+	})
+}
+	
 
 function cargarElementoPropio(_codSel){
 

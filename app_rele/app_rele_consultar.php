@@ -83,14 +83,18 @@ if($Acc<1){
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
 $query="
-	SELECT  *
+	SELECT  
+		ref_rele_campa.*,
+		ref_capasgeo.tipogeometria
     FROM    geogec.ref_rele_campa
+    LEFT JOIN
+		geogec.ref_capasgeo ON ref_capasgeo.id = ref_rele_campa.id_p_ref_capasgeo AND ref_capasgeo.ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
     WHERE 
-    	ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+    	ref_rele_campa.ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
     AND
-        zz_borrada = '0'
+        ref_rele_campa.zz_borrada = '0'
     AND 
-    	id = '".$_POST['idcampa']."'
+    	ref_rele_campa.id = '".$_POST['idcampa']."'
 ";
 
 
@@ -110,11 +114,13 @@ if (pg_num_rows($Consulta) == 0){
 	terminar($Log);
 }
 
- //Asumimos que solo devuelve una fila
+//Asumimos que solo devuelve una fila
 $fila=pg_fetch_assoc($Consulta);
 $Log['tx'][]= "Consulta de indicador existente id: ".$fila['id'];
-$Log['data']=$fila;
-
+//$Log['data']=$fila;
+foreach($fila as $k => $v){
+	$Log['data'][$k]=$v;
+}
 
 $query="
 	SELECT  
@@ -134,7 +140,7 @@ $query="
         zz_borrada = '0'
     AND 
     	id_p_ref_rele_campa = '".$_POST['idcampa']."'
-    order by orden asc
+    order by orden asc, id asc
 ";
 
 
@@ -147,12 +153,15 @@ if(pg_errormessage($ConecSIG)!=''){
 	terminar($Log);	
 }
 
+$Log['data']['camposOrden']=array();
+$Log['data']['campos']=array();
 while($row = pg_fetch_assoc($Consulta)){
 	$Log['data']['camposOrden'][]=$row['id'];
 	foreach($row as $k => $v){
 		$Log['data']['campos'][$row['id']][$k]=$v;
 	}
 }
+
 
 
 

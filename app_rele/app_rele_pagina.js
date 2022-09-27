@@ -26,12 +26,12 @@ function accionCreaCancelar(_this){
     limpiarFormularioCampas();
     limpiarFormularioCapa();
     
-    document.getElementById('formEditarCampa').style.display='none';
-    document.getElementById('formSeleccionCampa').style.display='none';
-    document.getElementById('divListaCampaCarga').style.display='none';
+    //document.getElementById('formEditarCampa').style.display='none';
+    //document.getElementById('formSeleccionCampa').style.display='none';
+    //document.getElementById('divListaCampaCarga').style.display='none';
     document.querySelector('#divListaCampaCarga #botonSeleccionarCampaCambio').removeAttribute('idcampa');
-    document.getElementById('divMenuAccionesCrea').style.display='none';
-    document.getElementById('botonCrearCampa').style.display='block';
+    //document.getElementById('divMenuAccionesCrea').style.display='none';
+    //document.getElementById('botonCrearCampa').style.display='block';
     
     accionCancelarSeleccionCapa(_this);
 }
@@ -39,12 +39,33 @@ function accionCreaCancelar(_this){
 
 function editarCampa(){
 	
-	document.querySelector('#carga.formCargaCampaCuerpo #campaNombre').value=_DataRele.nombre;
-	document.querySelector('#carga.formCargaCampaCuerpo #campaDescripcion').value=_DataRele.descripcion;
+	document.querySelector('#edicionCampa.formCargaCampaCuerpo #campaNombre').value=_DataRele.nombre;
+	document.querySelector('#edicionCampa.formCargaCampaCuerpo #campaDescripcion').value=_DataRele.descripcion;
 	
-	document.querySelector('#carga.formCargaCampaCuerpo').style.display='block';
+	document.querySelector('#edicionCampa.formCargaCampaCuerpo [name="unidadanalisis"]').value=_DataRele.unidadanalisis;
+	
+	_tipo='';
+	if(_DataCapa!=undefined){_tipo=_DataCapa.tipogeometria;}
+	
+	document.querySelector('#edicionCampa.formCargaCampaCuerpo [name="tipogeometria"]').value=_tipo;
+	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('releeditando','si');
+	
+	
+	//document.querySelector('#carga.formCargaCampaCuerpo').style.display='block';
 }
 
+function cancelarEditarCampa(){
+	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('releeditando','no');	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('relecargado','no');	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('geometriaeditando','no');	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('camposeditando','no');	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no');	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('nuevaUAhabilitado','no');					
+	cargarListadoCampa();	
+	_encuadrado='no';
+}
 
 function accionCreaEliminar(_this){
     //console.log('eliminarCandidatoIndicador()');
@@ -58,7 +79,7 @@ function accionCreaEliminar(_this){
 
 function activacargarGeometrias(){
 	
-	document.querySelector('#cargarGeometrias').style.display='block';
+	//document.querySelector('#cargarGeometrias').style.display='block';
 	
 }
 
@@ -106,12 +127,12 @@ function accionCargaCancelar(_this){
     limpiarFormularioCapa();
     limpiarFormularioIndPublicados();
     
-    document.getElementById('formEditarCampa').style.display='none';
-    document.getElementById('formSeleccionCampa').style.display='none';
-    document.getElementById('divListaCampaCarga').style.display='none';
+    //document.getElementById('formEditarCampa').style.display='none';
+    //document.getElementById('formSeleccionCampa').style.display='none';
+    //document.getElementById('divListaCampaCarga').style.display='none';
     document.querySelector('#divListaCAmpaCarga #botonSeleccionarCampaCambio').removeAttribute('idind');
     //document.getElementById('divMenuAccionesCarga').style.display='none';
-    document.getElementById('botonCrearIndicador').style.display='block';
+    //document.getElementById('botonCrearIndicador').style.display='block';
     
    _source_ind.clear();
    _source_ind_buffer.clear();
@@ -123,14 +144,13 @@ function accionCargaCancelar(_this){
 }
 
 function accionCrearCampa(_this){
-	alert('Función en desarrollo');
-	return;
+
     generarNuevaCampa();
-    document.getElementById('formEditarCampa').style.display='inline-block';
-    document.getElementById('divMenuAccionesCrea').style.display='inline-block';
-    document.getElementById('botonCrearCampa').style.display='none';
-    document.getElementById('divSeleccionCampaCuerpo').style.display='none';   
-    document.getElementById('divListaCampaCarga').style.display='none';   
+    //document.getElementById('formEditarCampa').style.display='inline-block';
+    //document.getElementById('divMenuAccionesCrea').style.display='inline-block';
+    //document.getElementById('botonCrearCampa').style.display='none';
+    //document.getElementById('divSeleccionCampaCuerpo').style.display='none';   
+    //document.getElementById('divListaCampaCarga').style.display='none';   
 }
 
 function accionCargarCampa(){
@@ -138,23 +158,22 @@ function accionCargarCampa(){
     limpiarFormularioCampa();
     
     
-    document.getElementById('formSeleccionInd').style.display='inline-block';
+    //document.getElementById('formSeleccionInd').style.display='inline-block';
     //document.getElementById('divMenuAccionesCarga').style.display='inline-block';
-    document.getElementById('botonCrearIndicador').style.display='block';
+    //document.getElementById('botonCrearIndicador').style.display='block';
 }
 //accionCargarCampa();
 
-cargarListadoCampa();
-    
+
     
 function accionModificarIndicador(_this){
     if(confirm("Editar Indicadores ya publicados puede causar errores en el sistema. \n Esta seguro que desea continuar con esta operacion?")){
         limpiarFormularioIndPublicados();
         cargarListadoIndicadoresPublicadosAModificar();
 
-        document.getElementById('formSeleccionInd').style.display='inline-block';
-        document.getElementById('divMenuAccionesCrea').style.display='inline-block';
-        document.getElementById('botonCrearIndicador').style.display='none';
+        //document.getElementById('formSeleccionInd').style.display='inline-block';
+        //document.getElementById('divMenuAccionesCrea').style.display='inline-block';
+        //document.getElementById('botonCrearIndicador').style.display='none';
         
     }
 }
@@ -162,19 +181,19 @@ function accionModificarIndicador(_this){
 function accionSeleccionarCapa(_this){
     cargarListadoCapasPublicadas();
     
-    document.getElementById('formSeleccionCapa').style.display='block';
+    //document.getElementById('formSeleccionCapa').style.display='block';
     //document.getElementById('AccionesSeleccionCapa').style.display='none';
-    document.getElementById('botonSeleccionarCapa').style.display='none';
-    document.getElementById('botonCancelarSeleccionarCapa').style.display='block';
+    //document.getElementById('botonSeleccionarCapa').style.display='none';
+    //document.getElementById('botonCancelarSeleccionarCapa').style.display='block';
 }
 
 function accionCancelarSeleccionCapa(_this){
     limpiarFormularioSeleccionCapa();
     
-    document.getElementById('formSeleccionCapa').style.display='none';
+    //document.getElementById('formSeleccionCapa').style.display='none';
     //document.getElementById('AccionesSeleccionCapa').style.display='block';
-    document.getElementById('botonSeleccionarCapa').style.display='block';
-    document.getElementById('botonCancelarSeleccionarCapa').style.display='none';
+    //document.getElementById('botonSeleccionarCapa').style.display='block';
+    //document.getElementById('botonCancelarSeleccionarCapa').style.display='none';
     
     //limpiarFormularioCapa();
     //document.getElementById('capaseleccionada').style.display='none';
@@ -183,19 +202,19 @@ function accionCancelarSeleccionCapa(_this){
 function accionSeleccionarCapaCambio(_this){
     cargarListadoCapasPublicadas();
     
-    document.getElementById('formSeleccionCapa').style.display='block';
+    //document.getElementById('formSeleccionCapa').style.display='block';
     //document.getElementById('AccionesSeleccionCapaCambio').style.display='none';
-    document.getElementById('botonSeleccionarCapaCambio').style.display='none';
-    document.getElementById('botonCancelarSeleccionarCapaCambio').style.display='block';
+    //document.getElementById('botonSeleccionarCapaCambio').style.display='none';
+    //document.getElementById('botonCancelarSeleccionarCapaCambio').style.display='block';
 }
 
 function accionCancelarSeleccionCapaCambio(_this){
     limpiarFormularioSeleccionCapa();
     
-    document.getElementById('formSeleccionCapa').style.display='none';
+    //document.getElementById('formSeleccionCapa').style.display='none';
     //document.getElementById('AccionesSeleccionCapaCambio').style.display='block';
-    document.getElementById('botonSeleccionarCapaCambio').style.display='block';
-    document.getElementById('botonCancelarSeleccionarCapaCambio').style.display='none';
+    //document.getElementById('botonSeleccionarCapaCambio').style.display='block';
+    //document.getElementById('botonCancelarSeleccionarCapaCambio').style.display='none';
     
     //limpiarFormularioCapa();
     //document.getElementById('capaseleccionada').style.display='none';
@@ -302,12 +321,14 @@ function cambiarModoSoloLectura(readonly){
     document.getElementById('inputFechaHasta').setAttribute('disabled', readonly);
 }
 
-var _Features={};
+
 function cargarFeatures(){
     _lyrElemSrc.clear();
+    _haygeom='no';
     for(var elem in _Features){
-
+		if(_Features[elem].geotx!=''){continue;}
         var format = new ol.format.WKT();	
+        _haygeom='si';        
         var _feat = format.readFeature(_Features[elem].geotx, {
             dataProjection: 'EPSG:3857',
             featureProjection: 'EPSG:3857'
@@ -333,25 +354,145 @@ function cargarFeatures(){
           })
         });
         _feat.setStyle (_st);
-
+		
+		
         _lyrElemSrc.addFeature(_feat);
 
         _MapaCargado='si';
     }
-
-    _ext= _lyrElemSrc.getExtent();
-
-    setTimeout(function(){
-        mapa.getView().fit(_ext, { duration: 1000 });
-    }, 50);
+	console.log(_haygeom);
+	if(_haygeom=='si'){
+		_ext= _lyrElemSrc.getExtent();
+		setTimeout(function(){
+			mapa.getView().fit(_ext, { duration: 1000 });
+		}, 50);
+	}else{
+		_ext= _sMarco.getExtent();
+		setTimeout(function(){
+			mapa.getView().fit(_ext, { duration: 1000 });
+		}, 50);
+	}
 }
 
 
+function cargarRegistroHistorico(_id_reg_hist){
+	if(document.querySelector("#selectorarchivo [selecto='si']")!=null){
+		document.querySelector("#selectorarchivo [selecto='si']").setAttribute('selecto','no');
+	}
+	document.querySelector(".historico[id_reg_hist='"+_id_reg_hist+"']").setAttribute('selecto','si');	
+	
+	
+	
+	if(_id_reg_hist=='actual'){
+		_registro=_DataRegistro.registro;
+		_campos=_DataRegistro.campos;	
+		document.querySelector("#FormularioRegistro").setAttribute('modo','actual');
+	}else{
+		_registro=_DataRegistro.historicos[_id_reg_hist].registro;
+		_campos=_DataRegistro.historicos[_id_reg_hist].campos;
+		document.querySelector("#FormularioRegistro").setAttribute('modo','archivado');
+	}
+	limpiarCampos();
+	cargarDefinicionRegistro(_registro);
+	cargarValoresRegistro(_campos);
+}
+
+
+function cargarDefinicionRegistro(_registro){
+	
+	//console.log(_registro);
+	
+	document.querySelector('#FormularioRegistro [name="id_registro"]').value=_registro.id;
+	
+	document.querySelector('#FormularioRegistro #autoria #usu').innerHTML='';
+	document.querySelector('#FormularioRegistro #autoria #fecha').innerHTML='';
+	_idusu= _registro.zz_auto_crea_usu;
+	if(_DataUsuaries.usu[_idusu]!=undefined){
+		_du=_DataUsuaries.usu[_idusu];
+		document.querySelector('#FormularioRegistro #autoria #usu').innerHTML=_du.nombre+' '+_du.apellido+' ('+_idusu+')';
+	
+		var date = new Date(_registro.zz_auto_crea_fechau*1000);
+		var hours = date.getHours();
+		var minutes = "0" + date.getMinutes();
+		var seconds = "0" + date.getSeconds();
+		var formattedTime =  ' '+date.getDate()+'/'+(1+date.getMonth())+'/'+date.getFullYear()+' ('+hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2)+')';
+		document.querySelector('#FormularioRegistro #autoria #fecha').innerHTML= formattedTime; 
+	}
+	
+}
+
+function cargarValoresRegistro(_campos){
+	//console.log(_campos);
+	for(_idcampo in _campos){
+		
+		_tipo=_DataRele.campos[_idcampo].tipo;
+		if(_tipo=='texto'){
+			_valor=	_campos[_idcampo].data_texto;
+		}else if(_tipo=='numero'){
+			_valor=	_campos[_idcampo].data_numero;
+		}else if(_tipo=='fecha'){
+			_valor=	_campos[_idcampo].data_texto;
+		}else if(_tipo=='coleccion_imagenes'){
+			_valor= _campos[_idcampo].data_documento;
+			
+			document.querySelector('#listadoDocumentos[idcampo="'+_idcampo+'"]').innerHTML='';
+			if(_valor!=''&&_valor!=undefined){
+				console.log(_valor);
+				_docs=$.parseJSON(_valor);
+				for(_dn in _docs){
+					_ruta=_docs[_dn].ruta;
+					_nombre=_docs[_dn].nombre;
+					_iddoc=_docs[_dn].iddoc;
+					cargaDeFoto(_nombre,'',_idcampo,_iddoc,_ruta);
+				}	
+			}
+		}
+		document.querySelector('#campospersonalizados [name="'+_idcampo+'"]').value=_valor;
+		$('#campospersonalizados [name="'+_idcampo+'"]').trigger('change');//esto genera el efeco onchange que de otra forma no ocurre por cambiar dinamicametne el valor de un input.
+	}	
+	
+	
+}
+
+function limpiarCampos(){
+	
+		_lis=document.querySelectorAll('#campospersonalizados input, #campospersonalizados textarea');
+		for(_nl in _lis){
+			
+			if(typeof _lis[_nl] != 'object'){continue;}
+			_lis[_nl].value='';
+		}
+		
+		_lis=document.querySelectorAll('#campospersonalizados input[type="checkbox"]');
+		for(_nl in _lis){
+			if(typeof _lis[_nl] != 'object'){continue;}
+			_lis[_nl].checked.false;
+		}
+		
+		_lis=document.querySelectorAll('#campospersonalizados select');
+		for(_nl in _lis){
+			if(typeof _lis[_nl] != 'object'){continue;}
+			_lis[_nl].selectedIndex=0;
+		}
+		
+		_lis=document.querySelectorAll('#campospersonalizados #listadoDocumentos');
+		for(_nl in _lis){
+			if(typeof _lis[_nl] != 'object'){continue;}
+			_lis[_nl].innerHTML='';
+		}
+}
+
+
+
 function cargarListadoCampas(_res){
+	
+	var divRoot = document.getElementById('listacampaspublicadas');
+	divRoot.innerHTML='';
+	
     if (_res.data != null){
         for (var elemCampa in _res.data){
         	document.getElementById('txningunacampa').style.display='none';
-            var divRoot = document.getElementById('listacampaspublicadas');
+           
             var filaCampa = document.createElement('a');
             filaCampa.setAttribute('idind', _res.data[elemCampa]["id"]);
             filaCampa.setAttribute('class', 'filaCampaLista');
@@ -380,24 +521,43 @@ function cargarListadoCampas(_res){
 }
 
 
-var _DataFormAgurp = {};
+
 function cargarCamposFormulario(){
 	
 	_form=document.querySelector('#FormularioRegistro #campospersonalizados');
 	_form.innerHTML='';
 	_DataFormAgurp={};	
+	
+	
+	_sels=document.querySelectorAll('#divReleACapa #campos select');
+	for(_sn in _sels){
+		if(typeof _sels[_sn] != 'object'){continue;}
+		_sels[_sn].innerHTML='<option value="">- elegir -</option>';
+	}
 		
 	for(_cn in _DataRele.camposOrden){
 		_cid=_DataRele.camposOrden[_cn];
 		_cdat = _DataRele.campos[_cid];
 		
+		
+		//crear opción de selección en el formulario de exportación a CAPA
+		_sels=document.querySelectorAll('#divReleACapa #campos select');
+		for(_sn in _sels){
+			if(typeof _sels[_sn] != 'object'){continue;}
+			_op=document.createElement('option');
+			_op.setAttribute('value',_cid);
+			_op.innerHTML=_cdat.nombre;
+			_sels[_sn].appendChild(_op);
+		}
+				
+		//crear input formateado en el formulario de carga.
 		_att={};
 		
 		//console.log(_cdat.inputattributes);
 		if(_cdat.inputattributes!=null){
 			_att=$.parseJSON(_cdat.inputattributes);
 		}
-			
+		
 		_div=document.createElement('div');
 		_div.setAttribute('class','campo');
 		_form.appendChild(_div);
@@ -421,9 +581,6 @@ function cargarCamposFormulario(){
 		_ay.appendChild(_aytx);
 		
 		
-		
-		
-				
 		if(_cdat.tipo=='texto'){
 			_tag='input';			
 			if(_att.tag!=null){
@@ -444,7 +601,7 @@ function cargarCamposFormulario(){
 			}else if(_tag=='input'){
 				
 				if(_type=='text'){
-					
+										
 					_in=document.createElement(_tag);
 					_in.setAttribute('name',_cdat.id);
 					_in.setAttribute('type',_type);
@@ -476,6 +633,23 @@ function cargarCamposFormulario(){
 					_aclara.innerHTML=_op[0];
 					_div.appendChild(_aclara);
 				}
+				
+			}else if(_tag=='select'){
+					
+				//console.log(_op);
+				
+				_in=document.createElement(_tag);
+				_in.setAttribute('name',_cdat.id);	
+				_div.appendChild(_in);
+				
+				_op=_cdat.opciones.split(/\n/);
+				for(_on in _op){
+					_oop=document.createElement('option');
+					_oop.value=_op[_on];
+					_oop.innerHTML=_op[_on];
+					_in.appendChild(_oop);
+				}
+			
 			}
 		}else if(_cdat.tipo=='numero'){
 			
@@ -502,6 +676,28 @@ function cargarCamposFormulario(){
 					_un.innerHTML=_cdat.unidaddemedida;
 					_div.appendChild(_un);
 					
+				}
+			}
+		}else if(_cdat.tipo=='fecha'){
+			
+			_tag='input';				
+			_type='date';	
+			if(_tag=='input'){
+				if(_type=='date'){
+					_in=document.createElement(_tag);
+					_in.setAttribute('type',_type);
+					_in.setAttribute('esfechaarchivo',_att.es_fecha_archivo);
+					_in.setAttribute('class','fecha');
+					_in.setAttribute('name',_cdat.id);
+					_div.appendChild(_in);
+					
+					
+					if(_att.es_fecha_archivo=='si'){
+						_l=document.createElement('label');
+						_l.innerHTML='es fecha de archivado';
+						_l.setAttribute('class','cartelfechaarchivo');
+						_div.appendChild(_l);						
+					}
 				}
 			}
 		}else if(_cdat.tipo=='coleccion_imagenes'){
@@ -934,8 +1130,7 @@ function editarIndFuncionalidad(_event, _this){
     }
 }
 
-var _ColumnasNumericasUsadas = [];
-var _ColumnasTextoUsadas = [];
+
 
 function inicializarColumnas(){
     _ColumnasNumericasUsadas[1] = false;
@@ -950,7 +1145,7 @@ function inicializarColumnas(){
     _ColumnasTextoUsadas[4] = false;
     _ColumnasTextoUsadas[5] = false;
 }
-inicializarColumnas();
+
 
 function accionAnadirNuevaColumnaValor(_this){
     accionAnadirNuevaColumnaValorInit(_this, 0, 0);
@@ -1426,9 +1621,9 @@ function accionIndicadorPublicadoCargar(idindicador, _res, seleccionarFechaAno, 
         document.getElementById('indCargaPeriodicidad').innerHTML = _res.data['indicador']['periodicidad'];
         document.getElementById('indicadorActivo').setAttribute('periodicidad', _res.data['indicador']['periodicidad']);
 
-        document.getElementById('formSeleccionInd').style.display='none';
-        document.getElementById('divListaIndicadoresCarga').style.display='block';
-        document.querySelector('#divListaIndicadoresCarga #AccionesSeleccionIndCambio').style.display='none';
+        //document.getElementById('formSeleccionInd').style.display='none';
+        //document.getElementById('divListaIndicadoresCarga').style.display='block';
+        //document.querySelector('#divListaIndicadoresCarga #AccionesSeleccionIndCambio').style.display='none';
 		document.querySelector('#divListaIndicadoresCarga #botonSeleccionarIndCambio').setAttribute('idind',_res.data.indicador.id);
 		
 		
@@ -1634,10 +1829,10 @@ function accionSeleccionarIndCambio(_this){
                 
         if(confirm("¿Confirma que quiere modificar un indicador que ya está publicado? \n Esto puede ser peligros, sobretodo y ya cuenta con valores cargados.")){
         	
-	        document.getElementById('formEditarIndicadores').style.display='inline-block';
-		    document.getElementById('divMenuAccionesCrea').style.display='inline-block';
-		    document.getElementById('botonCrearIndicador').style.display='none';
-		    document.getElementById('formSeleccionInd').style.display='none';
+	        //document.getElementById('formEditarIndicadores').style.display='inline-block';
+		    //document.getElementById('divMenuAccionesCrea').style.display='inline-block';
+		    //document.getElementById('botonCrearIndicador').style.display='none';
+		    //document.getElementById('formSeleccionInd').style.display='none';
 	        consultarIndicadorParaModificar(_idind);
 	        
         }
@@ -1666,8 +1861,8 @@ function cargarFormularioNuevasGeometrias(_res){
     _form.innerHTML='';
 	document.getElementById('divPeriodoSeleccionado').setAttribute('idindval', _res.data.campa.id);
     document.getElementById('divPeriodoSeleccionado').setAttribute('idgeom', '');
-    document.querySelector('#divPeriodoSeleccionado #divMenuAccionesEditarValor #botonCrearGeom').style.display='inline-block';
-    document.querySelector('#divPeriodoSeleccionado #divMenuAccionesEditarValor #botonDuplicarGeom').style.display='inline-block';
+    //document.querySelector('#divPeriodoSeleccionado #divMenuAccionesEditarValor #botonCrearGeom').style.display='inline-block';
+    //document.querySelector('#divPeriodoSeleccionado #divMenuAccionesEditarValor #botonDuplicarGeom').style.display='inline-block';
        
 	//console.log( _res.data.geom);
     for(_ng in _res.data.geom){
@@ -1744,7 +1939,7 @@ function cargarFormularioNuevasGeometrias(_res){
     		}
     	}
     }
-    document.getElementById('divPeriodoSeleccionado').style.display='block';
+    //document.getElementById('divPeriodoSeleccionado').style.display='block';
  }
      
 
@@ -1824,7 +2019,7 @@ function cargarFormularioValoresMultiple(_res){
     		}
     	}
     }
-    document.getElementById('divPeriodoSeleccionado').style.display='block';
+    //document.getElementById('divPeriodoSeleccionado').style.display='block';
  }
  
  function controlarCambiosinput(_this){
@@ -1883,11 +2078,14 @@ function accionGeomSeleccionada(_idgeom){
    
    	if(_DataGeom[_idgeom]==undefined){alert('faltan los datos de esa geometría, por favor reingrese aeste mapa');return;}
    	   
-   	document.querySelector('#divCargaCampa .accionesCampa').style.display='none';
+   	//document.querySelector('#divCargaCampa .accionesCampa').style.display='none';
    	
-    document.querySelector('#FormularioRegistro').style.display='block';
+   	
+   	
+   	
+    //document.querySelector('#FormularioRegistro').style.display='block';
     document.querySelector('#FormularioRegistro [name="idgeom"]').value=_idgeom;
-    document.querySelector('#FormularioRegistro #sect1').style.display="block";
+    //document.querySelector('#FormularioRegistro #sect1').style.display="block";
     
     document.querySelector('#FormularioRegistro [name="t1"]').value=_DataGeom[_idgeom].t1;
     
@@ -1909,8 +2107,6 @@ function accionGeomSeleccionada(_idgeom){
     
      	
 }
-
-
 
 function toglevalorSiNo(_this){
 	_nom=_this.getAttribute('for');	
@@ -1981,4 +2177,132 @@ function actualizarBusqueda(_event){
 	buscarTelef();*/
 }
 
+function nuevoCampo(){
+	_form=document.querySelector('#nuevocampo');	
+	_form.setAttribute('estado','activo');
+	_form.querySelector('[name="idcampo"]').value='0';		
+	
+	_form.querySelector('[name="nombre"]').value='';	
+	_form.querySelector('[name="ayuda"]').value='';	
+	_form.querySelector('[name="tipo"]').value='';	
+	_form.setAttribute('matriz','false');
+	cambiaTipoCampo(_form.querySelector('[name="tipo"]'));
+	
+	document.querySelector('#nuevocampo').scrollIntoView();
+	
+}
 
+function cancelarCampo(_this){
+	_form=document.querySelector('#nuevocampo');	
+	_form.removeAttribute('estado');	
+}
+
+function cambiaTipoCampo(_botonselect){
+	
+	_form=_botonselect.parentNode;
+	_tipo=_form.querySelector('select[name="tipo"]').value;
+	_form.setAttribute('tipo',_tipo);
+	
+}
+
+function cancelarCamposExistentes(){	
+		document.querySelector('#cuadrovalores #contenido').setAttribute('camposeditando','no');
+}
+
+function cambiaMatrizCampo(_botoncheck){
+	_form=_botoncheck.parentNode;
+	_chk=_botoncheck.checked;
+	_form.setAttribute('matriz',_chk);
+	
+}
+
+function toogleCheck(_this){	
+	
+	if(_this.getAttribute('type')=='hidden'){
+		_name=_this.getAttribute('name');
+		console.log('input[type="hidden"][para="'+_name+'"]');
+		_inputs=document.querySelector('input[type="hidden"][para="'+_name+'"]');
+		_inputh=this;		
+	}else{
+		_name=_this.getAttribute('para');
+		_inputs=this;
+		console.log('input[type="hidden"][name="'+_name+'"]');
+		_inputh=document.querySelector('input[type="hidden"][name="'+_name+'"]');
+	}
+	if(_inputh.value==0){_inputh.value=-1;}
+	_inputh.value=parseInt(_inputh.value)*(-1);
+	
+	if(_inputh.value=='1'){_inputs.checked=true;}
+	if(_inputh.value=='-1'){_inputs.checked=false;}	
+}
+
+function editarCampos(){
+	document.querySelector('#cuadrovalores #contenido').setAttribute('camposeditando','si');
+	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no');
+	
+	document.querySelector('#cuadrovalores #contenido #campos #listadecampos').innerHTML='';
+	for(_nc in _DataRele.camposOrden){
+		_idcpo=_DataRele.camposOrden[_nc];
+		_cpo=_DataRele.campos[_idcpo];
+		
+		_clon=document.querySelector('#cuadrovalores #contenido #nuevocampo').cloneNode(true);
+		
+		document.querySelector('#cuadrovalores #contenido #campos #listadecampos').appendChild(_clon);
+		
+		_clon.setAttribute('id','editacampo');
+		_clon.setAttribute('idcampo',_idcpo);
+		
+		_clon.removeChild(_clon.querySelector('h2'));
+		_clon.removeChild(_clon.querySelector('br'));
+		_clon.querySelector('#accionescampo').removeChild(_clon.querySelector('a#botoncancelacampo'));
+		_clon.querySelector('[name="nombre"]').value=_cpo.nombre;		
+		_clon.querySelector('[name="ayuda"]').value=_cpo.ayuda;
+		
+		_clon.querySelector('[name="tipo"]').removeAttribute('onchange');
+		_clon.querySelector('[name="tipo"]').setAttribute('readonly','readonly');
+		_clon.querySelector('[name="idcampo"]').value=_cpo.id;
+		console.log(_cpo);
+		console.log(_cpo.opciones);
+		_clon.querySelector('[name="opciones_select"]').value=_cpo.opciones;
+		
+		_clon.querySelector('[name="unidademedida"]').value=_cpo.unidaddemedida;
+		
+		if(_cpo.inputattributes!=null){
+			_att=$.parseJSON(_cpo.inputattributes);
+		}
+		
+		_clon.setAttribute('mariz','false');
+		
+		//_clon.querySelector('div[para="select"]').style.display="none";
+		//_clon.querySelector('div[para="numero"]').style.display="none";
+		//_clon.querySelector('div[para="matriz"]').style.display="none";
+		
+		if(_att.tag=='select'){
+			_clon.querySelector('[name="tipo"]').value='select';
+		}else if(_att.tag=='type'=='checkbox'){
+			_clon.querySelector('[name="tipo"]').value='checkbox';
+		}else{
+			_clon.querySelector('[name="tipo"]').value=_cpo.tipo;
+		}
+		
+		cambiaTipoCampo(_clon.querySelector('[name="tipo"]'));
+		
+		
+		//agrupación para inputs en matriz o (tabla)
+		
+		if(_att.agrupacion!=undefined){
+			_clon.querySelector('input[para="matriz"]').checked=true;
+			_clon.querySelector('input[name="matriz"]').value="1";				
+			_clon.querySelector('div[para="matriz"]').style.display="block";
+			_clon.querySelector('input[name="nombre_matriz"]')=_att.agrupacion.nombre;
+			_clon.querySelector('input[name="nombre_columna"]')=_att.agrupacion.columna;
+			_clon.querySelector('input[name="nombre_fila"]')=_att.agrupacion.fila;			
+		}else{
+			_clon.querySelector('input[name="matriz"]').value="0";
+			_clon.querySelector('input[para="matriz"]').checked=false;
+			
+		}
+		
+	}
+		
+}

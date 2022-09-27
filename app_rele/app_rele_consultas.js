@@ -26,16 +26,7 @@
 */
 
 
-//funciones para consultar datos y mostrarlos
-var _Tablas={};
-var _TablasConf={};
-var _SelecTabla='';//define si la consulta de nuevas tablas estará referido al elmento existente de una pabla en particular; 
-var _SelecElemCod=null;//define el código invariable entre versiones de un elemento a consultar (alternativa a _SelElemId);
-var _SelecElemId=null;//define el id de un elemento a consultar (alternativa a _SelElemCod);
 
-
-var _IdMarco = getParameterByName('id');
-var _CodMarco = getParameterByName('cod');
 	
 function consultarPermisos(){
 	_parametros = {
@@ -56,9 +47,7 @@ function consultarPermisos(){
         }
  	});	
 }
-consultarPermisos();
 
-var _DataUsuaries={};
 function consultarUsuaries(){
 	_parametros = {
 		'codMarco':_CodMarco,	
@@ -79,7 +68,6 @@ function consultarUsuaries(){
         }
  	});	
 }
-consultarUsuaries();
 
 
 
@@ -87,6 +75,9 @@ function cargarListadoCampa(){
     
     var idMarco = getParameterByName('id');
     var codMarco = getParameterByName('cod');
+    
+    
+    _source_rele.clear();
     
     var parametros = {
         'codMarco': codMarco,
@@ -110,17 +101,18 @@ function cargarListadoCampa(){
     });
 }
 
-function generarNuevaCampaQuery(){
+function generarNuevaCampa(){
     var idMarco = getParameterByName('id');
     var codMarco = getParameterByName('cod');
     
     var parametros = {
+    	'idRele':'0',
         'codMarco': codMarco,
         'idMarco': idMarco
     };
     
     $.ajax({
-        url:   './app_rele/app_rele_generar.php',
+        url:   './app_rele/app_rele_ed_guardar_relevamiento.php',
         type:  'post',
         data: parametros,
         success:  function (response)
@@ -128,7 +120,7 @@ function generarNuevaCampaQuery(){
             var _res = $.parseJSON(response);
             //console.log(_res);
             if(_res.res=='exito'){
-                asignarIdCampa(_res.data.id);
+            	cargarDatosCampa(_res.data.nid)
             }else{
                 alert('error asf0jg3444ffgh');
             }
@@ -136,12 +128,103 @@ function generarNuevaCampaQuery(){
     });
 }
 
+function guardarCampa(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    
+    var parametros = {
+    	'idRele':_DataRele.id,
+    	'descripcion':document.querySelector('.formCargaCampaCuerpo #campaDescripcion').value,
+    	'nombre':document.querySelector('.formCargaCampaCuerpo #campaNombre').value,
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'tipogeometria':document.querySelector('.formCargaCampaCuerpo [name="tipogeometria"]').value,
+        'unidadanalisis':document.querySelector('.formCargaCampaCuerpo [name="unidadanalisis"]').value
+    };
+    
+    $.ajax({
+        url:   './app_rele/app_rele_ed_guardar_relevamiento.php',
+        type:  'post',
+        data: parametros,
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            if(_res.res=='exito'){
+            	cargarDatosCampa(_res.data.id)
+            }else{
+                alert('error asf0jg3444ffgh');
+            }
+        }
+    });
+}
+
+
+
 function asignarIdCampa(_idCampa){
     document.getElementById('formEditarCampa').setAttribute('idcampa', _idCampa);
 }
 
+function eliminarCampa(){
+	if(!confirm('elminamos esta cmpaña de relevamiento?...¿Segure?')){return;}
+	_idcamp = document.querySelector('#divCargaCampa').getAttribute('idcampa');
+	var parametros = {
+    	'idRele':_DataRele.id,
+        'codMarco': getParameterByName('cod'),
+        'idMarco': getParameterByName('id')
+    };
+    
+    $.ajax({
+        url:   './app_rele/app_rele_ed_borrar_relevamiento.php',
+        type:  'post',
+        data: parametros,
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            
+            if(_res.res!='exito'){alert('error al procesar el pedido');return;}
+            document.querySelector('#contenido').setAttribute('relecargado','no');
+            document.querySelector('#divReleACapa').setAttribute('idcampa', '');            
+            
+            inicializarColumnas();
+            cargarListadoCampa();
+            
+        }
+    });
+}
 
-var _DataRele={};
+function eliminarCampo(_this){
+	
+	
+	var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    
+    var parametros = {
+    	'idRele':_DataRele.id,
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'idcampo':_this.parentNode.parentNode.getAttribute('idcampo')
+    };
+    
+    $.ajax({
+        url:   './app_rele/app_rele_ed_borrar_campo.php',
+        type:  'post',
+        data: parametros,
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            
+            if(_res.res!='exito'){alert('error al procesar el pedido');return;}
+			_form=document.querySelector('#listadecampos #editacampo[idcampo="'+_res.data.idcampo+'"]'),
+			_form.parentNode.removeChild(_form);
+            
+        }
+    });
+	
+	
+}
 
 function cargarDatosCampa(_idcampa){
     var idMarco = getParameterByName('id');
@@ -163,11 +246,35 @@ function cargarDatosCampa(_idcampa){
             if(_res.res!='exito'){alert('error asf0jg44f9ytfgh');return;}
             
             _DataRele=_res.data;
+            
+
             cargarCamposFormulario();
             cargarRegistrosCampa(_res.data.id);
             cargarUnidadesdeAnalisis(_res.data.id);   
-            document.querySelector('#FormularioNuevaUA').style.display='block';
-            document.querySelector('#divCargaCampa').style.display='block';
+
+			document.querySelector('#divCargaCampa').setAttribute('idcampa',_res.data.id);
+
+			document.querySelector('#cuadrovalores #contenido #titulorarlev').innerHTML=_DataRele.id+'<span>'+_DataRele.nombre+'<span>';
+            document.querySelector('#cuadrovalores #contenido #titulorarlev').title=_DataRele.descripcion;
+            document.querySelector('#cuadrovalores #contenido').setAttribute('relecargado','si');
+            
+            
+            
+            if(_DataRele.id_p_ref_capasgeo==null){
+				editarCampa();
+			}else{
+				document.querySelector('#cuadrovalores #contenido').setAttribute('releeditando','no');
+				document.querySelector('#cuadrovalores #contenido').setAttribute('geometriaeditando','no');
+				//document.querySelector('#cuadrovalores #contenido').setAttribute('camposeditando','no');
+				document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no');					
+				
+				if(_DataRele.tipogeometria!=null){
+					document.querySelector('#cuadrovalores #contenido').setAttribute('nuevaUAhabilitado','si');					
+				}else{
+					document.querySelector('#cuadrovalores #contenido').setAttribute('nuevaUAhabilitado','no');					
+				}
+			}
+          
         }
     });
 }
@@ -226,7 +333,7 @@ function cargarRegistrosCampa(_idcampa){
 				alert(_res.mg[_nm]);
 			}
 			
-			document.querySelector('#divCargaCampa').style.display='block';
+			//document.querySelector('#divCargaCampa').style.display='block';
 			//document.querySelector('#divCargaCampa .accionesCampa').style.display='none';
 			_Features=_res.data;
 			
@@ -237,8 +344,54 @@ function cargarRegistrosCampa(_idcampa){
     });
 }
 
+
+
+function archivarRegistro(_val){
+	
+	if(_val='1'){
+		if(document.querySelector('#campospersonalizados .campo .fecha[esfechaarchivo="si"]')==null){
+			alert('Falta configurar un campo de fecha para que sea la fecha de referencia del dato.');
+			return;
+		}
+		if(document.querySelector('#campospersonalizados .campo .fecha[esfechaarchivo="si"]').value<'1000-01-01'){
+			alert('Falta cargar la fecha de referencia para el dato.');
+			return;
+		}
+		_val_fecha=document.querySelector('#campospersonalizados .campo .fecha[esfechaarchivo="si"]').value;
+	}else{
+		_val_fecha='';
+	}
+		
+    _parametros = {
+		'codMarco':_CodMarco,
+		'id_registro': _idgeom=document.querySelector('#FormularioRegistro [name="id_registro"]').value,
+		'id_p_ref_capas_registros':document.querySelector('#FormularioRegistro [name="idgeom"]').value,
+		'fecha_archivo':_val_fecha,
+		'zz_archivada':_val
+    };
+    $.ajax({
+        url:   './app_rele/app_rele_archivar_registro.php',
+        type:  'post',
+        data: _parametros,
+        success:  function (response){
+            var _res = $.parseJSON(response);
+            for(var _nm in _res.mg){
+				alert(_res.mg[_nm]);
+			}
+			
+			consultarRegistroGeom(_res.data.id_p_ref_capas_registros);
+			
+        }
+    });
+}
+	
+	
+	
 function consultarRegistroGeom(_idregcapa){
 	var _CodMarco = getParameterByName('cod');
+	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no'); 
+	
     _parametros = {
             'codMarco':_CodMarco,
             'idcampa': _DataRele.id,
@@ -264,6 +417,12 @@ function consultarRegistroGeom(_idregcapa){
 			if(_res.res!='exito'){
 				alert('error al intentar consultar la UA');
 			}
+			document.querySelector("#FormularioRegistro").setAttribute('modo','actual');
+			
+			document.querySelector('#selectorarchivo [id_reg_hist="actual"]').setAttribute('selecto','si');
+			
+			_DataRegistro=_res.data;
+			document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','si');
 			
 			if(_res.data==null){
 				cargarCamposFormulario();//limpia el formulario
@@ -271,55 +430,68 @@ function consultarRegistroGeom(_idregcapa){
 			}else{
 				cargarCamposFormulario();//limpia el formulario
 			}
-			
-			
-			
-			document.querySelector('#FormularioRegistro #autoria #usu').innerHTML='';
-			document.querySelector('#FormularioRegistro #autoria #fecha').innerHTML=''; 
-		    
-			
-		    _idusu= _res.data.registro.zz_auto_crea_usu;
-		    if(_DataUsuaries.usu[_idusu]!=undefined){
-			    _du=_DataUsuaries.usu[_idusu];
-			    document.querySelector('#FormularioRegistro #autoria #usu').innerHTML=_du.nombre+' '+_du.apellido+' ('+_idusu+')';
-			
-				var date = new Date(_res.data.registro.zz_auto_crea_fechau*1000);
-				var hours = date.getHours();
-				var minutes = "0" + date.getMinutes();
-				var seconds = "0" + date.getSeconds();
-				var formattedTime =  ' '+date.getDate()+'/'+(1+date.getMonth())+'/'+date.getFullYear()+' ('+hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2)+')';
-    
-			    document.querySelector('#FormularioRegistro #autoria #fecha').innerHTML= formattedTime; 
-		    }
-					
-			
-			for(_idcampo in _res.data.campos){
-				_tipo=_DataRele.campos[_idcampo].tipo;
-				if(_tipo=='texto'){
-					_valor=	_res.data.campos[_idcampo].data_texto;
-				}else if(_tipo=='numero'){
-					_valor=	_res.data.campos[_idcampo].data_numero;
-				}else if(_tipo=='coleccion_imagenes'){
-					_valor=	_res.data.campos[_idcampo].data_documento;
-					
-					document.querySelector('#listadoDocumentos[idcampo="'+_idcampo+'"]').innerHTML='';
-					if(_valor!=''){
-						_docs=$.parseJSON(_valor);
-						for(_dn in _docs){
-							_ruta=_docs[_dn].ruta;
-							_nombre=_docs[_dn].nombre;
-							_iddoc=_docs[_dn].iddoc;
-							cargaDeFoto(_nombre,'',_idcampo,_iddoc,_ruta);
-						}	
-					}
-					
-				}
-				document.querySelector('#campospersonalizados [name="'+_idcampo+'"]').value=_valor;
-				$('#campospersonalizados [name="'+_idcampo+'"]').trigger('change');//esto genera el efeco onchange que de otra forma no ocurre por cambiar dinamicametne el valor de un input.
+			document.querySelector("#selectorarchivo").setAttribute('modo','inactivo');
+			document.querySelector('#FormularioNuevaUA #historicos').innerHTML='';		
+			for(_idh in _res.data.historicosOrden){
+				document.querySelector("#selectorarchivo").setAttribute('modo','activo');
+				_id_reg_h=_res.data.historicosOrden[_idh];
+				_dat_h=_res.data.historicos[_id_reg_h];
+				
+				_a=document.createElement('a');
+				document.querySelector('#FormularioNuevaUA #historicos').appendChild(_a);
+				_a.setAttribute('class','historico');
+				_a.setAttribute('id_reg_hist',_id_reg_h);
+				_a.setAttribute('onclick','cargarRegistroHistorico(this.getAttribute("id_reg_hist"))');
+				_f=_dat_h.registro.zz_archivada_fecha.split('-');
+				_a.innerHTML='<span class="dia">'+_f[2]+'</span><span class="mes">'+_f[1]+'</span><span class="ano">'+_f[0];
+				
+				_elim=document.createElement('a');
+				_a.appendChild(_elim);
+				_elim.setAttribute('id','boton_borra_reg');
+				_elim.innerHTML='<img src="./img/icon-delete-16.jpg"">';
+				_elim.setAttribute('onclick','event.stopPropagation();eliminarArchivado(this.parentNode.getAttribute("id_reg_hist"))');
+
 			}
+			console.log(_res.data.registro.id);
+			cargarDefinicionRegistro(_res.data.registro);
+			
+			cargarValoresRegistro(_res.data.campos);
+				
+				
+			
         }
     });	
 }
+
+
+
+function eliminarArchivado(_id_reg_hist){
+	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no'); 
+	
+    _parametros = {
+		'codMarco':_CodMarco,
+		'idcampa': _DataRele.id,
+		'id_registro_rele':_id_reg_hist
+    };
+    $.ajax({
+        url:   './app_rele/app_rele_borrar_registro_historico.php',
+        type:  'post',
+        data: _parametros
+    })
+	.done(function (_data, _textStatus, _jqXHR){
+		_res = preprocesarRespuestaAjax(_data, _textStatus, _jqXHR);
+		if(_res===false){return;}
+		
+		_div=document.querySelector('#selectorarchivo .historico[id_reg_hist="'+_res.data.id_registro_rele+'"]');
+		_div.parentNode.removeChild(_div);
+		
+		cargarRegistroHistorico('actual');
+
+	});	    
+
+}
+
 
 function cargaDeFoto(_nombre,_con,_idcampo,_iddoc,_ruta){
 	
@@ -348,13 +520,16 @@ function cargaDeFoto(_nombre,_con,_idcampo,_iddoc,_ruta){
 
 
 
-var _DataCapa=Array();
-function cargarUnidadesdeAnalisis(_idCampa){
-    
+function cargarUnidadesdeAnalisis(_id_campa){
+	
+	_idCampa=_id_campa;
+	
+	
     var parametros = {
         'codMarco': _CodMarco,
         'idMarco': '',
-        'idcampa': _idCampa
+        'idcampa': _idCampa,        
+		'RecorteDeTrabajo' : _RecorteDeTrabajo
     };
     
     $.ajax({
@@ -443,16 +618,21 @@ function borrarGeometrias(_modo,_idgeom){
 	
 }
 
-function enviarDatosRegistro(){
+function enviarDatosRegistro(_archivar){
 	
+	if(document.querySelector('#FormularioRegistro').getAttribute('modo')=='archivado'){
+		//alert('este registro ya fue archivado. Para modificarlo hay que desarchivarlo');
+		//return;
+	}
 	_idgeom=document.querySelector('#FormularioRegistro [name="idgeom"]').value;	
 	_t1=document.querySelector('#FormularioRegistro [name="t1"]').value;
 	_n1=document.querySelector('#FormularioRegistro [name="n1"]').value;
 	
-	
-	_inputs=document.querySelectorAll('#FormularioRegistro #campospersonalizados input');
+	_id_registro=document.querySelector('#FormularioRegistro [name="id_registro"]').value;
 	
 	_personalizados={};
+	
+	_inputs=document.querySelectorAll('#FormularioRegistro #campospersonalizados input');
 	for(_in in _inputs){
 		if(typeof _inputs[_in] != 'object'){continue;}
 		_name=_inputs[_in].getAttribute('name');
@@ -467,17 +647,28 @@ function enviarDatosRegistro(){
 		if(_name==null){continue;}
 		_personalizados[_name]=_ta[_tan].value;
 	}
+
+	_ta=document.querySelectorAll('#FormularioRegistro #campospersonalizados select');
+	for(_tan in _ta){
+		console.log(_ta[_tan]);
+		if(typeof _ta[_tan] != 'object'){continue;}
+		console.log(_ta[_tan].value);
+		_name=_ta[_tan].getAttribute('name');
+		if(_name==null){continue;}
+		_personalizados[_name]=_ta[_tan].value;
+	}
 		
 	var parametros = {
         'codMarco': _CodMarco,
         'idMarco': '',
         'idcampa': _DataRele.id,
         'idgeom':_idgeom,
+        'id_registro':_id_registro,
         't1':_t1,
         'n1':_n1,
-        'personalizados':_personalizados
+        'personalizados':_personalizados,
+		'archivar':_archivar
     };
-	
     
     $.ajax({
         url:   './app_rele/app_rele_cargar_registro.php',
@@ -488,10 +679,10 @@ function enviarDatosRegistro(){
             var _res = $.parseJSON(response);
             //console.log(_res);
             
-            
            	for(var _nm in _res.mg){
                 alert(_res.mg[_nm]);
             }
+            
             
             for(var _na in _res.acc){
                 procesarAcc(_res.acc[_na]);
@@ -503,15 +694,22 @@ function enviarDatosRegistro(){
             	return;
             }
             
+            
+			document.querySelector('#FormularioRegistro [name="id_registro"]').value=_res.data.nid;				
+			
+            if(_res.data.archivar=='si'){
+				archivarRegistro(1);	
+			}
+			
+			
             //TODO remplazar la carga total por la incorporación del dato editado.    
 			cargarRegistrosCampa();
             cargarDatosCampa(_DataRele.id);
-            document.querySelector('#FormularioRegistro').style.display='none';
+            //document.querySelector('#FormularioRegistro').style.display='none';
 			_source_rel_sel.clear();
         }
     });
-    
-    
+
 	_idnuevageom=document.querySelector('#FormularioRegistro #nuevageometria').getAttribute('idgeom');
 	if(_idnuevageom==_idgeom){
 		var parametros = {
@@ -519,7 +717,7 @@ function enviarDatosRegistro(){
 	        'idMarco': '',
 	        'idcapa': _DataCapa.id,
 	        'idgeom':_idgeom,
-	        'tipogeom':'Polygon',//TODO corregir este hardcoded
+	        'tipogeom':_DataCapa.tipogeometria,
 	        'geomtx': document.querySelector('#FormularioRegistro #nuevageometria').value
 	    };
 	     $.ajax({
@@ -547,7 +745,7 @@ function enviarCreaRegistroCapa(){
 	        'codMarco': _CodMarco,
 	        'idMarco': '',
 	        'idcapa': _DataCapa.id,
-	        'tipogeom':'Polygon',//TODO corregir este hardcoded
+	        'tipogeom':_DataCapa.tipogeometria //TODO corregir este hardcoded
     };
      $.ajax({
         url:   './app_capa/app_capa_crear_registro.php',
@@ -570,7 +768,16 @@ function enviarCreaRegistroCapa(){
             		't1':'',
             		'n1':''
             };
+            
+            
+            
+            
+            console.log('hab');
+            document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','si');
+            //console.log( document.querySelector('#cuadrovalores #contenido'));
+            
             accionGeomSeleccionada(_res.data.idgeom);
+            
             cambiarGeometria(_res.data.idgeom);            
         }
     });
@@ -680,3 +887,98 @@ function guardarDXFfondo(_imgs){
 }
 
 
+function ReleACapa(){
+	
+	_sels=document.querySelectorAll('#ReleACapa #campos select');
+	
+	_fuentes=Array();
+	for(_sn in _sels){
+		if(typeof _sels[_sn] !='object'){continue;}
+		if(_sels[_sn].value==''){continue}
+		_fue=_sels[_sn].value;
+		_fuentec=_sels[_sn].getAttribute('name');
+		_s=_fuentec.split('_');
+		_nombrec='nombrec_'+_s[1];
+		_nom=document.querySelector('#ReleACapa #campos input[name="'+_nombrec+'"]').value;
+		
+		_fuentes.push({'nom':_nom,'fue':_fue});
+	}
+	if(_fuentes.length==0){alert("Primero tenés que definir con cuales datos relevados querés generar la capa.");}
+	
+	_parametros={
+		'idcampa':_DataRele.id,
+		'codMarco':_CodMarco,
+		'fuentes':_fuentes
+	}
+ 	$.ajax({
+        url:   './app_rele/app_rele_generar_capa.php',
+        type:  'post',
+        data: _parametros,
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            
+            if(_res.res!='exito'){
+            	alert('error al guardar captura de pantalla');
+            	return;
+            }
+            if(confirm('Nueva capa disponible en el módulo de capas. ¿Vamos ahí?')){
+					window.location.assign('./app_capa.php?cod=VECPC2022');
+			}
+            
+        }
+    });	
+}
+
+
+
+function guardarCampo(_this){
+	
+	_form=_this.parentNode.parentNode;
+	
+	if(_form.getAttribute('id')=='nuevocampo'){_form.setAttribute('estado','inactivo');}
+	
+	if(_form.querySelector('[name="es_fecha_archivo"]').checked){
+		_es_fecha='si';
+	}else{
+		_es_fecha='no';
+	}
+	
+	_parametros={
+		'idRele':_DataRele.id,
+		'codMarco':_CodMarco,		
+		'idCampo':_form.querySelector('[name="idcampo"]').value,
+		'nombre':_form.querySelector('[name="nombre"]').value,
+		'ayuda':_form.querySelector('[name="ayuda"]').value,
+		'tipo':_form.querySelector('[name="tipo"]').value,
+		'opciones_select':_form.querySelector('[name="opciones_select"]').value,
+		'unidademedida':_form.querySelector('[name="unidademedida"]').value,
+		'es_fecha_archivo':_es_fecha,
+		'matriz':_form.querySelector('[name="matriz"]').value,
+		'nombre_matriz':_form.querySelector('[name="nombre_matriz"]').value,
+		'nombre_columna':_form.querySelector('[name="nombre_columna"]').value,
+		'nombre_fila':_form.querySelector('[name="nombre_fila"]').value
+		
+	}
+ 	$.ajax({
+        url:   './app_rele/app_rele_ed_guardar_campo.php',
+        type:  'post',
+        data: _parametros,
+        success:  function (response)
+        {   
+            var _res = $.parseJSON(response);
+            //console.log(_res);
+            
+            if(_res.res!='exito'){
+            	alert('error al guardar campo');
+            	return;
+            }
+            
+            cargarDatosCampa(_DataRele.id);            
+            
+        }
+    });	
+	
+	
+}

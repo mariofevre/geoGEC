@@ -115,7 +115,12 @@ if (pg_num_rows($Consulta) <= 0){
 
 
 
+if(!$Log['data']['campa']['id_p_ref_capasgeo']>0){
+	$Log['res']="exito";
+	terminar($Log);
+}
 
+	
 $query="
 		SELECT 
 			id, autor, nombre, ic_p_est_02_marcoacademico, 
@@ -141,6 +146,7 @@ if(pg_errormessage($ConecSIG)!=''){
     terminar($Log);	
 }
 $Capa=pg_fetch_assoc($Consulta);
+$Log['data']['capa']=$Capa;
 
 if($Capa['tipogeometria']=='Point'){
 	$campogeo='ref_capasgeo_registros.geom_point';
@@ -149,7 +155,6 @@ if($Capa['tipogeometria']=='Point'){
 }else{
 	$campogeo='ref_capasgeo_registros.geom';
 }
-
 
 
 $query="SELECT  
@@ -173,6 +178,7 @@ $query="SELECT
             ref_capasgeo_registros.zz_borrada='0'
             AND
     		ST_X(ST_centroid(".$campogeo.")) is not null
+    
  ";
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -199,169 +205,6 @@ if (pg_num_rows($Consulta) <= 0){
 
 
 
-$query="
-		SELECT 
-			id, autor, nombre, ic_p_est_02_marcoacademico, 
-			zz_borrada, 
-			descripcion, 
-			nom_col_text1, nom_col_text2, nom_col_text3, nom_col_text4, nom_col_text5, 
-			nom_col_num1, nom_col_num2, nom_col_num3, nom_col_num4, nom_col_num5, 
-			zz_publicada, srid, sld, tipogeometria, 
-			zz_instrucciones, modo_defecto, wms_layer, zz_aux_ind
-		FROM 
-			geogec.ref_capasgeo
-		WHERE
-            id = '".$Log['data']['campa']['id_p_ref_capasgeo']."'
-     ";
-
-$Consulta = pg_query($ConecSIG, $query);
-if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
-}
-$Capa=pg_fetch_assoc($Consulta);
-
-$Log['data']['capa']=$Capa;
-
-
-
-
-// TODO
-/*
-$query="
-	SELECT 
-		ref_indicadores_valores.id,
-		ref_indicadores_valores.id_p_ref_capas_registros,
-	    ref_indicadores_valores.ano,
-	    ref_indicadores_valores.mes,
-		
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_texto1_nom = '' OR ref_indicadores_indicadores.col_texto1_nom is null) 
-			AND (ref_indicadores_valores.col_texto1_dato is null OR ref_indicadores_valores.col_texto1_dato = '')  
-			THEN 0 ELSE 1 END AS stat_col_texto1_nom,
-		
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_texto2_nom = '' OR ref_indicadores_indicadores.col_texto2_nom is null ) 
-			AND (ref_indicadores_valores.col_texto2_dato is null OR ref_indicadores_valores.col_texto2_dato = '')  
-			THEN 0 ELSE 1 END AS stat_col_texto2_nom,
-
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_texto3_nom = '' OR ref_indicadores_indicadores.col_texto3_nom is null ) 
-			AND (ref_indicadores_valores.col_texto3_dato is null OR ref_indicadores_valores.col_texto3_dato = '')  
-			THEN 0 ELSE 1 END AS stat_col_texto3_nom,
-			
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_texto4_nom = '' OR ref_indicadores_indicadores.col_texto4_nom is null) 
-			AND (ref_indicadores_valores.col_texto4_dato is null OR ref_indicadores_valores.col_texto4_dato = '')  
-			THEN 0 ELSE 1 END AS stat_col_texto4_nom,
-		
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_texto5_nom = '' OR ref_indicadores_indicadores.col_texto5_nom is null) 
-			AND (ref_indicadores_valores.col_texto5_dato is null OR ref_indicadores_valores.col_texto5_dato = '')  
-			THEN 0 ELSE 1 END AS stat_col_texto5_nom,
-
-
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_numero1_nom = '' OR ref_indicadores_indicadores.col_numero1_nom is null) 
-			AND (ref_indicadores_valores.col_numero1_dato is null )  
-			THEN 0 ELSE 1 END AS stat_col_numero1_nom,
-		
-					
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_numero2_nom = '' OR ref_indicadores_indicadores.col_numero2_nom is null) 
-			AND (ref_indicadores_valores.col_numero2_dato is null )  
-			THEN 0 ELSE 1 END AS stat_col_numero2_nom,
-		
-		
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_numero3_nom = '' OR ref_indicadores_indicadores.col_numero3_nom is null) 
-			AND (ref_indicadores_valores.col_numero3_dato is null )  
-			THEN 0 ELSE 1 END AS stat_col_numero3_nom,
-		
-		
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_numero4_nom = '' OR ref_indicadores_indicadores.col_numero4_nom is null) 
-			AND (ref_indicadores_valores.col_numero4_dato is null )  
-			THEN 0 ELSE 1 END AS stat_col_numero4_nom,
-		
-		
-		CASE WHEN 
-			NOT(ref_indicadores_indicadores.col_numero5_nom = '' OR ref_indicadores_indicadores.col_numero5_nom is null) 
-			AND (ref_indicadores_valores.col_numero5_dato is null )  
-			THEN 0 ELSE 1 END AS stat_col_numero5_nom
-		
-	FROM
-		geogec.ref_indicadores_indicadores
-		
-	LEFT JOIN
-		geogec.ref_capasgeo_registros 
-        ON 
-                geogec.ref_indicadores_indicadores.id_p_ref_capasgeo = geogec.ref_capasgeo_registros.id_ref_capasgeo
-		AND 
-        		geogec.ref_capasgeo_registros.zz_borrada='0'	
-			
-	LEFT JOIN
-		geogec.ref_indicadores_valores
-        ON 
-                geogec.ref_indicadores_valores.id_p_ref_indicadores_indicadores = geogec.ref_indicadores_indicadores.id
-        AND
-                geogec.ref_indicadores_valores.id_p_ref_capas_registros = geogec.ref_capasgeo_registros.id
-        AND 
-        		geogec.ref_capasgeo_registros.zz_borrada='0'
-		
-	WHERE
-		geogec.ref_indicadores_valores.ano = '".$_POST['ano']."'
-        AND
-		geogec.ref_indicadores_valores.zz_superado = '0'
-        AND
-		geogec.ref_indicadores_valores.zz_borrado = '0'
-        AND
-		geogec.ref_indicadores_indicadores.id = '".$_POST['idcampa']."'
-
-        ";
-
-
-if ($Log['data']['campa']['periodicidad'] == 'mensual'){
-    $query=$query."
-        AND
-		geogec.ref_indicadores_valores.mes = '".$_POST['mes']."'";
-}
-
-
-$Consulta = pg_query($ConecSIG, $query);
-if(pg_errormessage($ConecSIG)!=''){
-    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-    $Log['tx'][]='query: '.$query;
-    $Log['mg'][]='error interno';
-    $Log['res']='err';
-    terminar($Log);	
-}
-
-
-if (pg_num_rows($Consulta) <= 0){
-    $Log['tx'][]= "Consulta de valores asociados a la capa existente id: ".$Log['data']['campa']['id_p_ref_capasgeo']." -estadocarga: sin carga";
-} else {
-    $Log['tx'][]= "Consulta de valores asociados a la capa existente id: ".$Log['data']['campa']['id_p_ref_capasgeo'];
-    
-    while ($fila=pg_fetch_assoc($Consulta)){
-    	if(!isset($Log['data']['geom'][$fila['id_p_ref_capas_registros']])){continue;}
-    	
-        $Log['data']['geom'][$fila['id_p_ref_capas_registros']]['estadocarga']='listo';
-        $Log['data']['geom'][$fila['id_p_ref_capas_registros']]['controles']=$fila;		
-
-        foreach($fila as $k => $v){
-            if (strpos($k, 'stat_col_') === false){continue;}
-
-            if($v=='0'){
-                $Log['data']['geom'][$fila['id_p_ref_capas_registros']]['estadocarga']='incompleto';
-            }
-        }
-    }
-}
-	*/
 	
 $Log['res']="exito";
 terminar($Log);
