@@ -159,7 +159,7 @@ $extracampo = "";
 $extravalor = "";
 $Log['data']['periodo']['ano']=$_POST['ano'];
 $Log['data']['periodo']['mes']='';
-
+/*
 if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
 	$extrawhere = "
 		AND
@@ -168,7 +168,18 @@ if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
 	$extracampo = ' mes, ';
 	$extravalor = "'".$_POST['mes']."', ";
 	$Log['data']['periodo']['mes']=$_POST['mes'];
-}
+}*/
+
+$extrawhere = "
+		AND
+			mes = '".$_POST['mes']."'
+		AND
+			dia = '".$_POST['dia']."'
+		";
+	$extracampo = ' mes, dia';
+	$extravalor = "'".$_POST['mes']."', '".$_POST['dia']."'";
+	$Log['data']['periodo']['mes']=$_POST['mes'];
+	$Log['data']['periodo']['dia']=$_POST['dia'];
 
 $query="
 	SELECT  
@@ -199,6 +210,7 @@ $query="
 			ref_indicadores_valores.id_p_ref_indicadores_indicadores, 
 			ref_indicadores_valores.ano, 
 			ref_indicadores_valores.mes, 
+			ref_indicadores_valores.dia, 
 			ref_indicadores_valores.usu_autor, 
 			ref_indicadores_valores.fechadecreacion, 
 			ref_indicadores_valores.zz_superado, 
@@ -252,6 +264,7 @@ $Buffertx='';
 if (pg_num_rows($Consulta) <= 0){
     $Log['tx'][]= "No se encontraron registros para la capa id ".$Log['data']['indicador']['id_p_ref_capasgeo']." asociada al indicador ".$_POST['id'];
     $Log['data']['geom']=array();
+    $Log['tx'][]=$query;
 } else {
     $Log['tx'][]= "Consulta de capa existente id: ".$Log['data']['indicador']['id_p_ref_capasgeo'];
     while ($fila=pg_fetch_assoc($Consulta)){
@@ -346,7 +359,8 @@ if($Log['data']['indicador']['calc_superp']>0){
 	}
 	$Log['data']['geom_superp_max']=pg_fetch_assoc($Consulta);
 	
-																			
+	
+
 																																											
 	$query="
 		SELECT
@@ -384,6 +398,7 @@ if($Log['data']['indicador']['calc_superp']>0){
 						ref_indicadores_valores.id_p_ref_indicadores_indicadores, 
 						ref_indicadores_valores.ano, 
 						ref_indicadores_valores.mes, 
+						ref_indicadores_valores.dia, 
 						ref_indicadores_valores.usu_autor, 
 						ref_indicadores_valores.fechadecreacion, 
 						ref_indicadores_valores.zz_superado, 
@@ -418,6 +433,7 @@ if($Log['data']['indicador']['calc_superp']>0){
 				       
 				GROUP BY 
 					zz_borrada
+					
 			) as buffer
 		LEFT JOIN	
 			geogec.ref_capasgeo_registros as capa ON '1'='1'
@@ -425,7 +441,7 @@ if($Log['data']['indicador']['calc_superp']>0){
 	  		id_ref_capasgeo = '".$Log['data']['indicador']['calc_superp']."'
 	
 	";
-	 
+	
 	
 	$Consulta = pg_query($ConecSIG, $query);
 	if(pg_errormessage($ConecSIG)!=''){
@@ -435,13 +451,21 @@ if($Log['data']['indicador']['calc_superp']>0){
 	    $Log['res']='err';
 	    terminar($Log);	
 	}
-	
+	 $Log['tx'][]='query: '.$query;
 	$Log['data']['geom_superp']=array();
 	
 	
 	$campo_sum='numero1';
 	
 	$Suma=0;
+	
+	$Sumas=Array(
+		'numero1'=>0,
+		'numero2'=>0,
+		'numero3'=>0,
+		'numero4'=>0
+	);
+	
 	if (pg_num_rows($Consulta) <= 0){
 	    $Log['tx'][]= "No se encontraron registros para la capa id ".$Log['data']['indicador']['id_p_ref_capasgeo']." asociada al indicador ".$_POST['id'];
 	    $Log['data']['geom_superp']=array();
@@ -454,12 +478,23 @@ if($Log['data']['indicador']['calc_superp']>0){
 	        	continue;        		
 	        }
 	        $Log['data']['geom_superp'][$fila['id']]=$fila;
-	        
-	        $Suma += ($fila[$campo_sum]/$fila['area_orig'])*$fila['area_intersec'];
+	        if($fila['area_orig']>0){// averiguar porque a veces da 0
+				
+				$Suma += ($fila[$campo_sum]/$fila['area_orig'])*$fila['area_intersec'];
+				
+				$fac=(1/$fila['area_orig'])*$fila['area_intersec'];
+				
+				$Sumas['numero1']+=$fila['numero1']*$fac;
+				$Sumas['numero2']+=$fila['numero2']*$fac;
+				$Sumas['numero3']+=$fila['numero3']*$fac;
+				$Sumas['numero4']+=$fila['numero4']*$fac;
+				
+				
+			}
 	    }
 	}
 	$Log['data']['intersec_sum']=$Suma;																			
-
+	$Log['data']['intersec_sumas']=$Sumas;	
 
 	$query="
 	SELECT 
@@ -620,14 +655,20 @@ $query="
         AND
 		id_p_ref_indicadores_indicadores = '".$_POST['id']."'
 ";
-
+/*
 if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
     $query=$query."
         AND
 		mes = '".$_POST['mes']."'";
 }
-
-
+*/
+    $query.="
+        AND
+		mes = '".$_POST['mes']."'
+		AND
+		dia = '".$_POST['dia']."'
+		";
+		
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
     $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
@@ -736,14 +777,23 @@ $query="
 
 ";
 
-
+/*
 if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
     $query=$query."
         AND
 		geogec.ref_indicadores_valores.mes = '".$_POST['mes']."'";
 }
-
-
+*/
+    $query.="
+        AND
+		geogec.ref_indicadores_valores.mes = '".$_POST['mes']."'
+		AND
+		geogec.ref_indicadores_valores.dia = '".$_POST['dia']."'
+		
+		";
+		
+		
+		
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
     $Log['tx'][]='error: '.pg_errormessage($ConecSIG);

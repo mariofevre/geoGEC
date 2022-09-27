@@ -376,13 +376,13 @@ div.fila.titulo{
 .marcar{
 	background-color:#Ffb;
 	color: #F55;	
-	border-color::#Ffb;
+	border-color:#Ffb;
 }
 
 .ver{
 	background-color:#aaf;
 	color: #55f;	
-	border-color::#55f;
+	border-color:#55f;
 }
 
 #puntosdeactividad{
@@ -479,7 +479,7 @@ iframe#cargaimagen{
     vertical-align: middle;		
 }
 .upload>span{
-	width: 90px;
+	width: 120px;
     height: 22px;
     line-height:11px;
 	

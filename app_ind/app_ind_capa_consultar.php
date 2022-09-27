@@ -64,10 +64,8 @@ $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 $query = '';
 
 if (isset($_POST['idcapa'])){
-    $query="SELECT  
-    			*
-            FROM    
-            	geogec.ref_capasgeo
+    $query="SELECT  *
+            FROM    geogec.ref_capasgeo
             WHERE 
                     zz_borrada = '0'
             AND

@@ -28,7 +28,7 @@ include($GeoGecPath.'/includes/encabezado.php');
 include($GeoGecPath."/includes/pgqonect.php");
 
 include_once($GeoGecPath."/usuarios/usu_validacion.php");
-//$Usu = validarUsuario(); // en ./usu_valudacion.php
+$Usu = validarUsuario(); // en ./usu_valudacion.php
 
 $Hoy_a = date("Y");
 $Hoy_m = date("m");
@@ -47,47 +47,61 @@ function terminar($Log){
 	exit;
 }
 
-if(!isset($_POST['codMarco'])){
-	$Log['tx'][]='no fue enviada la variable codMarco';
-	$Log['res']='err';
-	terminar($Log);	
+function IsNullOrEmptyString($string){
+    return (!isset($string) || trim($string)==='');
 }
 
-if(!isset($_POST['zz_publicada'])){
-	$Log['tx'][]='no fue enviada la variable zz_publicada';
-	$Log['res']='err';
-	terminar($Log);	
+if(!isset($_SESSION["geogec"])){
+	$Log['res']='caduca';
+	terminar($Log);
 }
+
+$Acc=0;
+if(isset($Usu['acc']['general']['general']['general'])){
+	$Acc=$Usu['acc']['general']['general']['general'];
+}
+$minacc=3;
+
+if($Acc<$minacc){
+	$Log['mg'][]=utf8_encode('no cuenta con permisos para modificar la planificación de este marco académico. \n minimo requerido: '.$minacc.' \ nivel disponible: '.$Acc);
+	$Log['tx'][]=print_r($Usu,true);
+	$Log['res']='err';
+	terminar($Log);
+}
+
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
-$query="SELECT  *
-        FROM    geogec.ref_capasgeo
-        WHERE 
-  		zz_borrada = '0'
-  	AND
- 	 	zz_publicada = '".$_POST['zz_publicada']."'
- 	AND
- 		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
- ";
+if(!isset($_POST['id'])){
+	$Log['res']='error';
+	$Log['tx'][]='falta id del indicador';	
+	terminar($Log);
+}
+if($_POST['id']<1){
+	$Log['res']='error';
+	$Log['tx'][]='falta id del indicador';	
+	terminar($Log);
+}
+
+   
+$query="
+	UPDATE 
+		geogec.ref_indicadores_modelos
+	SET 
+		zz_borrada='1'
+	WHERE 
+		id='".$_POST['id']."'
+	";
+
+$Log['tx'][]='query: '.$query;
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
-	$Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-	$Log['tx'][]='query: '.$query;
-	$Log['mg'][]='error interno';
-	$Log['res']='err';
-	terminar($Log);	
+    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+    $Log['tx'][]='query: '.$query;
+    $Log['mg'][]='error interno';
+    $Log['res']='err';
+    terminar($Log);	
 }
 
-if (pg_num_rows($Consulta) <= 0){
-    $Log['tx'][]= "No se encontraron capas marcadas como zz_publicada = ".$_POST['zz_publicada'];
-    $Log['data']=null;
-} else {
-    $Log['tx'][]= "Consulta de capas existentes";
-    while ($fila=pg_fetch_assoc($Consulta)){	
-	$Log['data'][$fila['id']]=$fila;
-    }
-}
-
-$Log['res']="exito";
+$Log['res']='exito';
 terminar($Log);

@@ -16,6 +16,7 @@
     display:inline-block;
     vertical-align:top;
     border:none;
+    position:relative;
 }
 
 #page .cuadroaplicacion{
@@ -403,8 +404,35 @@ div#barrabusqueda:hover{
 }
 
 
-#menuacciones{
-	position:absolute;
-	top:-25px;
-	left:0px;
+#gifanimado{
+	display:none;
+	position:fixed;
+	width:50px;
+	left:calc(50vw - 26px);
+	top:calc(50vh - 26px);	
+	border: 2px solid #08afd9;
+	box-shadow: 10px 10px 5px rgba(0,0,0,0.8);
+	z-index: 1000;
+}
+#gifanimado img{
+	width:50px;
+}
+#turnos{
+	border-top:1px solid #08afd9;
+}
+#turnos #actual{
+	font-size:20px;	
+}
+#turnos #actual span#nturn{
+	font-size:60px;	
+}
+#graficos{
+	border-top:1px solid #08afd9;
+}
+#graficos p{
+	font-size:20px;	
+	
+}
+#graficos p #puntajeactual{
+	font-size:60px;	
 }

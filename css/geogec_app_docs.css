@@ -1,109 +1,64 @@
-	p{
-		margin:0 10px;
-	}
-	
-	h1{
-		margin:0 10px;
-	}
 
-	h2 {
-	    font-size: 18px;
-	    margin: 0 0 0 10px;
-	}		
 	
-	form{
-		margin:0;
-	}
-	form.respuestar > .COMcomunicacion{
-		font-size:10px;padding:0;
-	}
-			
-	pre {
-	    font-family: inherit;
-	    white-space: pre-wrap;
-	}
-	
-	input.fecha{
-	float:left;
-	width:40px;		
-	}		
-
-	input.chico{
-	width:560px;
-	}		
-	
-	input.mini{
-	float:left;
-	width:25px;
-	}		
-	
-	select.chico{
-	width:100px;
-	}			
-		
-	th{
-	font-size:12px;
-	text-align:right;
-	background-color:#DBF7FE;
-	width:100px;
-	}
-
-	td{
-		text-align:center;
-		border:solid 1px gray;
-	}
-	a#encabezado{
-		text-shadow: 1px 1px #08afd9;
-		margin:2px;
-		border:none;
-	}
-	
-	a#encabezado > h2{	
-		display: inline-block;
-		width: 90px;
-		font-size:32px;
-	}
-	a#encabezado > p{	
-		display: inline-block;
-		width: 190px;
-		font-size:12px;
-	}
-	
-	
-	a.fila {
-		color:#000;
-	    width: 360px;
-	    height: auto;
-	    border-top: 3px solid #CDF0F9;
-	    display: block;
-	    font-size: 15px;
-	    height: 34px;
-	    overflow: hidden;
-	}	
-	a#botonanadir{
-		display: inline-block;
-		width: 120px;
-		font-size:14px;		
-	}
-	#page > div#cuadrovalores{
-		display:inline-block;
-		width:40%;
-	}
-	#page  > div#menutablas{
-		display:inline-block;
-		width:calc(60% - 5px);
-	}
-
-	.alerta{
-	background-color:red;
-	}
-
-
-			
-button{
-	min-width:160px;
-	padding:0px;
+form{
+	margin:0;
 }
+form.respuestar > .COMcomunicacion{
+	font-size:10px;padding:0;
+}
+		
+pre {
+    font-family: inherit;
+    white-space: pre-wrap;
+}
+
+input.fecha{
+float:left;
+width:40px;		
+}		
+
+input.chico{
+width:560px;
+}		
+
+input.mini{
+float:left;
+width:25px;
+}		
+
+select.chico{
+width:100px;
+}			
+	
+th{
+font-size:12px;
+text-align:right;
+background-color:#DBF7FE;
+width:100px;
+}
+
+td{
+	text-align:center;
+	border:solid 1px gray;
+}
+	
+a.fila {
+	color:#000;
+    width: 360px;
+    height: auto;
+    border-top: 3px solid #CDF0F9;
+    display: block;
+    font-size: 15px;
+    height: 34px;
+    overflow: hidden;
+}	
+a#botonanadir{
+	display: inline-block;
+	width: 120px;
+	font-size:14px;		
+}
+
+
 
 #contenidoextenso{
 	width:1000px;
@@ -473,16 +428,7 @@ div#modelos{
         position: absolute;	
         height: 10px;
 }
-.item[nivel="1"] .submedio{
-        width:210px;
-}
-.item[nivel="2"] .submedio{
-        display:none;
-}
-.item[nivel="2"] .medio{
-        width:calc(100% - 4px);
-        height:10px;
-}
+
 
 .item{
         display:inline-block;
@@ -493,19 +439,57 @@ div#modelos{
         box-shadow:6px 6px 8px rgba(30, 30, 30, 0.5);
         margin: 15px 1px 4px 1px;
         vertical-align: top;
+        position:relative;
 }
 
+#avisopublico, #avisocerrado{
+	position:absolute;
+	display:none;
+	right:2px;
+	top:2px;	
+}
+
+.item[publica='usuarie'] #avisopublico{
+	display:block;
+}
+
+.item[publica='cualquiera'] #avisopublico{
+	display:block;
+}
+	
+	
+.item[publica='no'] #avisocerrado{
+	display:block;
+}
+		
+.item[zz_sis="Publ"]{
+	display:none;
+}	
 .item[nivel="0"]{
         width:471px;
 }
 
+
 .item[nivel="1"]{
         width:calc(50% - 20px);
 }
+	.item[nivel="1"] .submedio{
+	        width:210px;
+	}
+	
+	
 .item[nivel="2"] .item{
         width:calc(100% - 4px);
         margin-top:2px;
-}	
+}
+	.item[nivel="2"] .submedio{
+	        display:none;
+	}
+	.item[nivel="2"] .medio{
+	        width:calc(100% - 4px);
+	        height:10px;
+	}
+	
 .hijos{
         display: inline-block;
         width: calc(100% - 14px);
@@ -534,7 +518,7 @@ div#modelos{
         position:fixed;
         top:15vh;
         height:70vh;
-        min-height:calc(10vh + 125px);		
+        min-height: 190px;
         left:20vw;
         width:60vw;
         background-color:#fff;
@@ -542,14 +526,20 @@ div#modelos{
         z-index:20;
         box-shadow:10px 10px 40px rgba(0,0,0,0.8);
 }
-#editoritem label, #editoritem input, #editoritem textarea{
+#editoritem label, #editoritem input, #editoritem textarea, #editoritem div#contenidos{
         display:block;
         float:none;
-        width:40vw;
-        margin-left:10vw;
+        width:45vw;
+        margin-left:5vw;
 }
+#editoritem div#contenidos{
+	border:1px solid #aaa;
+	height:calc(70vh - 2px - 35vh - 70px);
+	min-height:30px;
+}
+
 #editoritem label{
-        margin-top:5vh;
+        margin-top:2vh;
 }
 #editoritem #botoncierra{
         position:absolute;
@@ -656,70 +646,6 @@ div#modelos{
 	color:black;
 }
 
-/**
- * Tooltip Styles
- */
-/* Add this attribute to the element that needs a tooltip */
-[data-tooltip] {
-  position: relative;
-  z-index: 2;
-  cursor: pointer;
-}
-
-/* Hide the tooltip content by default */
-[data-tooltip]:before,
-[data-tooltip]:after {
-  visibility: hidden;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=0);
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Position tooltip above the element */
-[data-tooltip]:before {
-  position: absolute;
-  bottom: 110%;
-  left: 50%;
-  margin-bottom: 1px;
-  margin-left: -80px;
-  padding: 1px;
-  width: 160px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  background-color: #000;
-  background-color: hsla(0, 0%, 20%, 0.9);
-  color: #fff;
-  content: attr(data-tooltip);
-  text-align: center;
-  line-height: 1.2;
-}
-
-/* Triangle hack to make tooltip look like a speech bubble */
-[data-tooltip]:after {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -5px;
-  width: 0;
-  border-top: 5px solid #000;
-  border-top: 5px solid hsla(0, 0%, 20%, 0.9);
-  border-right: 5px solid transparent;
-  border-left: 5px solid transparent;
-  content: " ";
-  font-size: 0;
-  line-height: 0;
-}
-
-/* Show tooltip content on hover */
-[data-tooltip]:hover:before,
-[data-tooltip]:hover:after {
-  visibility: visible;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);
-  opacity: 1;
-}
 
 
 #editoritem .editarListaDocs{
@@ -803,9 +729,32 @@ div#modelos{
         width:60vw;
         background-color:#fff;
         border:1px solid #08afd9;
-        z-index:20;
+        z-index:30;
         box-shadow:10px 10px 40px rgba(0,0,0,0.8);
 }
+
+
+#editordoc label{
+	margin:0px;
+}
+
+#editordoc #autor{
+		background-color: #fff;
+		border:none;
+        position:absolute;
+        top:2px;
+        left:2px;
+        font-size:10px;
+        font-style:italic;
+		font-weight:normal;
+}
+#editordoc #autor label, #editordoc #autor span{
+	margin:0px;
+	font-size:10px;
+	font-weight:normal;
+	font-style:italic;
+}
+
 #editordoc label, #editordoc input, #editordoc textarea{
         display:block;
         float:none;
@@ -949,8 +898,3 @@ div.item[destinof='si']{
         background-color:#900;
 }
 
-#menuacciones{
-	position:absolute;
-	top:-25px;
-	right:0px;
-}

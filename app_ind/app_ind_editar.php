@@ -252,6 +252,50 @@ if(isset($_POST['idcapa'])){
              AND
                     ref_indicadores_indicadores.usu_autor='".$idUsuario."'
     ;";
+    
+    
+    
+    
+    $f=explode('-',$fila['fechadesde']);
+    
+    $query2="
+		INSERT INTO geogec.ref_indicadores_valores(
+				id_p_ref_indicadores_indicadores, 
+				ano, mes, dia,
+				usu_autor, fechadecreacion, 
+				col_texto1_dato, 
+				id_p_ref_capas_registros
+				)
+		SELECT 
+				'".$_POST['id']."',
+				'".$f[0]."', '".$f[1]."','".$f[2]."',
+				'".$idUsuario."', '".date('Y-m-d')."', 
+				texto1, 
+				id
+				
+		FROM 
+			geogec.ref_capasgeo_registros
+		WHERE
+			zz_borrada = 0
+			AND
+			id_ref_capasgeo = '".$_POST['idcapa']."'	
+    ";
+    $Consulta = pg_query($ConecSIG, $query2);
+    if(pg_errormessage($ConecSIG)!=''){
+            $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+            $Log['tx'][]='query: '.$query;
+            $Log['mg'][]='error interno';
+            $Log['res']='err';
+            terminar($Log);	
+    }
+
+    $fila2=pg_fetch_assoc($Consulta);
+    
+    $Log['tx'][]="vinculados registros de la capa de referencia la primera fecha";
+    $Log['res']="exito";
+    
+    
+    
 }
 
 if(isset($_POST['periodicidad'])){

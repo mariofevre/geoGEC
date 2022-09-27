@@ -69,15 +69,19 @@ function cargarListadoCapasPublicadas(){
             {   
                 var _res = $.parseJSON(response);
                 //console.log(_res);
-                if(_res.res=='exito'){
-                    cargarValoresCapasPublicadas(_res);
-                    mostrarListadoCapasPublicadas();
-                }else{
-                    alert('error asf0jg434ff0gh');
-                }
+                if(_res.res!='exito'){alert('error');return;}
+					
+				_DataCapas=_res.data;
+				//console.log(_DataCapas);
+				
+				cargarValoresCapasPublicadas(_res);
+				mostrarListadoCapasPublicadas();
+
             }
     });
 }
+cargarListadoCapasPublicadas();
+
 
 function cargarDatosCapaPublicada(idcapa){
     var idMarco = getParameterByName('id');
@@ -157,7 +161,8 @@ function  editarIndPublicado(_this){
                 //console.log(_res);
                 if(_res.res=='exito'){
                     if (_res.data != null){
-                        cargarValoresIndicadorExist(_res);
+						_DataIndicador=_res.data;
+                        cargarValoresIndicadorExist(_res);                        
                     } else {
                         generarNuevoIndicadorQuery();
                     }
@@ -191,6 +196,7 @@ function generarNuevoIndicador(){
                 //console.log(_res);
                 if(_res.res=='exito'){
                     if (_res.data != null){
+						_DataIndicador=_res.data;
                         cargarValoresIndicadorExist(_res);
                     } else {
                         generarNuevoIndicadorQuery();
@@ -198,6 +204,33 @@ function generarNuevoIndicador(){
                 }else{
                     alert('error asf0jg44f9ytfgh');
                 }
+            }
+    });
+}
+
+
+function generarNuevoModelo(){
+    
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    
+    
+    var parametros = {
+    };
+    
+    $.ajax({
+            url:   './app_ind/app_ind_ed_crea_modelo.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                var _res = $.parseJSON(response);
+                //console.log(_res);
+                if(_res.res!='exito'){alert('error al crear modelo');}
+                _Id_Modelo_Editando=_res.data.nid;
+				cargarListadoModelo();
+				
+				
             }
     });
 }
@@ -220,6 +253,8 @@ function generarNuevoIndicadorQuery(){
                 var _res = $.parseJSON(response);
                 //console.log(_res);
                 if(_res.res=='exito'){
+					_DataIndicador['id']=_res.data.id;
+					
                     asignarIdIndicador(_res.data.id);
                 }else{
                     alert('error asf0jg3444ffgh');
@@ -229,16 +264,15 @@ function generarNuevoIndicadorQuery(){
 }
 
 function consultarIndicadorParaModificar(idindicador){
-    //consultar si ya existe un indicador sin publicar para este autor y sino crearlo
-    var idMarco = getParameterByName('id');
+	 var idMarco = getParameterByName('id');
     var codMarco = getParameterByName('cod');
     var zz_publicada = '1';
     
     var parametros = {
         'codMarco': codMarco,
         'idMarco': idMarco,
-        'zz_publicada': zz_publicada,
-        'id': idindicador
+        'id': idindicador,
+        'zz_publicada': zz_publicada
     };
     
     $.ajax({
@@ -251,8 +285,52 @@ function consultarIndicadorParaModificar(idindicador){
                 //console.log(_res);
                 if(_res.res=='exito'){
                     if (_res.data != null){
+						_DataIndicador=_res.data;
+						
                         //TODO
                         cargarValoresIndicadorExist(_res);
+                    }
+                }else{
+                    alert('error asf0jg44f9ytfgh');
+                }
+            }
+    });
+}
+
+
+
+function accionCrearCapaAux(){
+    _idMarco = getParameterByName('id');
+    _codMarco = getParameterByName('cod');
+    _copiar = 'no';
+														  funcionalidadSelector
+    _func=document.querySelector('#formEditarIndicadores #funcionalidadSelector').value;
+    _tipog=document.querySelector('#formEditarIndicadores [name="tipogeometria"]').value;
+    if(_tipog=='' && _func!='sinGeometria'){alert('Primero tenés que seleccionar un tipo de geometria');return;}
+    if(_func=='sinGeometria'){_tipog='Polygon';_copiar='marco';}
+    
+    var parametros = {
+        'codMarco': _codMarco,
+        'idMarco': _idMarco,
+        'idindicador': _DataIndicador.id,
+        'tipogeometria': _tipog,
+        'copiar':_copiar
+    };
+    
+    $.ajax({
+            url:   './app_capa/app_capa_generar_ind_aux.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                var _res = $.parseJSON(response);
+                //console.log(_res);
+                if(_res.res=='exito'){
+                    if (_res.data != null){
+                        //TODO
+                        alert('capa auxiliar creada y asociada a este indicador');
+                        accionIndicadorPublicadoSeleccionado('', _res.data.id_indicador);
+                        //cargarValoresIndicadorExist(_res);
                     }
                 }else{
                     alert('error asf0jg44f9ytfgh');
@@ -383,15 +461,62 @@ function cargarListadoIndicadoresPublicados(){
             {   
                 var _res = $.parseJSON(response);
                 //console.log(_res);
-                if(_res.res=='exito'){
-                    cargarValoresIndicadoresPublicados(_res, "accionIndicadorPublicadoSeleccionado");
-                    mostrarListadoIndicadoresPublicados();
-                }else{
-                    alert('error asf0jg44ff0gh');
-                }
+				if(_res.res!='exito'){return;}
+			
+				$('#cuadrovalores').attr('modo','indicadores');
+				_DataListaIndicadores=_res.data;
+				cargarValoresIndicadoresPublicados(null, "accionIndicadorPublicadoSeleccionado");
+				mostrarListadoIndicadoresPublicados();
+			
             }
     });
 }
+
+
+function cargarListadoModelo(){
+    var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    var zz_publicada = '1';
+    
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'zz_publicada': zz_publicada
+    };
+    
+    $.ajax({
+            url:   './app_ind/app_ind_consultar_listado_modelos.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                var _res = $.parseJSON(response);
+                //console.log(_res);
+                if(_res.res!='exito'){alert('error al consultar listado de modelos')};
+				
+				$('#cuadrovalores').attr('modo','modelos');
+				_DataListaModelos=_res.data;
+				mostrarListadoModelos();
+				
+				if(_Id_Modelo_Editando!=''){
+					cargarModelo(_Id_Modelo_Editando);
+					_Id_Modelo_Editando='';
+				}
+
+            }
+    });
+}
+
+function cargarModelo(_idmod){
+	_DataModelo=_DataListaModelos.modelos[_idmod];
+	formularioAmpliado('modelo');	
+}
+
+
+
+
+	
+
 /*
 function cargarListadoIndicadoresPublicadosAModificar(){
     var idMarco = getParameterByName('id');
@@ -445,68 +570,88 @@ function refrescarDatosIndicadorActivo(_res){
 	
 }
 
-function cargarIndicadorPublicado(idIndicador, seleccionarFechaAno, seleccionarFechaMes){
-    cargarInfoIndicador(idIndicador, seleccionarFechaAno, seleccionarFechaMes, 'true');
+function cargarIndicadorPublicado(idIndicador){
+    cargarInfoIndicador(idIndicador,'true');
 }
 
 
-var _DataIndicador;
-var _DataPeriodo=Array();
-function cargarInfoIndicador(idIndicador, seleccionarFechaAno, seleccionarFechaMes, seleccionarDefault){
-    var idMarco = getParameterByName('id');
-    var codMarco = getParameterByName('cod');
+
+function cargarInfoIndicador(_idIndicador, _seleccionarDefault){
+    var _idMarco = getParameterByName('id');
+    var _codMarco = getParameterByName('cod');
     
     var parametros = {
-        'codMarco': codMarco,
-        'idMarco': idMarco,
+        'codMarco': _codMarco,
+        'idMarco': _idMarco,
         'zz_publicada': '1',
-        'id': idIndicador
+        'id': _idIndicador
     };
     
     $.ajax({
-            url:   './app_ind/app_ind_consultar_estado.php',
-            type:  'post',
-            data: parametros,
-            success:  function (response)
-            {   
-                var _res = $.parseJSON(response);
-                
-                for(var _nm in _res.mg){
-	                alert(_res.mg[_nm]);
-	            }
-	            for(var _na in _res.acc){
-	                procesarAcc(_res.acc[_na]);
-	            }
-                //console.log(_res);
-                if(_res.res=='exito'){
-                	_DataIndicador=_res.data.indicador;
-                    accionIndicadorPublicadoCargar(idIndicador, _res, seleccionarFechaAno, seleccionarFechaMes, seleccionarDefault);
-                }else{
-                    alert('error asf0jg44f8f0gh');
-                }
-            }
+		url:   './app_ind/app_ind_consultar_estado.php',
+		type:  'post',
+		data: parametros,
+		success:  function (response)
+		{   
+			var _res = $.parseJSON(response);
+			
+			for(var _nm in _res.mg){
+				alert(_res.mg[_nm]);
+			}
+			for(var _na in _res.acc){
+				procesarAcc(_res.acc[_na]);
+			}
+			//console.log(_res);
+			if(_res.res=='exito'){
+				_DataIndicador=_res.data.indicador;
+				
+				if(_DataIndicador.periodicidad=='anual'){
+					if(_DataIndicador.fechadesde!=null){
+						_Select_Fecha['mes']=parseInt(_DataIndicador.fechadesde.split('-')[1]);
+						_Select_Fecha['dia']=parseInt(_DataIndicador.fechadesde.split('-')[2]);
+					}
+				}else if(_DataIndicador.periodicidad=='mensual'){
+					if(_DataIndicador.fechadesde!=null){
+						_Select_Fecha['dia']=parseInt(_DataIndicador.fechadesde.split('-')[2]);
+					}
+				}
+				
+				
+				accionIndicadorPublicadoCargar(_idIndicador, _res, _seleccionarDefault);
+			}else{
+				alert('error asf0jg44f8f0gh');
+			}
+		}
     });
 }
 
-var _DataCapa=Array();
-function cargarPoligonosIndicadorPublicado(idIndicador, ano, mes, seleccionarDefault){
+
+
+function cargarPoligonosIndicadorPublicado(idIndicador, seleccionarDefault){
     var idMarco = getParameterByName('id');
     var codMarco = getParameterByName('cod');
     var zz_publicada = '1';
     
-    var paramMes = 1;
-    if (mes != null && mes > 0){
-        paramMes = mes;
+    var _paramMes = 1;
+    if (_Select_Fecha.mes != null && _Select_Fecha.mes > 0){
+        _paramMes = _Select_Fecha['mes'];
     }
+    
+    _paramDia=1;
+    if(_Select_Fecha['dia'] != null && _Select_Fecha['dia'] >0){
+		_paramDia=_Select_Fecha['dia']
+	}
     
     var parametros = {
         'codMarco': codMarco,
         'idMarco': idMarco,
         'zz_publicada': zz_publicada,
         'id': idIndicador,
-        'ano': ano,
-        'mes': paramMes
+        'ano': _Select_Fecha['ano'],
+        'mes':_paramMes,
+        'dia':_paramDia
     };
+    
     
     $.ajax({
             url:   './app_ind/app_ind_consultar_indicador_geom.php',
@@ -525,7 +670,7 @@ function cargarPoligonosIndicadorPublicado(idIndicador, ano, mes, seleccionarDef
 	            
 	            for(var _na in _res.acc){
 	                procesarAcc(_res.acc[_na]);
-	            }
+	            }_res.data.periodo.me
 	            
 	            if(_DataIndicador.calc_buffer>0){
 	            	consultarBuffer(_res.data.indicador.id,_res.data.periodo.ano,_res.data.periodo.mes);
@@ -533,20 +678,21 @@ function cargarPoligonosIndicadorPublicado(idIndicador, ano, mes, seleccionarDef
 	            
 	            
                 if(_res.res=='exito'){
+					
                     dibujarPoligonosMapa(_res);
-                    
+                    console.log('o');
                     if(_res.data.indicador.funcionalidad=='nuevaGeometria'){
                     	cargarFormularioNuevasGeometrias(_res);
                     }else{
-                    	
                     	cargarFormularioValoresMultiple(_res);
                     }
                     
                     if(_res.data.indicador.funcionalidad=='geometriaExistente'){
                     	
                     	if(obtenerNombreMes(_res.data.periodo.mes-1)==undefined){_m='';}else{_m=obtenerNombreMes(_res.data.periodo.mes-1);}
-                		_selector='#periodo > #selectorPeriodo #periodoFecha'+_m+_res.data.periodo.ano+' #valor';
-                		console.log(_selector);
+                		_p=_res.data.periodo.ano+'_'+parseInt(_res.data.periodo.mes)+'_'+parseInt(_res.data.periodo.dia);
+                		_selector='#periodo > #selectorPeriodo [periodo="'+_p+'"] #valor';
+                		//console.log(_selector);
                 		_divValor=document.querySelector(_selector); 
                 		
                 		
@@ -558,7 +704,7 @@ function cargarPoligonosIndicadorPublicado(idIndicador, ano, mes, seleccionarDef
 		        		}
 						_divValor.innerHTML='s: '+_v;
 						
-						_selector='#periodo > #selectorPeriodo #periodoFecha'+_m+_res.data.periodo.ano+' #porc';
+						_selector='#periodo > #selectorPeriodo [periodo="'+_p+'"] #porc';
                 		console.log(_selector);
                 		_divPorc=document.querySelector(_selector);
                 		console.log(_divPorc);
@@ -593,18 +739,25 @@ function consultarBuffer(idIndicador, ano, mes){
     var codMarco = getParameterByName('cod');
     var zz_publicada = '1';
     
-    var paramMes = 1;
-    if (mes != null && mes > 0){
-        paramMes = mes;
+    
+     var _paramMes = 1;
+    if (_Select_Fecha.mes != null && _Select_Fecha.mes > 0){
+        _paramMes = _Select_Fecha['mes'];
     }
     
+    _paramDia=1;
+    if(_Select_Fecha['dia'] != null && _Select_Fecha['dia'] >0){
+		_paramDia=_Select_Fecha['dia']
+	}
+       
     var parametros = {
         'codMarco': codMarco,
         'idMarco': idMarco,
         'zz_publicada': zz_publicada,
         'id': idIndicador,
         'ano': ano,
-        'mes': paramMes
+        'mes': _paramMes,
+        'dia': _paramDia
     };
     
     $.ajax({
@@ -630,11 +783,14 @@ function consultarBuffer(idIndicador, ano, mes){
                 	
                     dibujarBufferMapa(_res);
                 
-                
+					 console.log(_res.data.capa.sld);
                 	if(_res.data.capa_superp!=undefined){
+						//console.log(_res.data.capa.sld);
                 		dibujarCapaSuperp(_res);	
                 		if(obtenerNombreMes(_res.data.periodo.mes-1)==undefined){_m='';}else{_m=obtenerNombreMes(_res.data.periodo.mes-1);}
-                		_selector='#periodo > #selectorPeriodo #periodoFecha'+_m+_res.data.periodo.ano+' #valor';
+                		
+                		_p=_res.data.periodo.ano+'_'+parseInt(_res.data.periodo.mes)+'_'+parseInt(_res.data.periodo.dia);
+                		_selector='#periodo > #selectorPeriodo [periodo="'+_p+'"] #valor';
                 		console.log(_selector);
                 		_divValor=document.querySelector(_selector);             
                 		
@@ -647,11 +803,11 @@ function consultarBuffer(idIndicador, ano, mes){
 		        		}
 						_divValor.innerHTML=_v;
 						
-						
-						_selector='#periodo > #selectorPeriodo #periodoFecha'+_m+_res.data.periodo.ano+' #porc';
-                		console.log(_selector);
+						_p=_res.data.periodo.ano+'_'+parseInt(_res.data.periodo.mes)+'_'+parseInt(_res.data.periodo.dia);
+                		_selector='#periodo > #selectorPeriodo [periodo="'+_p+'"] #porc';
+                		//console.log(_selector);
                 		_divPorc=document.querySelector(_selector);
-                		console.log(_divPorc);
+                		//console.log(_divPorc);
                 		
 						
 						if(Number(_res.data.geom_superp_max.superp_max_numero1)>0){
@@ -745,23 +901,17 @@ function eliminarValorIndicador(idindval){
 }
 
 function accionEditarValorGuardar(_this){
-	
-    var idMarco = getParameterByName('id');
-    var codMarco = getParameterByName('cod');
-    
-    var idIndicador = document.getElementById('indicadorActivo').getAttribute('idindicador');
-    var idindval = document.getElementById('divPeriodoSeleccionado').getAttribute('idindval');
-    var ano = document.getElementById('divPeriodoSeleccionado').getAttribute('ano');
-    var mes = document.getElementById('divPeriodoSeleccionado').getAttribute('mes');
+	    
     var fechaAhora = new Date();
-    
+
     var _paramGral = {
-        'codMarco': codMarco,
-        'idMarco': idMarco,
-        'id': idindval,
-        'idIndicador': idIndicador,
-        'ano': ano,
-        'mes': mes,
+        'codMarco': _CodMarco,
+        'idMarco': '',
+        'id': document.getElementById('divPeriodoSeleccionado').getAttribute('idindval'),
+        'idIndicador': _DataIndicador.id,
+        'ano': document.getElementById('divPeriodoSeleccionado').getAttribute('ano'),
+        'mes': document.getElementById('divPeriodoSeleccionado').getAttribute('mes'),
+        'dia': document.getElementById('divPeriodoSeleccionado').getAttribute('dia'),
         'fechadecreacion': fechaAhora.toISOString().slice(0,10)        
     };
     
@@ -789,10 +939,8 @@ function accionEditarValorGuardar(_this){
     		_envios[_idg][_campo]=_imps[_in].value;
     	}
     }
-    
-    
-    for(_idg in _envios){    
-    	
+        
+    for(_idg in _envios){    	
     	parametros = _paramGral;
     	for(_campo in  _envios[_idg]){
     		parametros[_campo]=_envios[_idg][_campo];    	
@@ -801,21 +949,17 @@ function accionEditarValorGuardar(_this){
 	    $.ajax({
             url:   './app_ind/app_ind_val_editar.php',
             type:  'post',
-            data: parametros,
-            success:  function (response)
-            {   
-                var _res = $.parseJSON(response);
-                //console.log(_res);
-                if(_res.res=='exito'){
-                	accionPeriodoElegido(_DataPeriodo.ano, _DataPeriodo.mes, 'false');
-                    //refrescarIndicadorActivo();
-                    //refrescarDatosIndicadorActivo(_res);
-                    
-                }else{
-                    alert('error asf89d0j2jg4u96d7gh');
-                }
-            }
-	    });	    
+            data: parametros
+		})
+		.done(function (_data, _textStatus, _jqXHR){
+			_res = preprocesarRespuestaAjax(_data, _textStatus, _jqXHR);
+			if(_res===false){return;}
+			
+			cargarInfoIndicador(_res.data.indid, true);
+			
+			accionPeriodoElegido(_Select_Fecha.ano+'_'+_Select_Fecha.mes+'_'+_Select_Fecha.dia, 'false');	
+			
+        })	    
     }
 }
 
@@ -829,6 +973,7 @@ function guardarNuevaGeometria(_geometria,_idm,_elem){
     var idCapa = _DataIndicador.id_p_ref_capasgeo;
     var ano = document.getElementById('divPeriodoSeleccionado').getAttribute('ano');
     var mes = document.getElementById('divPeriodoSeleccionado').getAttribute('mes');
+    var dia = document.getElementById('divPeriodoSeleccionado').getAttribute('dia');
     var fechaAhora = new Date();
     
 	var _paramGral = {
@@ -842,6 +987,7 @@ function guardarNuevaGeometria(_geometria,_idm,_elem){
         'idCapa_registro_elimina': '',
         'ano': ano,
         'mes': mes,
+        'dia': dia,
         'fechadecreacion': fechaAhora.toISOString().slice(0,10)        
     };
 
@@ -894,7 +1040,6 @@ function eliminarGeom(_this){
         'ano': ano,
         'mes': mes 
     };
-
 	
 	$.ajax({
 		data:_paramGral,
@@ -942,7 +1087,6 @@ function guardarNombreGeometria(_idgeom,_nombre){
         'mes': mes 
     };
 
-	
 	$.ajax({
 		data:_paramGral,
 		url:   './app_ind/app_ind_geom_editar.php',
@@ -961,7 +1105,6 @@ function guardarNombreGeometria(_idgeom,_nombre){
 	});	
 }    
 
-
 function accionCopiarGeometriaAnterior(_this){
 	//para indicadores de funcionalidad nuevaGeometria, busca geometrías del período anterior al dado y las replica para este período.
 	
@@ -973,7 +1116,14 @@ function accionCopiarGeometriaAnterior(_this){
     var idCapa = _DataIndicador.id_p_ref_capasgeo;
     var ano = document.getElementById('divPeriodoSeleccionado').getAttribute('ano');
     var mes = document.getElementById('divPeriodoSeleccionado').getAttribute('mes');
+    var dia = document.getElementById('divPeriodoSeleccionado').getAttribute('dia');
     var fechaAhora = new Date();
+    
+    _prev = document.querySelector('#selectorPeriodo .card[selected="true"]').previousSibling.getAttribute('periodo');
+    _p=_prev.split('_');
+	_prev_ano = _p[0];
+    _prev_mes = _p[1].padStart(2, "0");
+    _prev_dia = _p[2].padStart(2, "0");
     
 	var _paramGral = {
         'codMarco': codMarco,
@@ -983,6 +1133,10 @@ function accionCopiarGeometriaAnterior(_this){
         'idCapa': idCapa,
         'ano': ano,
         'mes': mes,
+        'dia': dia,
+        'prev_ano': _prev_ano,
+        'prev_mes': _prev_mes,
+        'prev_dia': _prev_dia,
         'fechadecreacion': fechaAhora.toISOString().slice(0,10)        
     };
 
@@ -1003,4 +1157,823 @@ function accionCopiarGeometriaAnterior(_this){
 			}
 		}
 	});
+}
+
+function formularCopiarGeometriaCapa(){
+	
+    var codMarco = getParameterByName('cod');
+	var _paramGral = {
+        'codMarco': codMarco,
+        'zz_publicada':'1'
+    };
+	
+	$.ajax({
+		data:_paramGral,
+		url:   './app_capa/app_capa_consultar_listado.php',
+		type:  'post',
+		success: function (response){alert('error al consulta el servidor');},
+		success:  function (response){
+			var _res = $.parseJSON(response);
+			//console.log(_res);
+			if(_res.res!='exito'){return;}
+			
+			_DataCapas=_res.data;
+			//console.log(_DataCapas);
+			
+			_lista=document.querySelector('#listacapasfuente');
+			_lista.innerHTML='';
+			for(_idc in _res.data){
+				_datc=_res.data[_idc];
+				_a=document.createElement('a');
+				_lista.appendChild(_a);
+				_a.innerHTML=_datc.id+' - '+_datc.nombre;
+				_a.setAttribute('onclick','accionCopiarGeometriaCapa("'+_datc.id+'")');
+			}
+
+		}
+	});
+
+}
+
+
+
+function formularCopiarGeometriaRele(){
+	var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    
+    var parametros = {
+        'codMarco': codMarco,
+        'idMarco': idMarco
+    };
+    
+    $.ajax({
+            url:   './app_rele/app_rele_consultar_listado.php',
+            type:  'post',
+            data: parametros
+            
+    }).done(function (_data, _textStatus, _jqXHR){
+			_res = preprocesarRespuestaAjax(_data, _textStatus, _jqXHR);
+			if(_res===false){return;}
+			_Data_reles=_res.data;
+			_lista=document.querySelector('#listarelesfuente');
+			_lista.innerHTML='';
+			for(_idr in _res.data){
+				_a=document.createElement('a');
+				_lista.appendChild(_a);
+				_a.innerHTML=_idr+' - '+_res.data[_idr].nombre;
+				_a.setAttribute('onclick','formularSeleccionCamposRele("'+_idr+'")');
+			}
+	})	 
+}
+
+function formularSeleccionCamposRele(_idrele){
+	
+	document.querySelector('#formImportarRele #accionImportarRele').setAttribute('id_rele',_idrele);
+	document.querySelector('#formImportarRele #selectorCamposRele').setAttribute('estado','activo');
+	_sel=document.querySelector('#formImportarRele [name="campo_importar_1"]');
+	_op=document.createElement('option');
+	_op.value='0';
+	_op.innerHTML='- dejar vacío -';
+	_sel.appendChild(_op);
+		
+	
+	_reldat=_Data_reles[_idrele];
+	
+	
+	for(_idc in _reldat.campos){
+		if(_reldat.campos[_idc].tipo!='numero'){
+			continue;//por ahora solo se pueden importar datos numericos
+		}
+		_op=document.createElement('option');
+		_op.value=_idc;
+		_op.innerHTML=_reldat.campos[_idc].nombre;
+		_op.title=_reldat.campos[_idc].ayuda;
+		_sel.appendChild(_op);
+	}
+	
+	document.querySelector('#formImportarRele [name="campo_importar_1"]').innerHTML=_sel.innerHTML;
+	document.querySelector('#formImportarRele [name="campo_importar_2"]').innerHTML=_sel.innerHTML;
+	document.querySelector('#formImportarRele [name="campo_importar_3"]').innerHTML=_sel.innerHTML;
+	document.querySelector('#formImportarRele [name="campo_importar_4"]').innerHTML=_sel.innerHTML;
+	
+	
+}
+
+
+
+
+function importarRele(){
+		
+	var parametros = {
+        'codMarco': _CodMarco,
+        'idMarco': _IdMarco,
+        'idindicador': _DataIndicador.id,
+        'id_rele_campa':document.querySelector('#formImportarRele #accionImportarRele').getAttribute('id_rele'),
+        'campo_importar_1':document.querySelector('#formImportarRele [name="campo_importar_1"]').value,
+        'campo_importar_2':document.querySelector('#formImportarRele [name="campo_importar_2"]').value,
+        'campo_importar_3':document.querySelector('#formImportarRele [name="campo_importar_3"]').value,
+        'campo_importar_4':document.querySelector('#formImportarRele [name="campo_importar_4"]').value
+    };	
+    
+    $.ajax({
+            url:   './app_ind/app_ind_importar_rele.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                _res = $.parseJSON(response);
+                //console.log(_res);
+                if(_res.res!='exito'){
+					alert('error asf0jg434ff0gh');
+					return;
+				}
+				
+				alert('Los datos y geometrías fueron importados con éxito. Recargar la página para actualizar la información visible');
+                
+                
+            }
+    });
+}
+
+
+function formularCruce(){
+	
+	document.querySelector('#form_cruce').setAttribute('estado','activo');
+	
+	_si1=document.querySelector('#form_cruce select[name="inicador_1"]');
+	_si1.innerHTML='';
+	
+	_sc1=document.querySelector('#form_cruce select[name="campo_i_1"]');
+	_sc1.innerHTML='';
+	
+	
+	_si2=document.querySelector('#form_cruce select[name="inicador_2"]');
+	_si2.innerHTML='';
+	
+	_sc2=document.querySelector('#form_cruce select[name="campo_i_2"]');
+	_sc2.innerHTML='';
+	
+	_op=document.createElement('option');
+	_op.innerHTML='- elegir indicador principal -';
+	_op.value='';
+	_si1.appendChild(_op);
+	
+	for(_idi in _DataListaIndicadores){
+		_op=document.createElement('option');
+		_op.innerHTML=_idi+' - '+_DataListaIndicadores[_idi].nombre+' : '+ _DataListaIndicadores[_idi].periodicidad +' : '+_DataListaIndicadores[_idi].tipogeometria;
+		_op.value=_idi;
+		_si1.appendChild(_op);
+	}
+			
+}
+
+function actualizarFormCruceSi1(){
+	_idi_1=document.querySelector('#form_cruce select[name="inicador_1"').value;
+	if(_idi_1==''){formularCruce();return;}
+	
+	_capa1 = _DataListaIndicadores[_idi_1].id_p_ref_capasgeo;
+	if(_capa1==''){formularCruce();return;}
+	
+	_tipogeom=_DataListaIndicadores[_idi_1].tipogeometria;
+			
+	_sc1=document.querySelector('#form_cruce select[name="campo_i_1"');
+	_sc1.innerHTML='';
+		
+	
+	_op=document.createElement('option');
+	_op.innerHTML='- elegir la variable de cruce primaria -';
+	_op.value='';
+	_sc1.appendChild(_op);	
+	
+	if(_DataListaIndicadores[_idi_1].col_numero1_nom!=''){
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_1].col_numero1_nom;
+		_op.value='col_numero1';
+		_sc1.appendChild(_op);		
+	}
+	
+	if(_DataListaIndicadores[_idi_1].col_numero1_nom!=''){
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_1].col_numero2_nom;
+		_op.value='col_numero2';
+		_sc1.appendChild(_op);
+	}
+	
+	if(_DataListaIndicadores[_idi_1].col_numero1_nom!=''){			
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_1].col_numero3_nom;
+		_op.value='col_numero3';
+		_sc1.appendChild(_op);	
+	}
+	
+	if(_DataListaIndicadores[_idi_1].col_numero1_nom!=''){			
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_1].col_numero4_nom;
+		_op.value='col_numero4';
+		_sc1.appendChild(_op);	
+	}
+	
+	if(_DataListaIndicadores[_idi_1].col_numero1_nom!=''){			
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_1].col_numero5_nom;
+		_op.value='col_numero5';
+		_sc1.appendChild(_op);	
+	}
+			
+	_si2=document.querySelector('#form_cruce select[name="inicador_2"');	
+	
+	_op=document.createElement('option');
+	_op.innerHTML='- elegir la variable de cruce secundaria -';
+	_op.value='';
+	_si2.appendChild(_op);	
+	
+	for(_idi in _DataListaIndicadores){		
+		if(_tipogeom==_DataListaIndicadores[_idi].tipogeometria){continue;}
+		if( _DataListaIndicadores[_idi].tipogeometria=='LineString'){continue;}		
+		_op=document.createElement('option');
+		_op.innerHTML=_idi+' - '+_DataListaIndicadores[_idi].nombre+' : '+ _DataListaIndicadores[_idi].periodicidad+' : '+_DataListaIndicadores[_idi].tipogeometria;
+		_op.value=_idi;
+		_si2.appendChild(_op);
+	}
+		
+	_sc2=document.querySelector('#form_cruce select[name="campo_i_2"');
+	_sc2.innerHTML='';
+	
+	
+	_scapa=document.querySelector('#form_cruce select[name="capa_3"]');
+	_scapa.innerHTML='';	
+	
+	if(_tipogeom=='Polygon'){
+		//no acepta capa de superposicion
+		return;
+	}
+	_op=document.createElement('option');
+	_op.innerHTML='- elegir una capa de superposición -';
+	_op.value='';
+	_scapa.appendChild(_op);
+	
+	for(_id_capa in _DataCapas){
+		if( _DataCapas[_id_capa].zz_aux_ind!=null || _DataCapas[_id_capa].zz_aux_rele!=null){continue;}
+		_op=document.createElement('option');
+		_op.innerHTML=_DataCapas[_id_capa].nombre;
+		_op.value=_id_capa;
+		_scapa.appendChild(_op);
+	}
+}
+
+
+
+function actualizarFormCruceSi1Campos2(){
+	
+	_idi_2=document.querySelector('#form_cruce select[name="inicador_2"').value;
+	if(_idi_2==''){formularCruce();return;}
+	
+	_capa2 = _DataListaIndicadores[_idi_2].id_p_ref_capasgeo;
+	if(_capa2==''){return;}
+	
+	_tipogeom=_DataListaIndicadores[_idi_2].tipogeometria;
+			
+	_sc2=document.querySelector('#form_cruce select[name="campo_i_2"');
+	_sc2.innerHTML='';
+		
+	
+	_op=document.createElement('option');
+	_op.innerHTML='- elegir la variable de cruce secundaria -';
+	_op.value='';
+	_sc2.appendChild(_op);	
+	
+	if(_DataListaIndicadores[_idi_2].col_numero1_nom!=''){
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_2].col_numero1_nom;
+		_op.value='col_numero1';
+		_sc2.appendChild(_op);		
+	}
+	
+	if(_DataListaIndicadores[_idi_2].col_numero2_nom!=''){
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_2].col_numero2_nom;
+		_op.value='col_numero2';
+		_sc2.appendChild(_op);
+	}
+	
+	if(_DataListaIndicadores[_idi_2].col_numero1_nom!=''){			
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_2].col_numero3_nom;
+		_op.value='col_numero3';
+		_sc2.appendChild(_op);	
+	}
+	
+	if(_DataListaIndicadores[_idi_2].col_numero1_nom!=''){			
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_2].col_numero4_nom;
+		_op.value='col_numero4';
+		_sc2.appendChild(_op);	
+	}
+	
+	if(_DataListaIndicadores[_idi_2].col_numero1_nom!=''){			
+		_op=document.createElement('option');
+		_op.innerHTML=_DataListaIndicadores[_idi_2].col_numero5_nom;
+		_op.value='col_numero5';
+		_sc2.appendChild(_op);	
+	}
+			
+	
+}
+
+function generarCruce(_modo_representa){
+	
+
+	var parametros = {
+        'codMarco': _CodMarco,
+        'idMarco': _IdMarco,
+        'modo_representa':_modo_representa,
+        'id_ind_1': document.querySelector('#form_cruce select[name="inicador_1"').value,
+        'campo_ind_1': document.querySelector('#form_cruce select[name="campo_i_1"').value,
+        'id_ind_2': document.querySelector('#form_cruce select[name="inicador_2"').value,
+        'campo_ind_2': document.querySelector('#form_cruce select[name="campo_i_2"').value,
+        'id_capa_3': document.querySelector('#form_cruce select[name="capa_3"').value
+        
+    };	
+    
+    $.ajax({
+            url:   './app_ind/app_ind_calcular_cruce.php',
+            type:  'post',
+            data: parametros,
+            success:  function (response)
+            {   
+                _res = $.parseJSON(response);
+                //console.log(_res);
+                if(_res.res!='exito'){
+					alert('error asf0jg434ff0gh');
+					return;
+				}
+				
+				dibujarGrafico(_res);
+                
+            }
+    });
+}
+
+function dibujarGrafico(_res){
+	
+	document.querySelector('#ventanagrafico').setAttribute('estado','activo');
+	
+	_canvas=document.querySelector('#ventanagrafico canvas');
+	_alto=800;
+	_ancho=1000;
+	_margen=50;
+	_alto_leyenda_x=200;
+	_ancho_leyenda_y=200;
+	_ancho_cuadro_neto=_ancho-(_margen*2)-_ancho_leyenda_y;
+	_alto_cuadro_neto=_alto-(_margen*2)-_alto_leyenda_x;
+	
+	
+	_amplitud_x=_res.data.resumen.x.max-_res.data.resumen.x.min;
+	_amplitud_y=_res.data.resumen.y.max-_res.data.resumen.y.min;
+	
+	//_canvas.setAttribute('height',(Object.keys(_gra.tareas).length * _ConfGra.fila_alto) + _ConfGra.encabez_alto);
+	//_canvas.setAttribute('width',_ConfGra.canvas_ancho);
+	_ctx = _canvas.getContext('2d');
+
+	//dibuja fondo blanco
+	_ctx.fillStyle = 'rgba(256,256,256,1)';
+	_ctx.fillRect( //fillect(x, y, width, height)
+		0, 
+		0,
+		_ancho,
+		_alto
+	);
+	
+
+	
+	
+	//Dibujar eje x
+		_ctx.fillStyle = 'rgba(0,0,0,0)';
+		_ctx.strokeStyle = 'rgba(0,0,0,1)';
+		_ctx.lineWidth = 3;		
+		_ctx.beginPath();
+		_ctx.moveTo( (_margen+_ancho_leyenda_y) , (_margen+_alto_cuadro_neto));
+		_ctx.lineTo( (_ancho-_margen) , (_margen+_alto_cuadro_neto));
+		_ctx.stroke();
+		
+		// dibujar ticks X
+		
+		_a=[parseFloat(_res.data.resumen.x.min), 0];
+		_ticks=[_a];
+		_av=parseFloat(_res.data.resumen.x.min);
+		
+		if(_amplitud_x<=3){
+			_paso=0.1;	
+			_av=Math.round(_av*10)/10;
+		}
+		if(_amplitud_x>3){
+			_paso=1;	
+			_av=Math.round(_av);
+		}
+		if(_amplitud_x>30){
+			_paso=10;	
+			_av=Math.round(_av/10)*10;
+		}
+		if(_amplitud_x>300){
+			_paso=100;	
+			_av=Math.round(_av/10)*10;
+		}		
+		_av+=parseFloat(_paso);
+		
+		_c=0;				
+		while(_av<parseFloat(_res.data.resumen.x.max) && _c<10){
+			_c++;
+			
+			_u_desde_izq=_av-_res.data.resumen.x.min;
+			_p_cuadro_x=_u_desde_izq/_amplitud_x;
+			_pos_x_neta= _p_cuadro_x * _ancho_cuadro_neto;
+			_a=[_av, _pos_x_neta];
+			
+			_ticks.push(_a);
+			
+			_av+=parseFloat(_paso);
+		}
+		
+		_a=[parseFloat(_res.data.resumen.x.max), _ancho_cuadro_neto];
+		_ticks.push(_a);
+		
+		for(_nt in _ticks){			
+		
+			_ctx.fillStyle = 'rgba(0,0,0,0)';
+			_ctx.strokeStyle = 'rgba(0,0,0,1)';
+			_ctx.lineWidth = 1;		
+			_ctx.beginPath();
+			_ctx.moveTo( _margen+_ancho_leyenda_y+_ticks[_nt][1], (_margen+_alto_cuadro_neto));
+			_ctx.lineTo( _margen+_ancho_leyenda_y+_ticks[_nt][1], (_margen+_alto_cuadro_neto) + 5);
+			_ctx.stroke();
+		
+		
+			_ctx.font = '10px serif';
+			_ctx.fillStyle = 'rgba(0,0,0,1)';
+			_ctx.textAlign = 'center';
+			_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+				_ticks[_nt][0], 
+				( _margen+_ancho_leyenda_y+_ticks[_nt][1]), 
+				(_margen+_alto_cuadro_neto) + 25
+			);	
+		}
+		
+		
+		
+		_ctx.font = '16px serif';
+		_ctx.fillStyle = 'rgba(0,0,0,1)';
+		_ctx.textAlign = 'center';
+		_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+			'Variable Principal', 
+			(_margen+_ancho_leyenda_y+_ancho_cuadro_neto/2), 
+			(_margen+_alto_cuadro_neto + 60) 
+		);	
+		_ctx.font = '16px serif';
+		_ctx.fillStyle = 'rgba(0,0,0,1)';
+		_ctx.textAlign = 'center';
+		_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+			_res.data.variable_principal.nombre, 
+			(_margen+_ancho_leyenda_y+_ancho_cuadro_neto/2), 
+			(_margen+_alto_cuadro_neto + 90) 
+		);			
+		
+		
+	//Dibujar eje y
+		_ctx.fillStyle = 'rgba(0,0,0,0)';
+		_ctx.strokeStyle = 'rgba(0,0,0,1)';
+		_ctx.lineWidth = 3;		
+		_ctx.beginPath();
+		_ctx.moveTo( (_margen+_ancho_leyenda_y) , (_margen+_alto_cuadro_neto));
+		_ctx.lineTo( (_margen+_ancho_leyenda_y) , _margen);
+		_ctx.stroke();
+		
+		
+		//  dibujar ticks Y
+
+
+		_a=[parseFloat(_res.data.resumen.y.min), 0];
+		_ticks=[_a];
+		
+		_av=parseFloat(_res.data.resumen.y.min);
+		
+		//console.log(_res.data.resumen.y.max);
+		
+		if(_amplitud_y<=3){
+			_paso=0.1;	
+			_av=Math.round(_av*10)/10;
+		}
+		if(_amplitud_y>3){
+			_paso=1;	
+			_av=Math.round(_av);
+		}
+		if(_amplitud_y>30){
+			_paso=10;	
+			_av=Math.round(_av/10)*10;
+		}
+		if(_amplitud_y>300){
+			_paso=100;	
+			_av=Math.round(_av/10)*10;
+		}		
+		_av+=parseFloat(_paso);
+		
+		_c=0;				
+		while(_av<parseFloat(_res.data.resumen.y.max) && _c<10){
+			_c++;
+			
+			_u_desde_base=_av-_res.data.resumen.y.min;
+			_p_cuadro_y=_u_desde_base/_amplitud_y;
+			_pos_y_neta= _p_cuadro_y * _alto_cuadro_neto;
+			_a=[_av, _pos_y_neta];
+			
+			_ticks.push(_a);
+			
+			_av+=parseFloat(_paso);
+		}
+		console.log(_ticks);
+		_a=[parseFloat(_res.data.resumen.y.max), _alto_cuadro_neto];
+		_ticks.push(_a);
+		
+		for(_nt in _ticks){			
+		
+			_ctx.fillStyle = 'rgba(0,0,0,0)';
+			_ctx.strokeStyle = 'rgba(0,0,0,1)';
+			_ctx.lineWidth = 1;		
+			_ctx.beginPath();
+			_ctx.moveTo( (_margen+_ancho_leyenda_y) , _margen+_alto_cuadro_neto-_ticks[_nt][1]);
+			_ctx.lineTo( (_margen+_ancho_leyenda_y-5) , _margen+_alto_cuadro_neto-_ticks[_nt][1]);
+			_ctx.stroke();
+		
+		
+			_ctx.font = '10px serif';
+			_ctx.fillStyle = 'rgba(0,0,0,1)';
+			_ctx.textAlign = 'right';
+			_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+				_ticks[_nt][0], 
+				(_margen+_ancho_leyenda_y-8), 
+				_margen+_alto_cuadro_neto-_ticks[_nt][1], 
+			);	
+		}
+		
+				
+			_ctx.rotate(-1*Math.PI/2);
+			
+			_ctx.font = '16px serif';
+			_ctx.fillStyle = 'rgba(0,0,0,1)';
+			_ctx.textAlign = 'center';
+			_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+				'Variable Secundaria', 
+				-1 * _alto_cuadro_neto/2, 
+				_margen+_ancho_leyenda_y - 100
+			);	
+
+			_ctx.font = '16px serif';
+			_ctx.fillStyle = 'rgba(0,0,0,1)';
+			_ctx.textAlign = 'center';
+			_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+				_res.data.variable_secundaria.nombre, 
+				-1 * _alto_cuadro_neto/2, 
+				_margen+_ancho_leyenda_y - 75
+			);	
+						
+			_ctx.rotate(Math.PI/2);
+		
+		
+		
+	//puntos
+	for(_np in _res.data.cruce){
+				
+				
+		_u_desde_izq=_res.data.cruce[_np].campo_i_1-_res.data.resumen.x.min;
+		_p_cuadro_x=_u_desde_izq/_amplitud_x;
+		_pos_x_neta= _p_cuadro_x*_ancho_cuadro_neto;
+		_pos_x_fin=_pos_x_neta+_ancho_leyenda_y+_margen;
+		//console.log('x:'+_u_desde_izq+' '+_p_cuadro_x+' ' +_pos_x_neta+' ' +_pos_x_fin);
+
+		_u_desde_base=_res.data.cruce[_np].campo_i_2_promedio-_res.data.resumen.y.min;
+		_p_cuadro_y=_u_desde_base/_amplitud_y;
+		_pos_y_neta= _p_cuadro_y*_alto_cuadro_neto;
+		_pos_y_fin=_margen+_alto_cuadro_neto-_pos_y_neta;
+		//console.log('y:'+_u_desde_base+' '+_p_cuadro_y+' ' +_pos_y_neta+' ' +_pos_y_fin);
+				
+		
+		_ctx.beginPath();
+		_ctx.arc(_pos_x_fin, _pos_y_fin, 5, 0, 2 * Math.PI, false);
+		_ctx.fillStyle = _res.data.cruce[_np].color;
+		_ctx.fill();
+		_ctx.lineWidth = 5;
+		_ctx.strokeStyle = _res.data.cruce[_np].color;
+		_ctx.stroke();
+				
+	}
+	
+	
+	//referencias color capas
+	
+	_pos=60;
+	
+	
+	_ctx.font = '16px serif';
+	_ctx.fillStyle = 'rgba(0,0,0,1)';
+	_ctx.textAlign = 'left';
+	_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+		_res.data.capa.nombre, 
+		(_margen), 
+		(_margen+_alto_cuadro_neto + _pos) 
+	);		
+	
+	for(_nr in _res.data.capa.reglas){
+		_pos+=20;
+		_dataregla=_res.data.capa.reglas[_nr];
+		
+		_ctx.beginPath();
+		_ctx.arc((_margen), (_margen+_alto_cuadro_neto + _pos) , 5, 0, 2 * Math.PI, false);
+		_ctx.fillStyle = _dataregla.color;
+		_ctx.fill();
+		_ctx.lineWidth = 5;
+		_ctx.strokeStyle = _dataregla.color;
+		_ctx.stroke();
+		
+		_ctx.font = '16px serif';
+		_ctx.fillStyle = 'rgba(0,0,0,1)';
+		_ctx.textAlign = 'left';
+		_ctx.fillText(//strokeText(text, x, y [, maxWidth])
+			': '+_dataregla.nombre[0], 
+			(_margen+20), 
+			(_margen+_alto_cuadro_neto + _pos) 
+		);			
+		
+		_pos+=30;
+		
+		
+	}
+	
+}
+
+
+function descargarImagen(){
+	
+	_nombre='grafico';
+	_f=new Date();    
+	_filename=_nombre+'_'+_f.getFullYear()+'_'+_f.getMonth()+'_'+_f.getDate()+'.png';
+	 var link = document.createElement('a');
+	  link.download = _filename;
+	  link.href=document.querySelector('#ventanagrafico canvas').toDataURL()
+	  link.click();
+
+}
+
+
+
+
+
+function accionCopiarGeometriaCapa(_idcapa){
+	//para indicadores de funcionalidad nuevaGeometria, busca geometrías del período anterior al dado y las replica para este período.
+	
+	var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    
+    var idIndicador = document.getElementById('indicadorActivo').getAttribute('idindicador');
+    if(_DataIndicador.id!=idIndicador){alert('error al formular envío');}
+    var ano = document.getElementById('divPeriodoSeleccionado').getAttribute('ano');
+    var mes = document.getElementById('divPeriodoSeleccionado').getAttribute('mes');
+    var dia = document.getElementById('divPeriodoSeleccionado').getAttribute('dia');
+    var fechaAhora = new Date();
+    
+    _lista=document.querySelector('#listacapasfuente');
+	_lista.innerHTML='';	
+				
+	var _paramGral = {
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'idIndicador': idIndicador,
+        'idCapa': _idcapa,
+        'ano': ano,
+        'mes': mes,
+        'dia': dia,
+        'fechadecreacion': fechaAhora.toISOString().slice(0,10)        
+    };
+
+	
+	$.ajax({
+		data:_paramGral,
+		url:   './app_ind/app_ind_geom_copiar_a_periodo_capa.php',
+		type:  'post',
+		success: function (response){alert('error al consulta el servidor');},
+		success:  function (response){
+			var _res = $.parseJSON(response);
+			console.log(_res);
+			if(_res.res=='exito'){
+				accionPeriodoElegido(_DataPeriodo.ano, _DataPeriodo.mes, 'false');
+				//accionIndicadorPublicadoSeleccionado('',_res.data.idInd);		
+					
+			}else{
+				alert('la solicitud no fue ejecutada');
+			}
+		}
+	});
+}
+
+
+
+
+
+function accionGuardaMod(){
+	
+	_parametros={};
+	
+	_form=document.querySelector('#form_ind_exp');	
+	
+	_inps=_form.querySelectorAll('#características_generales input, #características_generales textarea, #características_generales select');	
+	for(_ni in _inps){
+			if(typeof _inps[_ni] != 'object'){continue;}
+		_parametros[_inps[_ni].getAttribute('name')]=_inps[_ni].value;
+	}
+	
+	_tags=_form.querySelectorAll('#matriz_clasif .tag');	
+	_parametros['tags']={};
+	for(_tn in _tags){
+		if(typeof _tags[_tn] != 'object'){continue;}
+		
+		_idt=_tags[_tn].getAttribute('id_tag');
+		_stat=_tags[_tn].querySelector('[name="estado"]').checked;
+		_comentario=_tags[_tn].querySelector('[name="comentario"]').value;
+		_parametros.tags[_idt]={
+			'stat':_stat,
+			'idtag':_idt,
+			'comentario':_comentario
+		}
+	}
+	
+	
+	_apps=_form.querySelectorAll('#requerimientos .app');	
+	_parametros['apps']={};
+	for(_na in _apps){
+		if(typeof _apps[_na] != 'object'){continue;}
+		
+		_coda=_apps[_na].getAttribute('cod_app');
+		_stat=_apps[_na].querySelector('[name="estado"]').checked;
+		_comentario=_apps[_na].querySelector('[name="comentario"]').value;
+		_parametros.apps[_coda]={
+			'stat':_stat,
+			'cod':_coda,
+			'comentario':_comentario,
+			'modelos':''
+		}
+	}
+	
+	
+	$.ajax({
+		data:_parametros,
+		url:   './app_ind/app_ind_ed_guarda_modelo.php',
+		type:  'post',
+		success: function (response){alert('error al consulta el servidor');},
+		success:  function (response){
+			var _res = $.parseJSON(response);
+			console.log(_res);
+			if(_res.res!='exito'){alert('la solicitud no fue ejecutada');}
+			
+			$("#form_ind_exp").attr("estado","inactivo");
+			cargarListadoModelo();
+		}
+	});
+}
+
+
+function accionEliminarFormCent(){
+	_modo=document.querySelector('#form_ind_exp').getAttribute('modo');
+	if(!confirm("¿Eliminamos este "+_modo+"?.. ¿Segure?")){return;}
+	
+	var idMarco = getParameterByName('id');
+    var codMarco = getParameterByName('cod');
+    
+    
+	if(_modo=='modelo'){
+		_url=	'./app_ind/app_ind_ed_borra_modelo.php'	
+	}else if(_modo=='indicador'){
+		_url=	'./app_ind/app_ind_eliminar.php'
+	}else{
+		alert('error');return;
+	}
+	
+	_parametros={
+        'codMarco': codMarco,
+        'idMarco': idMarco,
+        'id': document.querySelector('#form_ind_exp [name="id"]').value		
+	}
+	$.ajax({
+		data:_parametros,
+		url:   _url,
+		type:  'post',
+		success: function (response){alert('error al consulta el servidor');},
+		success:  function (response){
+			var _res = $.parseJSON(response);
+			console.log(_res);
+			if(_res.res!='exito'){alert('la solicitud no fue ejecutada');}
+			
+			$("#form_ind_exp").attr("estado","inactivo");
+			cargarListadoModelo();
+		}
+	});	
+	
+	
 }

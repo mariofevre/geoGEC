@@ -160,12 +160,20 @@ $query = "UPDATE
                 ano = '".$_POST['ano']."'
         ";
 
+/*
 if ($Indicador['periodicidad'] == 'mensual'){
     $query = $query."
         AND
                 mes = '".$_POST['mes']."'
         ";
 }
+
+if ($Indicador['periodicidad'] == 'diario'){*/
+    $query = $query."
+        AND
+                dia = '".$_POST['dia']."'
+        ";
+//}
 
 $query .= " RETURNING ID";
 
@@ -188,6 +196,7 @@ $Log['data']['indid']=$_POST['idIndicador'];
 $Log['data']['id_p_ref_capas_registros']=$_POST['id_p_ref_capas_registros'];
 $Log['data']['ano']=$_POST['ano'];
 $Log['data']['mes']=$_POST['mes'];
+$Log['data']['dia']=$_POST['dia'];
 
 $camposviables=array(
 	'col_texto1_dato',
@@ -214,10 +223,15 @@ foreach($camposviables as $v){
 $query = "INSERT INTO   geogec.ref_indicadores_valores
         (   id_p_ref_indicadores_indicadores, 
             ano,";
-
+/*
             if ($Indicador['periodicidad'] == 'mensual'){
                 $query .= " mes, ";
             }
+            if ($Indicador['periodicidad'] == 'diario'){*/
+                
+                $query .= " mes, ";
+                $query .= " dia, ";
+            //}
 
 $query .="
             usu_autor, 
@@ -232,10 +246,15 @@ $query .="
         (   '".$_POST['idIndicador']."',
             '".$_POST['ano']."',";
 
-            if ($Indicador['periodicidad'] == 'mensual'){
+          /*  if ($Indicador['periodicidad'] == 'mensual'){
                 $query .="'".$_POST['mes']."',";
             }
 
+			if ($Indicador['periodicidad'] == 'diario'){*/
+                $query .="'".$_POST['mes']."', ";
+                $query .="'".$_POST['dia']."', ";
+            //}
+            
 $query .="
             ".$idUsuario.",
             ".validarFechaQuery($_POST['fechadecreacion']).",
@@ -265,6 +284,8 @@ if ($query != ''){
     $Log['tx'][]="Error al editar indicador valor id: ".$_POST['id'];
     $Log['res']="error";
 }
+
+
 
 //$Log['tx'][]='Query: '.$query;
 

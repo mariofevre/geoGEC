@@ -47,20 +47,6 @@ function terminar($Log){
 	exit;
 }
 
-if(!isset($_POST['geometria'])){
-	$Log['tx'][]='falta geometria';
-	terminar($Log);		
-}
-if(!isset($_POST['idCapa_registro_duplica'])){
-	$Log['tx'][]='falta id duplicacion';
-	terminar($Log);		
-}
-
-if(!isset($_POST['idCapa_registro_elimina'])){
-	$Log['tx'][]='falta id elim';
-	terminar($Log);		
-}
-
 
 if(!isset($_POST['idCapa'])){
 	$Log['tx'][]='falta capa';
@@ -69,11 +55,6 @@ if(!isset($_POST['idCapa'])){
 
 if(!isset($_POST['idIndicador'])){
 	$Log['tx'][]='falta indicador';
-	terminar($Log);		
-}
-
-if(!isset($_POST['renombre'])){
-	$Log['tx'][]='falta la variable renombre ';
 	terminar($Log);		
 }
 
@@ -129,6 +110,9 @@ if(!isset($_POST['codMarco'])){
 	terminar($Log);	
 }
 
+
+
+
 $Acc=0;
 if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_ind'])){
 	$Acc=$Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_ind'];
@@ -148,8 +132,6 @@ if($Acc<$minacc){
 }
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
-
-
 
 
 $query="
@@ -188,14 +170,10 @@ if($Capa['tipogeometria']=='Point'){
 
 $query="
 	SELECT 
-		id, nombre, descripcion, funcionalidad, id_p_ref_capasgeo, ic_p_est_02_marcoacademico, 
-		periodicidad, fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada, 
-		col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, 
-		col_numero1_nom, col_numero2_nom, col_numero3_nom, col_numero4_nom, col_numero5_nom, 
-		col_texto1_unidad, col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, 
-		col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, col_numero5_unidad, 
-		representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime, 
-		calc_buffer, calc_superp, calc_zonificacion
+		id, nombre, descripcion, funcionalidad, 
+		id_p_ref_capasgeo, ic_p_est_02_marcoacademico, periodicidad, 
+		fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada, 
+		col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, col_numero1_nom, col_numero2_nom, col_numero3_nom, col_numero4_nom, col_numero5_nom, col_texto1_unidad, col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, col_numero5_unidad, representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime, calc_buffer, calc_superp, calc_zonificacion
 	FROM 
 		geogec.ref_indicadores_indicadores
 	
@@ -220,36 +198,28 @@ if($Capa['tipogeometria']=='Point'){
 	$campogeo='geom';
 }
 $Log['data']['idInd']=$Indicador['id'];
+$Log['data']['periodicidad']=$Indicador['periodicidad'];
 
 
+/* geom, texto1, texto2, texto3, texto4, texto5, 
+		numero1, numero2, numero3, numero4, numero5, 
+		geom_point, geom_line, id_ref_capasgeo, zz_borrada*/
+		
 
-
-if($_POST['idCapa_registro_duplica']!=''){
-	//duplica geometría usada en otro período
-	$Log['mg'][]=utf8_encode('función en desarrollo');
-	$Log['tx'][]=utf8_encode('función en desarrollo');
-	$Log['res']='err';	
-	
-}else if($_POST['renombre']!=''){
-	//renombre la geometría seleccionada
-			
 	$query="
-		UPDATE 
-			geogec.ref_capasgeo_registros
-		SET 
-			texto1='".$_POST['renombre']."'
+	
+		SELECT
+			ref_capasgeo_registros.*
 		FROM
-			geogec.ref_capasgeo
+		 	geogec.ref_capasgeo_registros		
 		WHERE
-			ref_capasgeo.id = ref_capasgeo_registros.id_ref_capasgeo
+			ref_capasgeo_registros.zz_borrada='0'
 		AND
-			ref_capasgeo_registros.id='".$_POST['idCapa_registro_renombre']."'
-		AND
-			ref_capasgeo_registros.id_ref_capasgeo='".$_POST['idCapa']."'
-		AND
-			ref_capasgeo.zz_aux_ind='".$_POST['idIndicador']."'
-	";			
-			
+			ref_capasgeo_registros.id_ref_capasgeo='".$_POST['idCapa']."'	
+	
+	";
+	$Log['tx'][]='query: '.utf8_encode($query);
+
 	$Consulta = pg_query($ConecSIG, $query);
 	if(pg_errormessage($ConecSIG)!=''){
 	    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
@@ -259,57 +229,51 @@ if($_POST['idCapa_registro_duplica']!=''){
 	    terminar($Log);	
 	}
 	
-	$Log['data']['id_geom_edit']=$_POST['idCapa_registro_renombre'];
 	
-	
-}else if($_POST['idCapa_registro_elimina']!=''){
-	//elimina geometría usada
-	
-	$query="
-		UPDATE 
-			geogec.ref_capasgeo_registros
-		SET 
-			zz_borrada='1'		
-		FROM		 
-			geogec.ref_capasgeo 			
-		WHERE		
-			ref_capasgeo.id = ref_capasgeo_registros.id_ref_capasgeo		
-		AND		 
-			ref_capasgeo_registros.id='".$_POST['idCapa_registro_elimina']."'
-		AND		
-			ref_capasgeo_registros.id_ref_capasgeo='".$_POST['idCapa']."'			
-		AND		
-			ref_capasgeo.zz_aux_ind='".$_POST['idIndicador']."'
-	";			
-			
-	$Consulta = pg_query($ConecSIG, $query);
-	if(pg_errormessage($ConecSIG)!=''){
-	    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
-	    $Log['tx'][]='query: '.$query;
-	    $Log['mg'][]='error interno';
-	    $Log['res']='err';
-	    terminar($Log);	
+function Nnull($val){
+	if($val==''){
+		return 'null';
+	}else{
+		return $val;
 	}
-	
-}else{
-	//crea geometría
+}
+
+while($row = pg_fetch_assoc($Consulta)){
 	
 	$query="
 		INSERT INTO geogec.ref_capasgeo_registros(
 			".$campogeo.",
 			id_ref_capasgeo,
-			texto1
+			texto1, 
+			texto2, 
+			texto3, 
+			texto4, 
+			texto5, 
+			numero1, 
+			numero2, 
+			numero3, 
+			numero4, 
+			numero5
 		)
 		VALUES (
-			ST_GeomFromText('".$_POST['geometria']."',3857),
-			'".$_POST['idCapa']."',
-			'- sin nombre -'
+			'".$row[$campogeo]."',
+			'".$Indicador['id_p_ref_capasgeo']."',
+			'".$row['texto1']."',
+			'".$row['texto2']."',
+			'".$row['texto3']."',
+			'".$row['texto4']."',
+			'".$row['texto5']."',
+			".Nnull($row['numero1']).",
+			".Nnull($row['numero2']).",
+			".Nnull($row['numero3']).",
+			".Nnull($row['numero4']).",
+			".Nnull($row['numero5'])."
 		)
 		RETURNING
 			id
 	";	
-	
-	$Consulta = pg_query($ConecSIG, $query);
+
+	$ConsultaB = pg_query($ConecSIG, $query);
 	if(pg_errormessage($ConecSIG)!=''){
 	    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
 	    $Log['tx'][]='query: '.$query;
@@ -317,30 +281,19 @@ if($_POST['idCapa_registro_duplica']!=''){
 	    $Log['res']='err';
 	    terminar($Log);	
 	}
-	
-	if (pg_num_rows($Consulta) <= 0){
-	    $Log['tx'][]= "Se creo un registro geometrico vinculado a la capa ".$_POST['idCapa'];
-	    $Log['data']=null;
-	} else {
-	    $fila = pg_fetch_assoc($Consulta);
-	    $RegCapa=$fila['id'];
-		$Log['tx'][]= "Creado registro de geometria id:".$RegCapa;
-	}
+	$fila=pg_fetch_assoc($ConsultaB);
+	$RegCapaId=$fila['id'];
 
-	$Log['data']['periodo']['ano']=$_POST['ano'];
-	$Log['data']['periodo']['mes']=$_POST['mes'];
-	$Log['data']['periodo']['dia']=$_POST['dia'];
-	
+/*
 	$extracampo='';
 	$extravalor='';
-	/*
     if ($Indicador['periodicidad'] == 'mensual'){
         $extracampo= " mes, ";
 		$extravalor="'".$_POST['mes']."', ";
     }*/
-
-        $extracampo= " mes, dia, ";
-		$extravalor="'".$_POST['mes']."', '".$_POST['dia']."', ";
+    
+     $extracampo= " mes, dia, ";
+	$extravalor="'".$_POST['mes']."', '".$_POST['dia']."', ";
 
 	$query = "
 		INSERT INTO   
@@ -365,27 +318,18 @@ if($_POST['idCapa_registro_duplica']!=''){
 	            ".validarFechaQuery($_POST['fechadecreacion']).",
 	            0,
 	            0,
-	            ".$RegCapa."
+	            ".$RegCapaId."
 	        )
 	        RETURNING id;
 	 ";
 
-	$Consulta = pg_query($ConecSIG, $query);
+	$ConsultaC = pg_query($ConecSIG, $query);
 	if(pg_errormessage($ConecSIG)!=''){
 	    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
 	    $Log['tx'][]='query: '.$query;
 	    $Log['mg'][]='error interno';
 	    $Log['res']='err';
 	    terminar($Log);	
-	}
-	
-	if (pg_num_rows($Consulta) <= 0){
-	    $Log['tx'][]= "Se creo un valor de indicador vinculado al indicador ".$_POST['idIndicador']." y al registro geométrico ".$RegCapa;
-	    $Log['data']=null;
-	} else {
-	    $fila = pg_fetch_assoc($Consulta);
-	    $RegValor=$fila['id'];
-		$Log['tx'][]= "Creado valor de indicador id:".$RegValor;
 	}
 	
 }

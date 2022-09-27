@@ -28,11 +28,14 @@ function accionCreaCancelar(_this){
     limpiarFormularioCapa();
     
     document.getElementById('formEditarIndicadores').style.display='none';
-    document.getElementById('formSeleccionInd').style.display='none';
-    document.getElementById('divListaIndicadoresCarga').style.display='none';
+    
+    $('#cuadrovalores').attr('estado','inicio');
+    $('#cuadrovalores').attr('modo','');
+	//document.getElementById('formSeleccionInd').style.display='none';
+    //document.getElementById('divListaIndicadoresCarga').style.display='none';
     document.querySelector('#divListaIndicadoresCarga #botonSeleccionarIndCambio').removeAttribute('idind');
     document.getElementById('divMenuAccionesCrea').style.display='none';
-    document.getElementById('botonCrearIndicador').style.display='block';
+    
     
     accionCancelarSeleccionCapa(_this);
 }
@@ -98,6 +101,181 @@ function accionCreaGuardar(){
     editarRepresentacionValorMinimo();
 }
 
+
+function formularioAmpliado(_modo){
+
+	if(_modo=='modelo'){
+		_dat=_DataModelo;
+	}
+	
+	if(_modo=='indicador'){
+		_dat=_DataIndicador;
+	}
+	
+	console.log(_dat);
+	
+	
+	$('#form_ind_exp').attr('estado','activo');
+	$('#form_ind_exp').attr('modo',_modo);
+	
+	$('#form_ind_exp [name="'+'id'+'"]').val(_dat.id);
+	
+	$('#form_ind_exp [name="'+'nombre'+'"]').val(_dat.nombre);
+	$('#form_ind_exp [name="'+'descripcion'+'"]').val(_dat.descripcion);
+	$('#form_ind_exp [name="'+'unidad_medida'+'"]').val(_dat.unidad_medida);
+	$('#form_ind_exp [name="'+'relevancia_acc'+'"]').val(_dat.relevancia_acc);
+	$('#form_ind_exp [name="'+'limitaciones'+'"]').val(_dat.limitaciones);
+	$('#form_ind_exp [name="'+'ejemplo'+'"]').val(_dat.ejemplo);
+	$('#form_ind_exp [name="'+'datos_input'+'"]').val(_dat.datos_input);
+	$('#form_ind_exp [name="'+'fuentes_input'+'"]').val(_dat.fuentes_input);
+	$('#form_ind_exp [name="'+'calculo'+'"]').val(_dat.calculo);
+	$('#form_ind_exp [name="'+'escala_espacial'+'"]').val(_dat.escala_espacial);
+	$('#form_ind_exp [name="'+'desagrgacion'+'"]').val(_dat.desagrgacion);
+	$('#form_ind_exp [name="'+'valoracion'+'"]').val(_dat.valoracion);
+	
+	
+	
+	$('#form_ind_exp [name="'+'funcionalidad'+'"]').val(_dat.funcionalidad);
+	$('#form_ind_exp [name="'+'periodicidad'+'"]').val(_dat.periodicidad);
+	$('#form_ind_exp [name="'+'fechadesde'+'"]').val(_dat.fechadesde);
+	$('#form_ind_exp [name="'+'fechahasta'+'"]').val(_dat.fechahasta);
+	$('#form_ind_exp [name="'+'representar_campo'+'"]').val(_dat.representar_campo);
+	$('#form_ind_exp [name="'+'representar_val_max'+'"]').val(_dat.representar_val_max);
+	$('#form_ind_exp [name="'+'representar_val_min'+'"]').val(_dat.representar_val_min);	
+	$('#form_ind_exp [name="'+'calc_buffer'+'"]').val(_dat.calc_buffer);
+	$('#form_ind_exp [name="'+'calc_superp'+'"]').val(_dat.calc_superp);
+	$('#form_ind_exp [name="'+'calc_zonificacion'+'"]').val(_dat.calc_zonificacion);
+	$('#form_ind_exp [name="'+'calc_superp_campo'+'"]').val(_dat.calc_superp_campo);
+
+
+
+	if(_modo=='modelo'){
+		_cont=document.querySelector('#form_ind_exp #matriz_clasif #categorias');
+		_cont.innerHTML='';
+		for(_tn in _DataListaModelos.tagsTiposOrden){
+			
+			_idti=_DataListaModelos.tagsTiposOrden[_tn];
+			_datti=_DataListaModelos.tagsTipos[_idti];
+			_tipo=_datti.tipo;
+			
+			_d=document.createElement('div');
+			_d.setAttribute('class','col');
+			_cont.appendChild(_d);
+			
+			_h=document.createElement('h6');
+			_h.innerHTML=_tipo;
+			_d.appendChild(_h);
+				
+			for(_nt in _DataListaModelos.tagsOrden[_tipo]){
+				_idt=_DataListaModelos.tagsOrden[_tipo][_nt];
+				_d=document.createElement('div');
+				_d.setAttribute('class','row tag');
+				_d.setAttribute('id_tag',_idt);
+				_h.appendChild(_d);
+								
+				_l=document.createElement('input');
+				_d.appendChild(_l);
+				_l.setAttribute('name','estado');
+				_l.setAttribute('type','checkbox');
+				
+				if(_DataModelo.tag_link[_idt].activo=='1'){
+					_l.checked=true;
+				}else{
+					_l.checked=false;
+				}
+				
+				_l=document.createElement('label');
+				_d.appendChild(_l);
+				_l.innerHTML=_DataListaModelos.tags[_idt].nombre;				
+				
+				_l=document.createElement('input');
+				_l.setAttribute('name','comentario');
+				_d.appendChild(_l);
+				_l.checked=_DataModelo.tag_link[_idt].comentario;
+
+			}
+	
+			
+		}
+		
+		
+		_lista=document.querySelector('#requerimientos #requerimientos_app');
+		_lista.innerHTML='';
+		
+		
+		
+		_fila=document.createElement('div');
+		_lista.appendChild(_fila);
+		_fila.setAttribute('class','row');
+		
+		_c=0;
+		
+		
+		
+		for(_accnom in _Acciones.acciones){
+			if(_accnom==''){continue;}
+			if(_c==4){
+				_fila=document.createElement('div');
+				_lista.appendChild(_fila);
+				_fila.setAttribute('class','row');				
+				_c=0;
+			}
+			_c++;
+			
+			_accndata=_Acciones.acciones[_accnom];	
+			
+			
+			_di=document.createElement('div');
+			_fila.appendChild(_di);
+			_di.setAttribute('class','col app');
+			_di.setAttribute('cod_app',_accnom);
+			
+			
+			_li=document.createElement('input');
+			_di.appendChild(_li);
+			_li.setAttribute('type','checkbox');
+			_li.setAttribute('name','estado');
+			
+
+			
+			_sp=document.createElement('span');
+			_di.appendChild(_sp);		
+			_sp.setAttribute('class','img');
+			_la=document.createElement('img');
+			_la.setAttribute('src','./img/'+_accnom+'.png');
+			_la.setAttribute('alt',_accnom);
+			_la.setAttribute('title',_accndata.resumen);
+			_sp.appendChild(_la);
+			
+
+			_la=document.createElement('span');
+			_la.innerHTML=_accndata.resumen;
+			_di.appendChild(_la);
+			
+			_li2=document.createElement('input');
+			_di.appendChild(_li2);
+			_li2.setAttribute('type','text');
+			_li2.setAttribute('name','comentario');
+
+			_acc=_accnom.replace('app_','');
+			if(_dat.requerimientos[_acc]!=undefined){
+				_li.checked=true;
+				_li2.value=_dat.requerimientos[_acc].descripcion;
+				//document.querySelector('#configModal #apps').setAttribute('estado','lleno');
+			}
+
+		}
+		while(_c<4){			
+				
+			_di=document.createElement('div');
+			_fila.appendChild(_di);
+			_di.setAttribute('class','col');
+				_c++;
+		}
+	}	
+}
+
+
 function accionCreaPublicar(_this){
     accionCreaGuardar();
     
@@ -113,11 +291,15 @@ function accionCargaCancelar(_this){
     limpiarFormularioIndPublicados();
     
     document.getElementById('formEditarIndicadores').style.display='none';
-    document.getElementById('formSeleccionInd').style.display='none';
-    document.getElementById('divListaIndicadoresCarga').style.display='none';
+    
+    $('#cuadrovalores').attr('estado','inicio');
+    $('#cuadrovalores').attr('modo','');   
+    //document.getElementById('formSeleccionInd').style.display='none';
+    //document.getElementById('divListaIndicadoresCarga').style.display='none';
+    
     document.querySelector('#divListaIndicadoresCarga #botonSeleccionarIndCambio').removeAttribute('idind');
     //document.getElementById('divMenuAccionesCarga').style.display='none';
-    document.getElementById('botonCrearIndicador').style.display='block';
+    //document.getElementById('botonCrearIndicador').style.display='block';
     
    _source_ind.clear();
    _source_ind_buffer.clear();
@@ -133,18 +315,41 @@ function accionCrearIndicador(_this){
     generarNuevoIndicador();
     document.getElementById('formEditarIndicadores').style.display='inline-block';
     document.getElementById('divMenuAccionesCrea').style.display='inline-block';
-    document.getElementById('botonCrearIndicador').style.display='none';
+    
+    $('#cuadrovalores').attr('estado','elemento');
+    //document.getElementById('botonCrearIndicador').style.display='none';
+    
     document.getElementById('divSeleccionIndCuerpo').style.display='none';   
     document.getElementById('divListaIndicadoresCarga').style.display='none';   
+        
 }
+
+
+function accionCrearModelo(){
+	
+    generarNuevoModelo();
+    document.getElementById('formEditarIndicadores').style.display='none';
+    document.getElementById('divMenuAccionesCrea').style.display='none';
+    
+    $('#cuadrovalores').attr('estado','');
+    //document.getElementById('botonCrearIndicador').style.display='none';
+    
+    document.getElementById('divSeleccionIndCuerpo').style.display='none';   
+    document.getElementById('divListaIndicadoresCarga').style.display='none';   
+        
+}
+
 
 function accionCargarIndicador(){
     limpiarFormularioIndPublicados();
     cargarListadoIndicadoresPublicados();
     
-    document.getElementById('formSeleccionInd').style.display='inline-block';
+        
+    $('#cuadrovalores').attr('estado','listado');
+    $('#cuadrovalores').attr('modo','indicadores');   
+    //document.getElementById('formSeleccionInd').style.display='inline-block';
     //document.getElementById('divMenuAccionesCarga').style.display='inline-block';
-    document.getElementById('botonCrearIndicador').style.display='block';
+    //document.getElementById('botonCrearIndicador').style.display='block';
 }
 accionCargarIndicador();
 
@@ -153,7 +358,9 @@ function accionModificarIndicador(_this){
         limpiarFormularioIndPublicados();
         cargarListadoIndicadoresPublicadosAModificar();
 
-        document.getElementById('formSeleccionInd').style.display='inline-block';
+		$('#cuadrovalores').attr('estado','listado');
+		$('#cuadrovalores').attr('modo','indicadores');   
+        //document.getElementById('formSeleccionInd').style.display='inline-block';
         document.getElementById('divMenuAccionesCrea').style.display='inline-block';
         document.getElementById('botonCrearIndicador').style.display='none';
         
@@ -168,6 +375,8 @@ function accionSeleccionarCapa(_this){
     document.getElementById('botonSeleccionarCapa').style.display='none';
     document.getElementById('botonCancelarSeleccionarCapa').style.display='block';
 }
+
+
 
 function accionCancelarSeleccionCapa(_this){
     limpiarFormularioSeleccionCapa();
@@ -596,7 +805,7 @@ function editarCampoIndParametrosColumna(nombreColumna, nuevoValor){
 function editarIndPeriodicidad(_event, _this){
     var nuevaPeriodicidad = _this.options[_this.selectedIndex].value;
     
-    if (nuevaPeriodicidad == 'mensual' || nuevaPeriodicidad == 'anual'){
+    if (nuevaPeriodicidad == 'mensual' || nuevaPeriodicidad == 'anual' || nuevaPeriodicidad == 'diario'){
         editarCampoIndParametros('periodicidad', nuevaPeriodicidad);
     } else {
         editarCampoIndParametros('periodicidad', 'NULL');
@@ -1086,34 +1295,121 @@ function actualizarEscalaT(){
 }
 
 function cargarValoresIndicadoresPublicados(_res, accionOnClick){
-    if (_res.data != null){
-        for (var elemInd in _res.data){
-            var divRoot = document.getElementById('listaindpublicadas');
-            var filaInd = document.createElement('a');
-            filaInd.setAttribute('idind', _res.data[elemInd]["id"]);
-            filaInd.setAttribute('class', 'filaIndLista');
-            filaInd.setAttribute('onclick', accionOnClick+"(this,"+_res.data[elemInd]["id"]+")" );
-            var indId = document.createElement('div');
-            indId.setAttribute('id','indIdLista');
-            indId.innerHTML = "ID <span class='idn'>" + _res.data[elemInd]["id"]+"</span>";
-            var indNombre = document.createElement('div');
-            indNombre.setAttribute('id','indNombreLista');
-            indNombre.innerHTML = _res.data[elemInd]["nombre"];
-            var indAu = document.createElement('div');
-            indAu.setAttribute('id','indAutoriaLista');
-            indAu.innerHTML ='por: '+ _res.data[elemInd]["autornom"]+' '+_res.data[elemInd]["autorape"];
-            var indDescripcion = document.createElement('div');
-            indDescripcion.setAttribute('id','indDescripcionLista');
-            indDescripcion.innerHTML = _res.data[elemInd]["descripcion"];
-            filaInd.appendChild(indId);
-            filaInd.appendChild(indNombre);
-            filaInd.appendChild(indDescripcion);
-            filaInd.appendChild(indAu);
-            divRoot.appendChild(filaInd);
-        }
-    } else {
-        console.log('no hay indicadores publicados para este usuario');
-    }
+    // DEPRECADA variable _res;
+	for (var elemInd in _DataListaIndicadores){
+		
+		_dati=_DataListaIndicadores[elemInd];
+		
+		var divRoot = document.getElementById('listaindpublicadas');
+		var filaInd = document.createElement('a');
+		divRoot.appendChild(filaInd);
+		filaInd.setAttribute('idind', _dati["id"]);
+		filaInd.setAttribute('class', 'filaIndLista');
+		filaInd.setAttribute('onclick', accionOnClick+"(this,"+_dati["id"]+")" );
+		
+		var indId = document.createElement('div');
+		filaInd.appendChild(indId);
+		indId.setAttribute('id','indIdLista');
+		indId.innerHTML = "ID <span class='idn'>" + _dati["id"]+"</span>";
+		
+		var indNombre = document.createElement('div');
+		filaInd.appendChild(indNombre);
+		indNombre.setAttribute('id','indNombreLista');
+		indNombre.innerHTML = _dati["nombre"];
+		
+		var indAu = document.createElement('div');
+		filaInd.appendChild(indDescripcion);		
+		indAu.setAttribute('id','indAutoriaLista');
+		indAu.innerHTML ='por: '+ _dati["autornom"]+' '+_dati["autorape"];
+		
+		var indDescripcion = document.createElement('div');
+		filaInd.appendChild(indAu);
+		indDescripcion.setAttribute('id','indDescripcionLista');
+		indDescripcion.innerHTML = _dati["descripcion"];
+		
+	}
+}
+
+function mostrarListadoModelos(){
+	var divRoot = document.getElementById('listamodpublicadas');
+	divRoot.innerHTML='';
+	for (_nm in _DataListaModelos['modelosOrden']){
+		
+		_idm=_DataListaModelos.modelosOrden[_nm];
+		console.log(_idm);
+		_dati=_DataListaModelos.modelos[_idm];
+		console.log(_dati);
+		
+		var filaInd = document.createElement('a');
+		divRoot.appendChild(filaInd);
+		filaInd.setAttribute('idind', _dati["id"]);
+		filaInd.setAttribute('class', 'filaIndLista');
+		filaInd.setAttribute('onclick', 'cargarModelo('+_idm+')');
+		
+		var indId = document.createElement('div');
+		filaInd.appendChild(indId);
+		indId.setAttribute('id','indIdLista');
+		indId.innerHTML = "ID <span class='idn'>" + _dati["id"]+"</span>";
+		
+		var indNombre = document.createElement('div');
+		filaInd.appendChild(indNombre);
+		indNombre.setAttribute('id','indNombreLista');
+		indNombre.innerHTML = _dati["nombre"];
+		
+		var indAu = document.createElement('div');
+		filaInd.appendChild(indAu);
+		indAu.setAttribute('id','indAutoriaLista');
+		indAu.innerHTML ='por: '+ _dati["autornom"]+' '+_dati["autorape"];
+		
+		var indDescripcion = document.createElement('div');
+		filaInd.appendChild(indDescripcion);		
+		indDescripcion.setAttribute('id','indDescripcionLista');
+		indDescripcion.innerHTML = _dati["descripcion"];
+		
+	}	
+}
+
+
+function mostrarModelo(){
+	
+	
+	
+}
+
+function cargarValoresIndicadoresPublicados(_res, accionOnClick){
+    
+	for (var elemInd in _DataListaIndicadores){
+		
+		_dati=_DataListaIndicadores[elemInd];
+		
+		var divRoot = document.getElementById('listaindpublicadas');
+		var filaInd = document.createElement('a');
+		divRoot.appendChild(filaInd);
+		filaInd.setAttribute('idind', _dati["id"]);
+		filaInd.setAttribute('class', 'filaIndLista');
+		filaInd.setAttribute('onclick', accionOnClick+"(this,"+_dati["id"]+")" );
+		
+		var indId = document.createElement('div');
+		filaInd.appendChild(indId);
+		indId.setAttribute('id','indIdLista');
+		indId.innerHTML = "ID <span class='idn'>" + _dati["id"]+"</span>";
+		
+		var indNombre = document.createElement('div');
+		filaInd.appendChild(indNombre);
+		indNombre.setAttribute('id','indNombreLista');
+		indNombre.innerHTML = _dati["nombre"];
+		
+		var indAu = document.createElement('div');
+		filaInd.appendChild(indAu);
+		indAu.setAttribute('id','indAutoriaLista');
+		indAu.innerHTML ='por: '+ _dati["autornom"]+' '+_dati["autorape"];
+		
+		var indDescripcion = document.createElement('div');
+		filaInd.appendChild(indDescripcion);		
+		indDescripcion.setAttribute('id','indDescripcionLista');
+		indDescripcion.innerHTML = _dati["descripcion"];
+		
+	}
 }
 
 function mostrarListadoIndicadoresPublicados(){
@@ -1121,31 +1417,43 @@ function mostrarListadoIndicadoresPublicados(){
     document.getElementById('divSeleccionIndCuerpo').style.display='block';
 }
 
-function accionIndicadorPublicadoSeleccionado(_this, idindicador){
+function accionIndicadorPublicadoSeleccionado(_this, _idindicador){
 	_encuadrado='no';
-    document.getElementById('indicadorActivo').setAttribute('idindicador', idindicador);    
-    document.querySelector('#divListaIndicadoresCarga').setAttribute('idindicadorcarga',idindicador);
-    document.querySelector('#botonCancelarCarga').style.display='block';
-    
-    var fechaHoy = new Date();
-    cargarIndicadorPublicado(idindicador, fechaHoy.getFullYear(), fechaHoy.getMonth()+1);
+    document.getElementById('indicadorActivo').setAttribute('idindicador', _idindicador);    
+    document.querySelector('#divListaIndicadoresCarga').setAttribute('idindicadorcarga',_idindicador);
+    //document.querySelector('#botonCancelarCarga').style.display='block';
+        
+    cargarIndicadorPublicado(_idindicador);
 }
 
 function accionIndicadorPublicadoSeleccionadoModificar(_this, idindicador){
+	$('#cuadrovalores').attr('estado','elemento');
     consultarIndicadorParaModificar(idindicador);
-    document.getElementById('formSeleccionInd').style.display='none';
+    //document.getElementById('formSeleccionInd').style.display='none';
     document.getElementById('formEditarIndicadores').style.display='inline-block';
 }
 
-function accionIndicadorPublicadoCargar(idindicador, _res, seleccionarFechaAno, seleccionarFechaMes, seleccionarDefault){
+function accionIndicadorPublicadoCargar(idindicador, _res, seleccionarDefault){
     if (_res.data != null && _res.data['indicador'] != null){
+		
+		
+		$('#cuadrovalores').attr('estado','elemento');
+		//document.getElementById('formSeleccionInd').style.display='none';
+		
         document.getElementById('indCargaNombre').innerHTML = _res.data['indicador']['nombre'];
         document.getElementById('indTituloNombre').innerHTML = _res.data['indicador']['nombre'];
         document.getElementById('indCargaDescripcion').innerHTML = _res.data['indicador']['descripcion'];
         document.getElementById('indCargaPeriodicidad').innerHTML = _res.data['indicador']['periodicidad'];
+        
+        if( _res.data['indicador']['capa']!=undefined){
+			document.getElementById('indCapaGeom').innerHTML = _res.data['indicador']['id_p_ref_capasgeo'] + ' - '+ _res.data['indicador']['capa']['nombre'];
+		}
+        
+        document.getElementById('indCapaGeom').innerHTML += '<a href="./app_capa.php?cod='+_CodMarco+'&idr='+_res.data['indicador']['id_p_ref_capasgeo']+'">ir</a>'
+        
         document.getElementById('indicadorActivo').setAttribute('periodicidad', _res.data['indicador']['periodicidad']);
-
-        document.getElementById('formSeleccionInd').style.display='none';
+        
+        
         document.getElementById('divListaIndicadoresCarga').style.display='block';
         document.querySelector('#divListaIndicadoresCarga #AccionesSeleccionIndCambio').style.display='none';
 		document.querySelector('#divListaIndicadoresCarga #botonSeleccionarIndCambio').setAttribute('idind',_res.data.indicador.id);
@@ -1174,144 +1482,634 @@ function accionIndicadorPublicadoCargar(idindicador, _res, seleccionarFechaAno, 
 
         var periodos = new Array();
         if (periodicidad == 'anual'){
-            for (var i in years) {
-            	if(i == 0){continue;}
-                var estadoCarga = 'sincarga';
-                
-                if (_res.data['periodos'][years[i]].estado == 'incompleto'){
-                    estadoCarga = 'cargaincompleta';
-                } else if (_res.data['periodos'][years[i]].estado == 'completo'){
-                    estadoCarga = 'cargacompleta';
-                }
-                
-                periodos[i] = new Array();
-                periodos[i][0] = years[i].toString();
-                periodos[i][1] = '';
-                var periodoString = years[i].toString();
-                periodoString = periodoString+"-01-01";
-                periodos[i][2] = periodoString;
-                periodos[i][3] = estadoCarga;
-                periodos[i][4] = _res.data['periodos'][years[i]].resumen;
-            }
-        }
-
-        if (periodicidad == 'mensual'){
+			
+			
+			_divRoot = document.getElementById('selectorPeriodo');
+			_divRoot.innerHTML='';
+			for(_ano in _res.data.periodos){
+				for(_mes in _res.data.periodos[_ano]){					
+					for(_dia in _res.data.periodos[_ano][_mes]){						
+						_divPeriodo = document.createElement('div');						
+						_divRoot.appendChild(_divPeriodo);
+						
+						_divPeriodo.setAttribute('class', 'periodoFecha');
+						_divPeriodo.setAttribute('periodo', _ano+'_'+_mes+'_'+_dia);
+						_divPeriodo.setAttribute('class', 'card '+ periodicidad+' ' +_res.data.periodos[_ano][_mes][_dia].estado.replace(' ',''));
+						_divPeriodo.setAttribute('selected', 'false');
+						_divPeriodo.setAttribute('onclick', "accionPeriodoElegido(this.getAttribute('periodo'), 'true')" );
+						if(_res.data.periodos[_ano][_mes][_dia].representa!=undefined && _res.data.indicador.representar_campo !=''){
+							
+							if(_res.data.indicador.representar_campo!=null){
+								_rc=_res.data.indicador.representar_campo;
+								_porc=_res.data.periodos[_ano][_mes][_dia].representa[_rc+'_dato'].valora;//TODO hacer configurable
+								if(_porc>1){
+									_red= _rmax;
+									_gre = _gmax;
+									_blu = _bmax;
+								}else if(_porc<0){
+									_red=_rmin;
+									_gre = _gmin;
+									_blu = _bmin;	
+										
+								}else{
+									_red = _rmin+(_rmax-_rmin)*_porc;
+									_gre = _gmin+(_gmax-_gmin)*_porc;
+									_blu = _bmin+(_bmax-_bmin)*_porc;
+								}
+								_color='rgba('+_red+','+_gre+','+_blu+', 1)';
+								_divPeriodo.style.backgroundColor=_color;
+							}
+						}
+						
+						_img=document.createElement('img');
+						_img.setAttribute('src','./img/check-sinborde.png');
+						_img.setAttribute('class','completo');
+						_divPeriodo.appendChild(_img);
+												
+						_h2dia = document.createElement('h2');
+						_divPeriodo.appendChild(_h2dia);
+						_h2dia.innerHTML = _dia;
+						_h2dia.setAttribute('class','dia');
+						
+						_h2mes = document.createElement('h2');
+						_divPeriodo.appendChild(_h2mes);
+						_h2mes.innerHTML = _mes;
+						_h2mes.setAttribute('class','mes');
+						
+						_h2ano = document.createElement('h2');
+						_divPeriodo.appendChild(_h2ano);
+						_h2ano.innerHTML = _ano;
+						
+						
+						document.getElementById('periodo').setAttribute('campo','n1');
+						
+						if(_res.data.periodos[_ano][_mes][_dia].resumen!=undefined){
+							_divN1=document.createElement('div');
+							_divPeriodo.appendChild(_divN1);
+							_divN1.setAttribute('class','resultado');
+							_divN1.setAttribute('id','n1');
+							
+							_divValor=document.createElement('div');
+							_divN1.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero1;
+							
+							_divPorc=document.createElement('div');
+							_divN1.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero1;
+							
+							_divN2=document.createElement('div');
+							_divPeriodo.appendChild(_divN2);
+							_divN2.setAttribute('class','resultado');
+							_divN2.setAttribute('id','n2');
+							
+							_divValor=document.createElement('div');
+							_divN2.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero2;
+							
+							_divPorc=document.createElement('div');
+							_divN2.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero2;						
+							
+									
+							_divN3=document.createElement('div');
+							_divPeriodo.appendChild(_divN3);
+							_divN3.setAttribute('class','resultado');
+							_divN3.setAttribute('id','n3');
+							
+							_divValor=document.createElement('div');
+							_divN3.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero3;
+							
+							_divPorc=document.createElement('div');
+							_divN3.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero3;						
+													
+													
+							_divN4=document.createElement('div');
+							_divPeriodo.appendChild(_divN4);
+							_divN4.setAttribute('class','resultado');
+							_divN4.setAttribute('id','n4');
+							
+							_divValor=document.createElement('div');
+							_divN4.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero4;
+							
+							_divPorc=document.createElement('div');
+							_divN4.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero4;		
+							
+													
+							_divN5=document.createElement('div');
+							_divPeriodo.appendChild(_divN5);
+							_divN5.setAttribute('class','resultado');
+							_divN5.setAttribute('id','n5');
+							
+							_divValor=document.createElement('div');
+							_divN5.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero5;
+							
+							_divPorc=document.createElement('div');
+							_divN5.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero5;		
+						}	
+																	
+					}		
+				}
+			}	
+        }else if (periodicidad == 'mensual'){
         	console.log(fechadesde);
-        	
-            var mesNumero = fechadesde.getUTCMonth();
-            console.log(mesNumero);
-            var mesNumero = mesNumero+1;
-             console.log(mesNumero);
-            var indicePeriodos = 0;
-
-            for (var i in years) {
-                var anoString = years[i].toString();
-                var mesString = '';
-                if (mesNumero > 12){
-                    mesNumero = 1;
-                }
-				
-                while (mesNumero <= 12) {
-                    if (years[i] == fechahasta.getFullYear() && mesNumero > fechahasta.getMonth()){
-                        break;
-                    }
-                    
-                    var estadoCarga = 'sincarga';
-                    console.log("año:"+years[i]);
-                    console.log("mes:"+(mesNumero));
-                    
-                    if (_res.data['periodos'][years[i]][mesNumero].estado == 'incompleto'){
-                        estadoCarga = 'cargaincompleta';
-                    } else if (_res.data['periodos'][years[i]][mesNumero].estado == 'completo'){
-                        estadoCarga = 'cargacompleta';
-                    }
+        	_divRoot = document.getElementById('selectorPeriodo');
+			_divRoot.innerHTML='';
+			for(_ano in _res.data.periodos){
+				for(_mes in _res.data.periodos[_ano]){
 					
-                    mesString = obtenerNombreMes((mesNumero-1));
-                    periodos[indicePeriodos] = new Array();
-                    periodos[indicePeriodos][0] = anoString; //Año
-                    periodos[indicePeriodos][1] = mesString; //nombre del mes
-                    periodos[indicePeriodos][2] = mesNumero; //numero del mes
-                    periodos[indicePeriodos][3] = estadoCarga;
-                    periodos[indicePeriodos][4] = _res.data['periodos'][years[i]][mesNumero].resumen;
-                    mesNumero++;
-                    indicePeriodos++;
+					for(_dia in _res.data.periodos[_ano][_mes]){
+						
+						
+						_divPeriodo = document.createElement('div');						
+						_divRoot.appendChild(_divPeriodo);
+						
+						_divPeriodo.setAttribute('class', 'periodoFecha');
+						_divPeriodo.setAttribute('periodo', _ano+'_'+_mes+'_'+_dia);
+						_divPeriodo.setAttribute('class', 'card '+ periodicidad+' ' +_res.data.periodos[_ano][_mes][_dia].estado.replace(' ',''));
+						_divPeriodo.setAttribute('selected', 'false');
+						_divPeriodo.setAttribute('onclick', "accionPeriodoElegido(this.getAttribute('periodo'), 'true')" );
+						if(_res.data.periodos[_ano][_mes][_dia].representa!=undefined && _res.data.indicador.representar_campo !=''){
+							
+							_rc=_res.data.indicador.representar_campo;
+							
+							if(_res.data.periodos[_ano][_mes][_dia].representa[_rc+'_dato']!=undefined){
+								
+								_porc=_res.data.periodos[_ano][_mes][_dia].representa[_rc+'_dato'].valora;//TODO hacer configurable
+								if(_porc>1){
+									_red= _rmax;
+									_gre = _gmax;
+									_blu = _bmax;
+								}else if(_porc<0){
+									_red=_rmin;
+									_gre = _gmin;
+									_blu = _bmin;	
+										
+								}else{
+									_red = _rmin+(_rmax-_rmin)*_porc;
+									_gre = _gmin+(_gmax-_gmin)*_porc;
+									_blu = _bmin+(_bmax-_bmin)*_porc;
+								}
+								_color='rgba('+_red+','+_gre+','+_blu+', 1)';
+								_divPeriodo.style.backgroundColor=_color;
+								
+							}
+						}
+						
+						_img=document.createElement('img');
+						_img.setAttribute('src','./img/check-sinborde.png');
+						_img.setAttribute('class','completo');
+						_divPeriodo.appendChild(_img);
+												
+						_h2dia = document.createElement('h2');
+						_divPeriodo.appendChild(_h2dia);
+						_h2dia.innerHTML = _dia;
+						_h2dia.setAttribute('class','dia');
+						
+						_h2mes = document.createElement('h2');
+						_divPeriodo.appendChild(_h2mes);
+						_h2mes.innerHTML = _mes;
+						_h2mes.setAttribute('class','mes');
+						
+						_h2ano = document.createElement('h2');
+						_divPeriodo.appendChild(_h2ano);
+						_h2ano.innerHTML = _ano;
+						
+						
+						document.getElementById('periodo').setAttribute('campo','n1');
+						
+						if(_res.data.periodos[_ano][_mes][_dia].resumen!=undefined){
+							_divN1=document.createElement('div');
+							_divPeriodo.appendChild(_divN1);
+							_divN1.setAttribute('class','resultado');
+							_divN1.setAttribute('id','n1');
+							
+							_divValor=document.createElement('div');
+							_divN1.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero1;
+							
+							_divPorc=document.createElement('div');
+							_divN1.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero1;
+							
+							_divN2=document.createElement('div');
+							_divPeriodo.appendChild(_divN2);
+							_divN2.setAttribute('class','resultado');
+							_divN2.setAttribute('id','n2');
+							
+							_divValor=document.createElement('div');
+							_divN2.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero2;
+							
+							_divPorc=document.createElement('div');
+							_divN2.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero2;						
+							
+									
+							_divN3=document.createElement('div');
+							_divPeriodo.appendChild(_divN3);
+							_divN3.setAttribute('class','resultado');
+							_divN3.setAttribute('id','n3');
+							
+							_divValor=document.createElement('div');
+							_divN3.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero3;
+							
+							_divPorc=document.createElement('div');
+							_divN3.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero3;						
+													
+													
+							_divN4=document.createElement('div');
+							_divPeriodo.appendChild(_divN4);
+							_divN4.setAttribute('class','resultado');
+							_divN4.setAttribute('id','n4');
+							
+							_divValor=document.createElement('div');
+							_divN4.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero4;
+							
+							_divPorc=document.createElement('div');
+							_divN4.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero4;		
+							
+													
+							_divN5=document.createElement('div');
+							_divPeriodo.appendChild(_divN5);
+							_divN5.setAttribute('class','resultado');
+							_divN5.setAttribute('id','n5');
+							
+							_divValor=document.createElement('div');
+							_divN5.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero5;
+							
+							_divPorc=document.createElement('div');
+							_divN5.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero5;		
+						}												
+							
+                    }
                 }
             }
-        }
-
-        var divRoot = document.getElementById('selectorPeriodo');
-        divRoot.innerHTML = '';
-		console.log(periodos);
-        for (var indice in periodos){
-            var divPeriodo = document.createElement('div');
-            divPeriodo.setAttribute('id', 'periodoFecha'+periodos[indice][1]+periodos[indice][0]);
-            divPeriodo.setAttribute('class', 'card '+periodos[indice][3]);
-            divPeriodo.setAttribute('selected', 'false');
-            divPeriodo.setAttribute('onclick', "accionPeriodoElegido('"+periodos[indice][0]+"', '"+periodos[indice][2]+"', 'true')" );
-            
-
-            var h2mes = document.createElement('h2');
-            h2mes.innerHTML = periodos[indice][1];
-            var h2ano = document.createElement('h2');
-            h2ano.innerHTML = periodos[indice][0];
-
-            divPeriodo.appendChild(h2mes);
-            divPeriodo.appendChild(h2ano);
-
-			_divValor=document.createElement('div');
-			_divValor.setAttribute('id','valor');
+        }else if (periodicidad == 'diario'){
 			
-			_divPorc=document.createElement('div');
-			_divPorc.setAttribute('id','porc');
-			
-			if(periodos[indice][4]!=undefined){
-				console.log(periodos[indice][4]);	
-				if(_res.data.indicador.funcionalidad=='nuevaGeometria'){
-					_val=periodos[indice][4].superp_sum
-					if(_val>100){
-	        			_v=formatearNumero(_val,0);	
-	        		}else{
-	        			_v=formatearNumero(_val,2);	
-	        		}
-					_divValor.innerHTML=_v;
+			_divRoot = document.getElementById('selectorPeriodo');
+			_divRoot.innerHTML='';
+			for(_ano in _res.data.periodos){
+				for(_mes in _res.data.periodos[_ano]){
 					
+					for(_dia in _res.data.periodos[_ano][_mes]){
+						
+						_divPeriodo = document.createElement('div');						
+						_divRoot.appendChild(_divPeriodo);
+						
+						_divPeriodo.setAttribute('class', 'periodoFecha');
+						_divPeriodo.setAttribute('periodo', _ano+'_'+_mes+'_'+_dia);
+						_divPeriodo.setAttribute('class', 'card '+ periodicidad+' ' +_res.data.periodos[_ano][_mes][_dia].estado.replace(' ',''));
+						_divPeriodo.setAttribute('selected', 'false');
+						_divPeriodo.setAttribute('onclick', "accionPeriodoElegido(this.getAttribute('periodo'), 'true')" );
+						if(_res.data.periodos[_ano][_mes][_dia].representa!=undefined && _res.data.indicador.representar_campo !=''){
+							
+							_rc=_res.data.indicador.representar_campo;
+							_porc=_res.data.periodos[_ano][_mes][_dia].representa[_rc+'_dato'].valora;//TODO hacer configurable
+							if(_porc>1){
+								_red= _rmax;
+								_gre = _gmax;
+								_blu = _bmax;
+							}else if(_porc<0){
+								_red=_rmin;
+								_gre = _gmin;
+								_blu = _bmin;	
+									
+							}else{
+								_red = _rmin+(_rmax-_rmin)*_porc;
+								_gre = _gmin+(_gmax-_gmin)*_porc;
+								_blu = _bmin+(_bmax-_bmin)*_porc;
+							}
+							_color='rgba('+_red+','+_gre+','+_blu+', 1)';
+							_divPeriodo.style.backgroundColor=_color;
+						}
+						
+						_img=document.createElement('img');
+						_img.setAttribute('src','./img/check-sinborde.png');
+						_img.setAttribute('class','completo');
+						_divPeriodo.appendChild(_img);
+												
+						_h2dia = document.createElement('h2');
+						_divPeriodo.appendChild(_h2dia);
+						_h2dia.innerHTML = _dia;
+						_h2dia.setAttribute('class','dia');
+						
+						_h2mes = document.createElement('h2');
+						_divPeriodo.appendChild(_h2mes);
+						_h2mes.innerHTML = _mes;
+						_h2mes.setAttribute('class','mes');
+						
+						_h2ano = document.createElement('h2');
+						_divPeriodo.appendChild(_h2ano);
+						_h2ano.innerHTML = _ano;
+						
+						
+						document.getElementById('periodo').setAttribute('campo','n1');
+						
+						if(_res.data.periodos[_ano][_mes][_dia].resumen!=undefined){
+							_divN1=document.createElement('div');
+							_divPeriodo.appendChild(_divN1);
+							_divN1.setAttribute('class','resultado');
+							_divN1.setAttribute('id','n1');
+							
+							_divValor=document.createElement('div');
+							_divN1.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero1;
+							
+							_divPorc=document.createElement('div');
+							_divN1.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero1;
+							
+							_divN2=document.createElement('div');
+							_divPeriodo.appendChild(_divN2);
+							_divN2.setAttribute('class','resultado');
+							_divN2.setAttribute('id','n2');
+							
+							_divValor=document.createElement('div');
+							_divN2.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero2;
+							
+							_divPorc=document.createElement('div');
+							_divN2.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero2;						
+							
+									
+							_divN3=document.createElement('div');
+							_divPeriodo.appendChild(_divN3);
+							_divN3.setAttribute('class','resultado');
+							_divN3.setAttribute('id','n3');
+							
+							_divValor=document.createElement('div');
+							_divN3.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero3;
+							
+							_divPorc=document.createElement('div');
+							_divN3.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero3;						
+													
+													
+							_divN4=document.createElement('div');
+							_divPeriodo.appendChild(_divN4);
+							_divN4.setAttribute('class','resultado');
+							_divN4.setAttribute('id','n4');
+							
+							_divValor=document.createElement('div');
+							_divN4.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero4;
+							
+							_divPorc=document.createElement('div');
+							_divN4.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero4;		
+							
+													
+							_divN5=document.createElement('div');
+							_divPeriodo.appendChild(_divN5);
+							_divN5.setAttribute('class','resultado');
+							_divN5.setAttribute('id','n5');
+							
+							_divValor=document.createElement('div');
+							_divN5.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero5;
+							
+							_divPorc=document.createElement('div');
+							_divN5.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero5;		
+						}												
+																		
+																		
+						/* RESTITUIR ESTO QUE INDICA EL ESTADO GLOBAL PARA UN PERIODO
+						if(periodos[indice][4]!=undefined){
+							//console.log(periodos[indice][4]);	
+							if(_res.data.indicador.funcionalidad=='nuevaGeometria'){
+								_val=periodos[indice][4].superp_sum
+								if(_val>100){
+									_v=formatearNumero(_val,0);	
+								}else{
+									_v=formatearNumero(_val,2);	
+								}
+								_divValor.innerHTML=_v;
+								
+								
+								if(Number(periodos[indice][4].superp_max_numero1)>0){
+									_val=Number(periodos[indice][4].superp_sum*100/Number(periodos[indice][4].superp_max_numero1));
+									if(_val>10){
+										_v=formatearNumero(_val,0);	
+									}else{
+										_v=formatearNumero(_val,2);
+									}
+									_divPorc.innerHTML=_v+'%';
+								}
+							}else if(_res.data.indicador.funcionalidad=='geometriaExistente'){
+								_val=periodos[indice][4].sum_numero1
+								if(_val>100){
+									_v=formatearNumero(_val,0);	
+								}else{
+									_v=formatearNumero(_val,2);	
+								}
+								_divValor.innerHTML='s: '+_v;
+								
 					
-					if(Number(periodos[indice][4].superp_max_numero1)>0){
-						_val=Number(periodos[indice][4].superp_sum*100/Number(periodos[indice][4].superp_max_numero1));
-						if(_val>10){
-		        			_v=formatearNumero(_val,0);	
-		        		}else{
-		        			_v=formatearNumero(_val,2);
-		        		}
-						_divPorc.innerHTML=_v+'%';
+								_val=periodos[indice][4].prom_numero1;
+								if(_val>100){
+									_v=formatearNumero(_val,0);	
+								}else{
+									_v=formatearNumero(_val,2);	
+								}
+								_divPorc.innerHTML='m: '+_v;
+								
+							}
+						}*/
+						
+						
 					}
-				}else if(_res.data.indicador.funcionalidad=='geometriaExistente'){
-					_val=periodos[indice][4].sum_numero1
-					if(_val>100){
-	        			_v=formatearNumero(_val,0);	
-	        		}else{
-	        			_v=formatearNumero(_val,2);	
-	        		}
-					_divValor.innerHTML='s: '+_v;
-					
-		
-					_val=periodos[indice][4].prom_numero1;
-					if(_val>100){
-        				_v=formatearNumero(_val,0);	
-	        		}else{
-	        			_v=formatearNumero(_val,2);	
-	        		}
-					_divPorc.innerHTML='m: '+_v;
-					
 				}
 			}
-			
-			
-			divPeriodo.appendChild(_divValor);
-			divPeriodo.appendChild(_divPorc);
-			
-            divRoot.appendChild(divPeriodo);
-        }
+		}
+		
+		/*else{
+			_divRoot = document.getElementById('selectorPeriodo');
+			_divRoot.innerHTML='';
+			for(_ano in _res.data.periodos){
+				for(_mes in _res.data.periodos[_ano]){					
+					for(_dia in _res.data.periodos[_ano][_mes]){
+												
+						_divPeriodo = document.createElement('div');						
+						_divRoot.appendChild(_divPeriodo);
+						
+						_divPeriodo.setAttribute('class', 'periodoFecha');
+						_divPeriodo.setAttribute('periodo', _ano+'_'+_mes+'_'+_dia);
+						_divPeriodo.setAttribute('class', 'card '+ periodicidad+' ' +_res.data.periodos[_ano][_mes][_dia].estado.replace(' ',''));
+						_divPeriodo.setAttribute('selected', 'false');
+						_divPeriodo.setAttribute('onclick', "accionPeriodoElegido(this.getAttribute('periodo'), 'true')" );
+						if(_res.data.periodos[_ano][_mes][_dia].representa!=undefined && _res.data.indicador.representar_campo !=''){
+							
+							_rc=_res.data.indicador.representar_campo;
+							_porc=_res.data.periodos[_ano][_mes][_dia].representa[_rc+'_dato'].valora;//TODO hacer configurable
+							if(_porc>1){
+								_red= _rmax;
+								_gre = _gmax;
+								_blu = _bmax;
+							}else if(_porc<0){
+								_red=_rmin;
+								_gre = _gmin;
+								_blu = _bmin;	
+									
+							}else{
+								_red = _rmin+(_rmax-_rmin)*_porc;
+								_gre = _gmin+(_gmax-_gmin)*_porc;
+								_blu = _bmin+(_bmax-_bmin)*_porc;
+							}
+							_color='rgba('+_red+','+_gre+','+_blu+', 1)';
+							_divPeriodo.style.backgroundColor=_color;
+						}
+						
+						_img=document.createElement('img');
+						_img.setAttribute('src','./img/check-sinborde.png');
+						_img.setAttribute('class','completo');
+						_divPeriodo.appendChild(_img);
+												
+						_h2dia = document.createElement('h2');
+						_divPeriodo.appendChild(_h2dia);
+						_h2dia.innerHTML = _dia;
+						_h2dia.setAttribute('class','dia');
+						
+						_h2mes = document.createElement('h2');
+						_divPeriodo.appendChild(_h2mes);
+						_h2mes.innerHTML = _mes;
+						_h2mes.setAttribute('class','mes');
+						
+						_h2ano = document.createElement('h2');
+						_divPeriodo.appendChild(_h2ano);
+						_h2ano.innerHTML = _ano;
+						
+						
+						document.getElementById('periodo').setAttribute('campo','n1');
+						
+						if(_res.data.periodos[_ano][_mes][_dia].resumen!=undefined){
+							_divN1=document.createElement('div');
+							_divPeriodo.appendChild(_divN1);
+							_divN1.setAttribute('class','resultado');
+							_divN1.setAttribute('id','n1');
+							
+							_divValor=document.createElement('div');
+							_divN1.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero1;
+							
+							_divPorc=document.createElement('div');
+							_divN1.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero1;
+							
+							_divN2=document.createElement('div');
+							_divPeriodo.appendChild(_divN2);
+							_divN2.setAttribute('class','resultado');
+							_divN2.setAttribute('id','n2');
+							
+							_divValor=document.createElement('div');
+							_divN2.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero2;
+							
+							_divPorc=document.createElement('div');
+							_divN2.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero2;						
+							
+									
+							_divN3=document.createElement('div');
+							_divPeriodo.appendChild(_divN3);
+							_divN3.setAttribute('class','resultado');
+							_divN3.setAttribute('id','n3');
+							
+							_divValor=document.createElement('div');
+							_divN3.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero3;
+							
+							_divPorc=document.createElement('div');
+							_divN3.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero3;						
+													
+													
+							_divN4=document.createElement('div');
+							_divPeriodo.appendChild(_divN4);
+							_divN4.setAttribute('class','resultado');
+							_divN4.setAttribute('id','n4');
+							
+							_divValor=document.createElement('div');
+							_divN4.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero4;
+							
+							_divPorc=document.createElement('div');
+							_divN4.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero4;		
+							
+													
+							_divN5=document.createElement('div');
+							_divPeriodo.appendChild(_divN5);
+							_divN5.setAttribute('class','resultado');
+							_divN5.setAttribute('id','n5');
+							
+							_divValor=document.createElement('div');
+							_divN5.appendChild(_divValor);
+							_divValor.setAttribute('id','valor');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.sum_numero5;
+							
+							_divPorc=document.createElement('div');
+							_divN5.appendChild(_divPorc);
+							_divPorc.setAttribute('id','porc');
+							_divValor.innerHTML= _res.data.periodos[_ano][_mes][_dia].resumen.prom_numero5;		
+						}							
+					}
+				}			
+			}
+		}*/
+		
 
         //Mostrar los campos correctos para cargar valores
         /*
@@ -1396,7 +2194,7 @@ function accionIndicadorPublicadoCargar(idindicador, _res, seleccionarFechaAno, 
         }
         */
         
-        accionPeriodoElegido(seleccionarFechaAno, seleccionarFechaMes, seleccionarDefault);
+        accionPeriodoElegido(_Select_Fecha.ano+'_'+_Select_Fecha.mes+'_'+_Select_Fecha.dia, seleccionarDefault);
     } else {
         console.log('Error al cargar indicador');
     }
@@ -1426,7 +2224,7 @@ function obtenerNombreMes(mesNumero){
 
 function accionSeleccionarIndCambio(_this){
 	
-	//pone en edición un indicador definido. Como hacer esto es peligroso, una vez ingresados datos, solo se puede con el máximo lnivel de acceso y tras verificarlo.
+	//pone en edición un indicador definido. Como hacer esto es peligroso, una vez ingresados datos, solo se puede con el máximo nivel de acceso y tras verificarlo.
 	
 	if(confirm("¿Confirma que quiere cancelar la carga de valores para este indicador? \n Si lo hace se perderan los cambios no guardados.")){
         _idind=_this.parentNode.parentNode.getAttribute('idindicadorcarga');
@@ -1437,56 +2235,79 @@ function accionSeleccionarIndCambio(_this){
 	        document.getElementById('formEditarIndicadores').style.display='inline-block';
 		    document.getElementById('divMenuAccionesCrea').style.display='inline-block';
 		    document.getElementById('botonCrearIndicador').style.display='none';
-		    document.getElementById('formSeleccionInd').style.display='none';
+		    
+		    $('#cuadrovalores').attr('estado','elemento');
+		    //document.getElementById('formSeleccionInd').style.display='none';
 	        consultarIndicadorParaModificar(_idind);
 	        
         }
     }
 }
 
-function accionPeriodoElegido(ano, mes, seleccionarDefault){
+function accionPeriodoElegido(_periodo, seleccionarDefault){
+	
+	
+	_p=_periodo.split('_');
+	_Select_Fecha['ano']=_p[0];
+	_Select_Fecha['mes']=_p[1];
+	_Select_Fecha['dia']=_p[2];
+	//console.log(_Select_Fecha);
 	
 	_source_ind_sel.clear();//limpia la source de la capa de seleccion cargada en mapa. 
-	
 	
     var idindicador = document.getElementById('indicadorActivo').getAttribute('idindicador');
     //var periodicidad = document.getElementById('indCargaPeriodicidad').innerHTML;
     var periodicidad = document.getElementById('indicadorActivo').getAttribute('periodicidad');
     
-    if (periodicidad == 'mensual') {
-        document.getElementById('indCargaPeriodoLabel').innerHTML = obtenerNombreMes(mes-1) + " " + ano;
-        _DataPeriodo['mes']=mes;
-        _DataPeriodo['ano']=ano;
+    
+    if (periodicidad == 'diario') {
+        document.querySelector('#indCargaPeriodoLabel').innerHTML = _Select_Fecha.dia+" de "+obtenerNombreMes(_Select_Fecha.mes-1) + " " + _Select_Fecha.ano;
+        _DataPeriodo['dia']=_Select_Fecha.dia;
+        _DataPeriodo['mes']=_Select_Fecha.mes;
+        _DataPeriodo['ano']=_Select_Fecha.ano;
+    } else if (periodicidad == 'mensual') {
+        document.querySelector('#indCargaPeriodoLabel').innerHTML = obtenerNombreMes(_Select_Fecha.mes-1) + " " + _Select_Fecha.ano;
+        _DataPeriodo['dia']='';
+        _DataPeriodo['mes']=_Select_Fecha.mes;
+        _DataPeriodo['ano']=_Select_Fecha.ano;
     } else {
-        document.getElementById('indCargaPeriodoLabel').innerHTML = ano;
+        document.querySelector('#indCargaPeriodoLabel').innerHTML = _Select_Fecha.ano;
+        _DataPeriodo['dia']='';
         _DataPeriodo['mes']='';
-        _DataPeriodo['ano']=ano;
+        _DataPeriodo['ano']=_Select_Fecha.ano;
     }
     
-    document.getElementById('divPeriodoSeleccionado').setAttribute('ano', ano);
+    document.getElementById('divPeriodoSeleccionado').setAttribute('ano', _Select_Fecha.ano);
+    /*
     if (periodicidad == 'mensual') {
-        document.getElementById('divPeriodoSeleccionado').setAttribute('mes', mes);
+        document.getElementById('divPeriodoSeleccionado').setAttribute('mes', _Select_Fecha.mes);
     }
+    if (periodicidad == 'diario') {*/
+        document.getElementById('divPeriodoSeleccionado').setAttribute('mes', _Select_Fecha.mes);		
+        document.getElementById('divPeriodoSeleccionado').setAttribute('dia', _Select_Fecha.dia);
+    //}
     
     var selectorPeriodo = document.getElementById('selectorPeriodo');
     for (var child in selectorPeriodo.children) {
         if (selectorPeriodo.children[child].nodeType == 1
                 && selectorPeriodo.children[child].getAttribute('selected') == 'true'){
-            selectorPeriodo.children[child].setAttribute('style', 'border: 2px solid white;');
             selectorPeriodo.children[child].setAttribute('selected', 'false');
         }
     }
     
-    var idPeriodoFecha = 'periodoFecha'+ano;
-    if (periodicidad == 'mensual'){
-        idPeriodoFecha = 'periodoFecha'+obtenerNombreMes(mes-1)+ano;
-    }
-    console.log(idPeriodoFecha);
-    var divPeriodoFecha = document.getElementById(idPeriodoFecha);
-    divPeriodoFecha.setAttribute('style', 'border: 2px solid rgb(8,175,217);');
-    divPeriodoFecha.setAttribute('selected', 'true');
-    
-    cargarPoligonosIndicadorPublicado(idindicador, ano, mes, seleccionarDefault);
+    _divPeriodoFecha = document.querySelector('#selectorPeriodo [periodo="'+_periodo+'"]');
+    if(_divPeriodoFecha!=null){
+		_divPeriodoFecha.setAttribute('selected', 'true');			
+		_divPeriodoFecha.scrollIntoView();
+	}    
+	
+    cargarPoligonosIndicadorPublicado(
+		_DataIndicador.id, 
+		_Select_Fecha.ano, 
+		_Select_Fecha.mes, 
+		_Select_Fecha.dia, 
+		seleccionarDefault
+	);
 }
 
 
@@ -1499,8 +2320,7 @@ function renombrarGeometria(_this,_event){
 	}else{
 		_this.setAttribute('editando','si');
 	}
-	
- }    	
+}
 
 
 
@@ -1515,10 +2335,16 @@ function cargarFormularioNuevasGeometrias(_res){
     document.querySelector('#divPeriodoSeleccionado #divMenuAccionesEditarValor #botonDuplicarGeom').style.display='inline-block';
     
     
-	//console.log( _res.data.geom);
+	console.log( _res.data.geom);
     for(_ng in _res.data.geom){
     	_datg=_res.data.geom[_ng];
     	
+    	
+		if(_DataIndicador.funcionalidad=='nuevaGeometria'&&_datg.estadocarga!='listo'){
+			//esta geometría no es para este período
+			continue;	
+		}
+		
     	_divg=document.createElement('div');
     	_divg.setAttribute('class','unidad');
     	_divg.setAttribute('idgeom',_datg.id);

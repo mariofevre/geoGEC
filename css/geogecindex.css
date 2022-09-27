@@ -23,40 +23,8 @@
 * 
 * Si usted no cuenta con una copia de dicha licencia puede encontrarla aqu�: <http://www.gnu.org/licenses/>.
 */
-h2{
-margin-top: 4px;
-margin-bottom: 0px;
-}
-#page{
-	border:none;
-}
 
-#mapa {
-    position: relative;
-    width: 600px;
-    height: 601px;
-}
 
-#portamapa{
-	display:inline-block;
-	vertical-align:top;
-	border:none;
-}
-
-#cuadrovalores{
-	display:inline-block;
-	vertical-align:top;
-	width:40%;
-	position: relative;
-}
-#encabezado{
-   font-size: 12px;
-
-}
-#encabezado p{
-   font-size: 12px;
-
-}
 .celda{
 	display:inline-block;
 	width:180px;
@@ -110,27 +78,6 @@ div.nombre[estado="activo"][selecto='si']{
 	background-color:lightblue;
 	color:#000;
 }
-
-.formcentral{
-	position:fixed;
-	top:5vh;
-	height:90vh;
-	left:5vw;
-	width:90vw;
-	background-color:#fff;
-	border:3px solid #000;
-	box-shadow:2vh 2vh 4vh rgba(50, 50, 50, 0.5);
-	z-index:1000;
-	display:none;
-}
-
-.formcentral a{		
-	display:block;
-}
-
-.formcentral #carga{		
-	display:none;
-}
 	
 #shp{
 	background-color:#fff;
@@ -151,6 +98,11 @@ div.nombre[estado="activo"][selecto='si']{
 	top:0px;
 }
 
+#cuadrovalores h2 > span{
+font-size:11px;
+font-weight:normal;
+}
+
 #menutablas #lista{
 	max-height:160px;
 	overflow-y:auto;
@@ -168,6 +120,12 @@ div.nombre[estado="activo"][selecto='si']{
 	display:inline-block;
 	width:300px;
 	text-align:left;
+	font-size:16px;
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+#menutablas #lista a.nombretabla span{
+	font-size:11px;
 }
 #menuelementos{
 	display:none;
@@ -210,18 +168,98 @@ div.nombre[estado="activo"][selecto='si']{
 	overflow:hidden;
 	text-align:left;
 }
+
+#menuelementos #lista{
+	max-height:135px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+#menuelementos #lista a:hover{
+    background-color:#ff6600;
+}
+#menuelementos #lista a[estado='selecto']{
+    background-color:#ff6600;
+}
+#menuelementos #lista a{
+	vertical-align:middle;
+	margin-left:3px;
+	width:396px;
+	text-align:left;
+    background-color: rgba(255, 102, 0, 0.2);
+    border: 1px solid #ff6600;
+    height: 15px;
+    color:#000;
+    margin-bottom:1px;
+}
+#menuelementos #lista a span.nom{
+	margin-left:3px;
+	display:inline-block;
+	width:286px;
+	overflow:hidden;
+	text-align:left;
+	height:15px;
+}
+#menuelementos #lista a span.cod{
+	
+	display:inline-block;
+	font-size:11px;
+	width:100px;
+	overflow:hidden;
+	text-align:left;
+}
+
+
+
+
+
+
+#menupropios #lista{
+	max-height:135px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+#menupropios #lista a:hover{
+    background-color:#ff6600;
+}
+#menupropios #lista a[estado='selecto']{
+    background-color:#ff6600;
+}
+#menupropios #lista a{
+	vertical-align:middle;
+	margin-left:3px;
+	width:384px;
+	text-align:left;
+    background-color: rgba(255, 102, 0, 0.2);
+    border: 1px solid #ff6600;
+    height: 15px;
+    color:#000;
+    margin-bottom:1px;
+}
+#menupropios #lista a span.nom{
+	margin-left:3px;
+	display:inline-block;
+	width:281px;
+	overflow:hidden;
+	text-align:left;
+	height:15px;
+	
+}
+#menupropios #lista a span.cod{
+	
+	display:inline-block;
+	font-size:11px;
+	width:100px;
+	overflow:hidden;
+	text-align:left;
+}
+
+
+
+
 #menuacciones{
 	display:none;
 }
-#menuacciones #lista a{
-	margin-left:5px;
-}
-#menuacciones #lista a:hover{
-	background-color:#e41937;
-}
-#menuacciones #lista a > img:hover{
-		background-color:#e41937;
-}
+
 #menuelementos #lista a[cargado='si']{
     background-color: rgba(228,25,55,1);
 }
@@ -374,7 +412,7 @@ select{
 	left:calc(50% - 50px);
 	height:50px;
 	width:100px;
-	text-align:middle;
+	text-align:center;
 	border:3px solid #08afd9;
 	border-radius:5px;
 	font-size:30px;

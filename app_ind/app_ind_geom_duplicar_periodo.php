@@ -170,7 +170,13 @@ if($Capa['tipogeometria']=='Point'){
 
 $query="
 	SELECT 
-		id, nombre, descripcion, funcionalidad, id_p_ref_capasgeo, ic_p_est_02_marcoacademico, periodicidad, fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada, col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, col_numero1_nom, col_numero2_nom, col_numero3_nom, col_numero4_nom, col_numero5_nom, col_texto1_unidad, col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, col_numero5_unidad, representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime, calc_buffer, calc_superp, calc_zonificacion
+		id, nombre, descripcion, funcionalidad, id_p_ref_capasgeo, 
+		ic_p_est_02_marcoacademico, periodicidad, fechadesde, fechahasta, usu_autor, 
+		zz_borrada, zz_publicada, col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, 
+		col_numero1_nom, col_numero2_nom, col_numero3_nom, col_numero4_nom, col_numero5_nom, 
+		col_texto1_unidad, col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, 
+		col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, col_numero5_unidad, 
+		representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime, calc_buffer, calc_superp, calc_zonificacion
 	FROM 
 		geogec.ref_indicadores_indicadores
 	
@@ -197,6 +203,9 @@ if($Capa['tipogeometria']=='Point'){
 $Log['data']['idInd']=$Indicador['id'];
 $Log['data']['periodicidad']=$Indicador['periodicidad'];
 
+
+
+/*
 if($Log['data']['periodicidad']=='anual'){
 	$origen_ano=$_POST['ano']-1;
 	$origen_mes='';
@@ -212,7 +221,7 @@ if($Log['data']['periodicidad']=='anual'){
 	}
 	$extrawhere=" AND mes= '".$origen_mes."'";
 }
-
+*/
 
 /* geom, texto1, texto2, texto3, texto4, texto5, 
 		numero1, numero2, numero3, numero4, numero5, 
@@ -239,11 +248,14 @@ if($Log['data']['periodicidad']=='anual'){
 		AND
 			ref_indicadores_indicadores.funcionalidad='nuevaGeometria'
 		AND
-			ref_indicadores_valores.ano='".$origen_ano."'
+			ref_indicadores_valores.ano='".$_POST['prev_ano']."'	
+		AND
+			ref_indicadores_valores.mes='".$_POST['prev_mes']."'	
+		AND
+			ref_indicadores_valores.dia='".$_POST['prev_dia']."'	
 		AND
 			geogec.ref_indicadores_valores.zz_borrado='0'
-		".$extrawhere."	
-			
+	
 	
 	";
 	$Log['tx'][]='query: '.utf8_encode($query);
@@ -311,14 +323,14 @@ while($row = pg_fetch_assoc($Consulta)){
 	}
 	$fila=pg_fetch_assoc($ConsultaB);
 	$RegCapaId=$fila['id'];
-
+/*
 	$extracampo='';
 	$extravalor='';
     if ($Indicador['periodicidad'] == 'mensual'){
         $extracampo= " mes, ";
 		$extravalor="'".$_POST['mes']."', ";
     }
-
+*/
 	$query = "
 		INSERT INTO   
 			geogec.ref_indicadores_valores
@@ -326,7 +338,8 @@ while($row = pg_fetch_assoc($Consulta)){
 	        (   
 	        	id_p_ref_indicadores_indicadores, 
 	            ano,
-	            ".$extracampo."
+	            mes,
+	            dia,
 	            usu_autor, 
 	            fechadecreacion,    
 	            zz_superado,
@@ -337,7 +350,9 @@ while($row = pg_fetch_assoc($Consulta)){
 	        VALUES
 	        (   '".$_POST['idIndicador']."',
 	            '".$_POST['ano']."',
-				".$extravalor."
+	            '".$_POST['mes']."',
+	            '".$_POST['dia']."',
+				
 	            ".$idUsuario.",
 	            ".validarFechaQuery($_POST['fechadecreacion']).",
 	            0,

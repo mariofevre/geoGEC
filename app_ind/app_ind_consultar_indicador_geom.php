@@ -161,13 +161,10 @@ $query="SELECT
                 numero2, 
                 numero3, 
                 numero4, 
-                numero5, 
-                geom_point, 
-                geom_line, 
-                id_ref_capasgeo,
-                zz_borrada
+                numero5
         FROM    
                 geogec.ref_capasgeo_registros
+        
         WHERE 
                 id_ref_capasgeo = '".$Log['data']['indicador']['id_p_ref_capasgeo']."'
                 AND
@@ -234,6 +231,7 @@ $query="
 		id_p_ref_indicadores_indicadores, 
 		ano, 
 		mes, 
+		dia,
 		usu_autor, 
 		fechadecreacion, 
 		zz_superado, 
@@ -263,13 +261,21 @@ $query="
         AND
 		id_p_ref_indicadores_indicadores = '".$_POST['id']."'
 ";
-
+/*
 if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
     $query=$query."
         AND
 		mes = '".$_POST['mes']."'";
 }
 
+if ($Log['data']['indicador']['periodicidad'] == 'diario'){*/
+    $query=$query."
+        AND
+		mes = '".$_POST['mes']."'
+		AND
+		dia = '".$_POST['dia']."'		
+		";
+//}
 
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -320,6 +326,7 @@ $extravalor = "";
 $Log['data']['periodo']['ano']=$_POST['ano'];
 $Log['data']['periodo']['mes']='';
 
+/*
 if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
 	$extrawhere = "
 		AND
@@ -329,6 +336,18 @@ if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
 	$extravalor = "'".$_POST['mes']."', ";
 	$Log['data']['periodo']['mes']=$_POST['mes'];
 }
+if ($Log['data']['indicador']['periodicidad'] == 'diario'){*/
+	$extrawhere = "
+		AND
+			mes = '".$_POST['mes']."'
+		AND
+			dia = '".$_POST['dia']."'
+		";
+	$extracampo = ' mes, dia, ';
+	$extravalor = "'".$_POST['mes']."', '".$_POST['dia']."', ";
+	$Log['data']['periodo']['mes']=$_POST['mes'];
+	$Log['data']['periodo']['dia']=$_POST['dia'];
+//}
 
 
 $query="
@@ -356,8 +375,8 @@ if (pg_num_rows($Consulta) <= 0){
 		INSERT INTO 
 			geogec.ref_indicadores_resumen( 
 				id_p_ref_indicadores_indicadores, 
-				".$extracampo."
 				ano,
+				".$extracampo."
 				sum_numero1,
 				sum_numero2,
 				sum_numero3,
@@ -371,8 +390,8 @@ if (pg_num_rows($Consulta) <= 0){
 			)
 			VALUES (
 				'".$_POST['id']."',
-				".$extravalor."
 				'".$_POST['ano']."',
+				".$extravalor."				
 				'".$Log['data']['resumen']['sum_numero1']."',
 				'".$Log['data']['resumen']['sum_numero2']."',
 				'".$Log['data']['resumen']['sum_numero3']."',
@@ -402,8 +421,8 @@ if (pg_num_rows($Consulta) <= 0){
 			
 		SET( 
 			id_p_ref_indicadores_indicadores, 
-			".$extracampo."
 			ano,
+			".$extracampo."			
 			sum_numero1,
 			sum_numero2,
 			sum_numero3,
@@ -417,8 +436,8 @@ if (pg_num_rows($Consulta) <= 0){
 		)
 		= (
 			'".$_POST['id']."',
-			".$extravalor."
 			'".$_POST['ano']."',
+			".$extravalor."			
 			'".$Log['data']['resumen']['sum_numero1']."',
 			'".$Log['data']['resumen']['sum_numero2']."',
 			'".$Log['data']['resumen']['sum_numero3']."',
@@ -462,6 +481,7 @@ $query="
 		ref_indicadores_valores.id_p_ref_capas_registros,
 	    ref_indicadores_valores.ano,
 	    ref_indicadores_valores.mes,
+	    ref_indicadores_valores.dia,
 		
 		CASE WHEN 
 			NOT(ref_indicadores_indicadores.col_texto1_nom = '' OR ref_indicadores_indicadores.col_texto1_nom is null) 
@@ -548,12 +568,25 @@ $query="
 
         ";
 
-
+/*
 if ($Log['data']['indicador']['periodicidad'] == 'mensual'){
     $query=$query."
         AND
 		geogec.ref_indicadores_valores.mes = '".$_POST['mes']."'";
 }
+if ($Log['data']['indicador']['periodicidad'] == 'diario'){*/
+    $query=$query."
+        AND
+		geogec.ref_indicadores_valores.mes = '".$_POST['mes']."'
+		AND
+		geogec.ref_indicadores_valores.dia = '".$_POST['dia']."'
+		
+		
+		";
+//}
+
+
+
 
 
 $Consulta = pg_query($ConecSIG, $query);
@@ -591,7 +624,7 @@ if($Log['data']['indicador']['funcionalidad']=='nuevaGeometria'){
 	
 	foreach($Log['data']['geom'] as $idgeom => $data){	
 		if($data['estadocarga']=='sin carga'){
-			unset($Log['data']['geom'][$idgeom]);
+			//unset($Log['data']['geom'][$idgeom]);
 		}
 	}	
 }
