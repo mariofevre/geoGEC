@@ -96,14 +96,17 @@ if(!isset($_POST['idgeom'])){
 	$Log['tx'][]='falta la variable idgeom';	
 	terminar($Log);
 }
+$Log['data']['idgeom']=$_POST['idgeom'];
+
+	
 if(!isset($_POST['t1'])){
 	$Log['res']='err';
-	$Log['tx'][]='falta la variable t1';	
+	$Log['tx'][]='falta la variable t1';	//nombre UA
 	terminar($Log);
 }
 if(!isset($_POST['n1'])){
 	$Log['res']='err';
-	$Log['tx'][]='falta la variable n1';	
+	$Log['tx'][]='falta la variable n1';	//estado de carga completo
 	terminar($Log);
 }
 
@@ -115,6 +118,7 @@ if(!isset($_POST['personalizados'])){
 
 $Log['data']['archivar']=$_POST['archivar'];
 
+$Log['data']['id_registro']=$_POST['id_registro'];
 
 if($_POST['id_registro']==''||$_POST['id_registro']=='undefined'){
 	$query="
@@ -149,7 +153,7 @@ if($_POST['id_registro']==''||$_POST['id_registro']=='undefined'){
 	$Log['data']['registro_nuevo']='no';
 }
 	
-	$Log['data']['id_registro']=$_POST['id_registro'];
+	
 	
 	
 $query="
@@ -214,7 +218,7 @@ if($f['id_p_ref_capasgeo']>0){
 }else{
 	
 	$Log['res']='err';
-	$Log['tx'][]='no se encontro la capa';	
+	$Log['tx'][]='no se encontro la campana';	
 	terminar($Log);
 	
 }
@@ -290,7 +294,7 @@ if(pg_errormessage($ConecSIG)!=''){
     $Log['tx'][]=$query;
     terminar($Log);
 }	
-
+$Log['data']['id_reg_viejo']=$_POST['id_registro'];
 
 
 $query="
@@ -340,7 +344,7 @@ foreach($_POST['personalizados'] as $k => $v){
 	}
 	
 	if($Campos[$k]['tipo']=='texto'){
-		
+		if($v==''){continue;}
 		$defcampo="
 			data_texto,  
 			data_numero,
@@ -356,6 +360,7 @@ foreach($_POST['personalizados'] as $k => $v){
 		if($v===null||$v===''){
 			$v= "null";
 		}
+		if($v=='null'){continue;}
 		$defcampo="
 			data_texto,  
 			data_numero,
@@ -385,6 +390,7 @@ foreach($_POST['personalizados'] as $k => $v){
 		if($v===null||$v===''){
 			$v= "null";
 		}
+		if($v=='null'){continue;}
 		$defcampo="
 			data_texto,  
 			data_numero,
@@ -401,6 +407,7 @@ foreach($_POST['personalizados'] as $k => $v){
 			data_numero,
 			data_documento
 		";
+		if($v==''){continue;}
 		$setcampo="
 			null,
 			null,
@@ -498,7 +505,7 @@ foreach($_POST['personalizados'] as $k => $v){
 	$Consulta = pg_query($ConecSIG,utf8_encode($query));
 	$row=pg_fetch_assoc($Consulta);
 	$Log['data']['registroscampos_nids'][]=$nid;
-	$Log['tx'][]=utf8_encode($query);
+	//$Log['tx'][]=utf8_encode($query);
 	if(pg_errormessage($ConecSIG)!=''){
 	    $Log['res']='error';
 	    $Log['tx'][]='error al insertar registro-campo en la base de datos';

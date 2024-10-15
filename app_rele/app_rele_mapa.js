@@ -188,6 +188,11 @@ function cargarMapa(){
       minZoom:2,
       maxZoom:19	      
 	});
+	_view.on('change:center', function(){
+		ActualizarLink();
+		//console.log(_view.getResolution())
+	});// funcion en ./comun_mapa/comun_mapa_link.js
+	//_view.on('change:center', function(){alert('hola');});// funcion en ./comun_mapa/comun_mapa_link.js
 
 	var tablaRasLayer = new ol.layer.Image();
 
@@ -206,6 +211,7 @@ function cargarMapa(){
         visible: true,
         source: _ExtraBaseWmsSource
     });
+    La_ExtraBaseWms.set('crossOrigin', "anonymous");
     
 	mapa = new ol.Map({
 	    layers: [
@@ -253,8 +259,7 @@ function cargarMapa(){
 		
 	function consultaPuntoAj(_Pid){
 		console.log(_Pid);
-		formAI(_Pid);
-		
+		formAI(_Pid);		
 	}
 }
 
@@ -272,6 +277,7 @@ function mostrarTablaEnMapa(_tabla){
         }
    });
 	La_ExtraBaseWms.setSource(_ExtraBaseWmsSource);
+	La_ExtraBaseWms.set('crossOrigin', "anonymous");
 }
 
 function cargarCapaMarco(){
@@ -338,31 +344,48 @@ var _source_rele= new ol.source.Vector({
 	projection: 'EPSG:3857' 
 });
 
+
+var labelStyle = new ol.style.Style();
+function resetLabelStyle(){
+		// se resetea al cambiar la simboloíga o el tipo de geometría
+	
+	
+	var _color='rgba(0,200,256,0.2)';
+	var _colorb='rgba(0,0,100,1)';
+	var _ancho='0.5';
+
+	if(_DataRele!=undefined){
+		if(_DataRele.tipogeometria=='LineString'){
+			_ancho='5';
+		}
+	}
+	
+	labelStyle = new ol.style.Style({
+		image: new ol.style.Circle({
+			   fill: new ol.style.Fill({color: _color}),
+			   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+			   radius: 12
+		}),
+		fill: new ol.style.Fill({color: _color}),
+		stroke: new ol.style.Stroke({color: _colorb,width: _ancho}),
+		zIndex:1000,
+		text: new ol.style.Text({
+			font: '14px Calibri,sans-serif',
+			overflow: true,
+			offsetX:8,
+			offsetY:-4,
+			fill: new ol.style.Fill({
+			color: '#000'
+			}),
+			stroke: new ol.style.Stroke({color: '#fff', width: 4})
+		})
+	});
+}
+resetLabelStyle();
+
 var _color='rgba(0,200,256,0.2)';
 var _colorb='rgba(0,0,100,1)';
 var _ancho='0.5';
-
-var labelStyle = new ol.style.Style({
-	image: new ol.style.Circle({
-		   fill: new ol.style.Fill({color: _color}),
-		   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
-		   radius: 12
-	}),
-	fill: new ol.style.Fill({color: _color}),
-	stroke: new ol.style.Stroke({color: _colorb,width: _ancho}),
-	zIndex:1000,
-	text: new ol.style.Text({
-		font: '12px Calibri,sans-serif',
-		overflow: true,
-		offsetX:8,
-		offsetY:-4,
-		fill: new ol.style.Fill({
-		color: '#000'
-		}),
-		stroke: new ol.style.Stroke({color: '#fff', width: 2})
-	})
-});
-
 
 var _mudoStyle = new ol.style.Style({
 	image: new ol.style.Circle({
@@ -378,6 +401,7 @@ var _mudoStyle = new ol.style.Style({
 
 var _layer_rel= new ol.layer.Vector({
 	name: 'relevamiento',
+    className: 'multiply',
     source: _source_rele,
     zIndex:5000,
     //style:_mudoStyle,
@@ -390,13 +414,13 @@ var _layer_rel= new ol.layer.Vector({
 	   	}
 	   //console.log(feature.get('estado'));
 	   	if(feature.get('estado')==='0'){
-	   		labelStyle.getFill().setColor("rgba(255,0,0,0.5)");
-	   		console.log(labelStyle.getImage().getFill());
+	   		labelStyle.getFill().setColor("rgba(255,0,0,0.2)");
+	   		//console.log(labelStyle.getImage().getFill());
 	   		//labelStyle.getImage().setColor("rgba(0,255,100,0.8)");
 	   		
 	   		labelStyle.setImage(
 				new ol.style.Circle({
-					   fill: new ol.style.Fill({color: "rgba(255,0,0,0.5)"}),
+					   fill: new ol.style.Fill({color: "rgba(255,0,0,0.2)"}),
 					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
 					   radius: 12,
 					   zIndex:1000,
@@ -404,10 +428,10 @@ var _layer_rel= new ol.layer.Vector({
 	   		);
 	   		
 	   	}else if(feature.get('estado')==='1'){
-	   		labelStyle.getFill().setColor("rgba(0,255,100,0.8)");
+	   		labelStyle.getFill().setColor("rgba(0,255,100,0.2)");
 	   		labelStyle.setImage(
 				new ol.style.Circle({
-					   fill: new ol.style.Fill({color: "rgba(0,255,100,0.8)"}),
+					   fill: new ol.style.Fill({color: "rgba(0,255,100,0.2)"}),
 					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
 					   radius: 12,
 					   zIndex:1000,
@@ -433,32 +457,58 @@ var _layer_rel= new ol.layer.Vector({
 });
 mapa.addLayer(_layer_rel);
 
+/*
+var div = document.getElementById(_layer_rel.id);
+var canvas = document.querySelector('#portamapa .multiply canvas');
+var context = canvas.getContext("2d");
+context.globalCompositeOperation = "multiply";*/
+
+
+//layer de geometría seleccionada para cargar datos
 var _source_rel_sel= new ol.source.Vector({
 	wrapX: false,   
 	projection: 'EPSG:3857' 
 });
 
-//layer de geometría seleccionadad para cargar datos
 var _st_rel_sel=new ol.style.Style({
      image: new ol.style.Circle({
 	       stroke: new ol.style.Stroke({color:'rgb(8, 175, 217)',width: 0.8}),
 	       radius: 6
 	 }),
 	 stroke: new ol.style.Stroke({color: 'rgb(8, 175, 217)',width: 1}),
-	 zIndex:2000
+	 zIndex:200000
 });
 var _layer_rel_sel= new ol.layer.Vector({
 	name: 'indicador: elemento selecto',
     source: _source_rel_sel,
-    style: _st_rel_sel
+    style: _st_rel_sel,
+	 zIndex:200000
 });
-//console.log('1');
 mapa.addLayer(_layer_rel_sel);
+
+//layer de vercites handler para cargar datos
+var _source_rel_sel_vert= new ol.source.Vector({
+	wrapX: false,   
+	projection: 'EPSG:3857' 
+});
+
+var _st_rel_sel_vert=new ol.style.Style({
+     image: new ol.style.Circle({
+	       stroke: new ol.style.Stroke({color:'rgb(8, 175, 217)',width: 0.8}),
+	       radius: 6
+	 })
+});
+var _layer_rel_sel_vert= new ol.layer.Vector({
+	name: 'vertices del elemento selecto',
+    source: _source_rel_sel_vert,
+    style: _st_rel_sel_vert,
+	 zIndex:190000
+});
+mapa.addLayer(_layer_rel_sel_vert);
 
 
 mapa.on('click', function(evt){   
-	if(_mapaEstado=='dibujando'){return;} 	
-	
+	if(_mapaEstado=='dibujando'){return;} 		
   	consultaPuntoRel(evt.pixel,evt);       
 });
 
@@ -468,25 +518,104 @@ function consultaPuntoRel(pixel,_event) {
 	if(_mapaEstado=='terminado'){return;}
 	//if(_Dibujando=='si'){return;}	
 	_source_rel_sel.clear();
-    var feature = mapa.forEachFeatureAtPixel(pixel, function(feature, layer){
-        if(layer.get('name')=='relevamiento'){	        	
-          return feature;
+	
+	document.querySelector('#portamapa #listadoUA').setAttribute('activo','no');
+	_listado = document.querySelector('#portamapa #listadoUA #listadito');
+	_listado.innerHTML='';
+	
+	_c=0;
+	_feature={};
+	_prop={};
+    mapa.forEachFeatureAtPixel(pixel, function(feature, layer){
+		
+        if(layer.get('name')=='relevamiento'){	
+			_c++;	
+			_feature=feature;
+			_prop=feature.getProperties();
+			_prop['id']=feature.getId();
+			//console.log(_prop);
+			
+			_ua=document.createElement('a');
+			_listado.appendChild(_ua);
+			_ua.setAttribute('onclick','accionGeomSeleccionada('+feature.getId()+')');
+
+			_ua.innerHTML=_prop.name;
+			        	
+          //return feature;
         }else{
         	console.log('no');
         }
     });
     
-    _prop=feature.getProperties();
+    if(_c>1){
+		 document.querySelector('#portamapa #listadoUA').setAttribute('activo','si');
+	}
+	
+	if(_c==0){return;}
     
-     console.log('carga punto rel');
+    
+    
+    //_ext= _ft.getGeometry().getExtent();	
+    //_view.fit(_ext, { duration: 1000 });
+    //console.log(feature.getProperties());
+    accionGeomSeleccionada(_prop.id);
+   //alert('hizo click en registro id:')
+}
+
+function generarFeatureSelecta(_idgeom){	
+	
+	_source_rel_sel.clear();
+	
+	_ft_orig=_source_rele.getFeatureById(_idgeom);
+	
+    if(_ft_orig==null){
+		console.log('¡No se encontró el feature con id:'+_idgeom);
+		return;
+	}
+
+
+
+	_color="rgba(0,200,256,0.0)";
+    _colors='rgba(0,0,256,0.5)';
+	_ft_orig.setStyle(new ol.style.Style({
+         image: new ol.style.Circle({
+		       fill: new ol.style.Fill({color: _color}),
+		       stroke: new ol.style.Stroke({color: _colors,width: 0.5}),
+		       radius: 6,
+			   zIndex:100
+		 }),
+		 fill: new ol.style.Fill({color: _color}),
+		 stroke: new ol.style.Stroke({color: _colors,width: 2,lineDash:[4,8]}),
+		 
+		 zIndex:100
+	}));
+	
+	
+	_ft=_ft_orig.clone();
+	_ft.setId(_idgeom);
+	_source_rel_sel.addFeature(_ft);		
+	
+	
+	//_view.fit(_ft.getGeometry());
+	
+    
+    /*
+	//console.log('carga punto rel');
     var _format = new ol.format.WKT();
 	var _ft = _format.readFeature(_prop.geotx, {
         dataProjection: 'EPSG:3857',
-        featureProjection: 'EPSG:3857'
+        featureProjection: 'EPSG:3857',
+        id:_prop.id
     });
+    _ft.setId(_prop.id);
     
+   
+    
+    console.log(_prop.geotx);
+   */ 
+   //_color='rgba(255,255,255,0.0)';
+	_color="rgba(0,200,256,0.0)";
     _colors='rgba(0,0,256,0.5)';
-    
     _ft.setStyle(new ol.style.Style({
          image: new ol.style.Circle({
 		       fill: new ol.style.Fill({color: _color}),
@@ -495,14 +624,55 @@ function consultaPuntoRel(pixel,_event) {
 			   zIndex:100
 		 }),
 		 fill: new ol.style.Fill({color: _color}),
-		 stroke: new ol.style.Stroke({color: _colors,width: 0.5}),
+		 stroke: new ol.style.Stroke({color: _colors,width: 2}),
 		 zIndex:100
 	}));
+    //_source_rel_sel.addFeature(_ft);
+    
+    _geom=_ft.getGeometry();
+    if(	//es un punto
+		_geom.extent_[2]-_geom.extent_[0]<0.5
+		&&
+		_geom.extent_[3]-_geom.extent_[1]<0.5
+    ){
+		_view.setCenter(_geom.extent_);
+		_view.setZoom(17);
+	}else{
+		// es más grande que un punto
+		_view.fit(_ft.getGeometry(),{padding:[20,20,20,20],duration:1000});	
+	}
+    
+}
+
+
+function mostrarVerticesSelecta(){	
+	ocultarVerticesSelecta();
+	_feats=_source_rel_sel.getFeatures();
 	
-    _source_rel_sel.addFeature(_ft);
-    //console.log(feature.getProperties());
-    accionGeomSeleccionada(_prop.id);
-   //alert('hizo click en registro id:')
+	for(_f in _feats){
+		
+		_cl=_feats[_f].clone();
+		_source_rel_sel_vert.addFeature(_cl);
+		_cl.setStyle(new ol.style.Style({
+			image: new ol.style.Circle({
+				   fill: new ol.style.Fill({color: 'rgba(255,255,255,1)'}),
+				   stroke: new ol.style.Stroke({color: 'rgba(0,0,256,1)',width: 2}),
+				   radius: 4,
+				   zIndex:1
+			}),
+			geometry: function (feature) {
+			  // return the coordinates of the first ring of the polygon
+			  const coordinates = feature.getGeometry().getCoordinates()[0];
+			  return new ol.geom.MultiPoint(coordinates);
+			}
+		}));
+	}
+}
+
+function ocultarVerticesSelecta(){	
+	
+	_source_rel_sel_vert.clear();
+	
 }
 
 
@@ -588,32 +758,22 @@ function asignarRepresentacion(_data){
 		});
 	}
 	
-	
-	
-	
-	
-	
 	return _estilo;
 }
 
 
 var _featurescargadas=0;
 
-function dibujarReleMapa(_res){
+function dibujarReleMapa(){
+	//REPRESENTA GEOMETRÍAS del relevamiento
 	
-    //console.log('inicia funcion'); 
-	//console.log(_res.data.geom);
-	//console.log(_source_rele.getFeatures());
     _source_rele.clear();
-    //console.log(_source_rele.getFeatures());
-    
-	_campo=_res.data.campa.representar_campo;
+	_campo=_DataRele.representar_campo;
 	_haygeom='no';
 	
-		
-	for(_gn in _res.data.geom){
+	for(_gn in _DataGeom){
 		_featurescargadas++;
-		_geo=_res.data.geom[_gn];
+		_geo=_DataGeom[_gn];
 		_val=null;
 		_haygeom='si';
 		
@@ -626,13 +786,17 @@ function dibujarReleMapa(_res){
 		}		
 		
 		//console.log('+ um geometria: campo'+_campo+'. valor:'+_val);
-		 console.log('carga regeom rele');
+		 //console.log('carga regeom rele');
+		 //console.log(_geo.id);
+		 //console.log(_geo.geotx);
+		if(_geo.geotx.indexOf('inf')!=-1){continue}
 		var _format = new ol.format.WKT();
 		var _ft = _format.readFeature(_geo.geotx, {
 	        dataProjection: 'EPSG:3857',
 	        featureProjection: 'EPSG:3857',
 	        id: _gn
 	    });
+	   // console.log('ii: '+_gn);
 	 	_ft.setId(_gn);
 	 	
 	 	
@@ -644,7 +808,7 @@ function dibujarReleMapa(_res){
 		//console.log(_color);
 		_ancho=1.8;
 		//console.log(_res.data.capa);
-		if(_res.data.capa.tipogeometria=='LineString'){
+		if(_DataCapa.tipogeometria=='LineString'){
 			_ancho=10;
 		}
 	    
@@ -652,6 +816,7 @@ function dibujarReleMapa(_res){
 	    //_ft.setStyle(_estilo);//por ahora usamos el estilo del mapa
 	    
 	    _ft.setProperties(_geo);
+	    console.log(_geo.t1);
 	    if(_geo.t1!=''){
 			_ft.set('name',_geo.t1);
 		}else{
@@ -661,19 +826,7 @@ function dibujarReleMapa(_res){
 		_ft.set('estado',_geo.n1);
 	   	_source_rele.addFeature(_ft);
 	   	
-	   	
-	   	/*
-	   	_ft.setStyle(function(feature) {
-			if(feature.get('name')!=null){
-		    labelStyle.getText().setText(feature.get('name'));
-		    
-		   }else{
-		   	labelStyle.getText().setText('');
-		   }
-		   return labelStyle;
-		});
-		*/
-		
+	   
 	   	_c='rgba(250,250,250,0.8)';
 	   	if(_geo.n1=='0'){ 
 		   	_c='rgba(250,0,0,0.8)';
@@ -682,6 +835,7 @@ function dibujarReleMapa(_res){
 	   	}
 	   	
 	   	_st= new ol.layer.Vector({
+			/*
 			image: new ol.style.Circle({
 		       fill: new ol.style.Fill({color: _c}),
 		       stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
@@ -699,22 +853,52 @@ function dibujarReleMapa(_res){
 			    }),
 			    stroke: new ol.style.Stroke({color: '#fff', width: 2})
 			})
+			* */
 		});
 		//_ft.setStyle(_st);
 
 	}
 	
-	if(_haygeom=='si'){
+	if(
+		_Mapa_z!=''
+		&&
+		_Mapa_x!=''
+		&&
+		_Mapa_y!=''
+	
+	){
+		
+		
+		//alert('hola');
+		_coords=[_Mapa_x,_Mapa_y];
+		//console.log(_coords);
+		_view.setZoom(_Mapa_z);
+		_view.centerOn(_coords,mapa.getSize(),[300,400]);
+		
+	}else if(_haygeom=='si'){
+		
 		_ext= _source_rele.getExtent();	
-		console.log(_ext);
+		//console.log(_ext);
 		if(_encuadrado=='no'){
-			mapa.getView().fit(_ext, { duration: 1000 , padding: [50, 50, 50, 50]});
-			
+			_view.fit(_ext, { duration: 1000 , padding: [50, 50, 50, 50]});
 			_encuadrado='si';
 		}
 	}
 	//geometryOrExtent
 	
+	if(_DataRele.resol_fija>0){
+		_view.setResolution(_DataRele.resol_fija);
+		_z=_view.getZoom();
+		_view.setMaxZoom(_z);
+		_view.setMinZoom(_z);
+		document.querySelector('#resol_fija [name="val"]').innerHTML=_DataRele.resol_fija;
+		document.querySelector('#resol_fija').setAttribute('activo','si');
+	}else{		
+		_view.setMaxZoom(1000);
+		_view.setMinZoom(0); 
+		document.querySelector('#resol_fija [name="val"]').innerHTML='';
+		document.querySelector('#resol_fija').setAttribute('activo','no');
+	}
 	
 	mapa.on('pointermove', function(evt){
 		if(_mapaEstado=='dibujando'){return;}   
@@ -967,7 +1151,7 @@ function dibujarCapaSuperp(_res){
 var drawL={};
 var _nnelem=0;
 function accionEditarCrearGeometria(_idgeom){    
-	
+	console.log('dibujando geometría id:'+_idgeom);
 	_typeGeom=_DataCapa.tipogeometria;
 	//_typeGeom='Polygon';//TODO resolver este hardcoded
 	mapa.removeInteraction(drawL);
@@ -977,14 +1161,14 @@ function accionEditarCrearGeometria(_idgeom){
     });
     
     _mapaEstado='dibujando';
-    
     mapa.addInteraction(drawL);  
 	
 	
 	_source_rel_sel.on('change', function(evt){
 		mapa.removeInteraction(drawL);
 		
-		if(_mapaEstado!='dibujando'){return;}
+		console.log('mapaestado'+_mapaEstado);
+		if(_mapaEstado!='dibujando'){;return;}
 		if(_mapaEstado=='terminado'){_mapaEstado.estado='nuevaGeom';return;}
 		
 		if(_mapaEstado.estado=='error'){
@@ -1000,7 +1184,7 @@ function accionEditarCrearGeometria(_idgeom){
 		
 		
 		_idgeom=document.querySelector('#FormularioRegistro [name="idgeom"]').value;
-		console.log('actualizanro atributo de nuevageom.... con _idgeom: '+_idgeom);
+		console.log('actualizando atributo de nuevageom.... con _idgeom: '+_idgeom);
 		document.querySelector('#FormularioRegistro #nuevageometria').setAttribute('idgeom',_idgeom);
 		
 		console.log('removiendo dibujante');
@@ -1026,6 +1210,8 @@ function accionEditarCrearGeometria(_idgeom){
 var selecP={};
 var _nnelem=0;
 function accionSeleccionarGeometria(){    
+	
+	reiniciarSimbologia();
 	//_DataCapa.tipogeometria='Polygon';
 	_typeGeom=_DataCapa.tipogeometria;
 	mapa.removeInteraction(drawL);
@@ -1074,6 +1260,7 @@ function dibujarNuevaUa(_idgeom){
 
 function cambiarGeometria(_idgeom){
 	_source_rel_sel.clear();
+	
 	_feat=_source_rele.getFeatureById(_idgeom);
 	if(_feat!=null){
 		_feat.setStyle(
@@ -1090,7 +1277,7 @@ function cambiarGeometria(_idgeom){
 		);
 		_ext= _feat.getGeometry().getExtent();	
 		//console.log(_ext);
-	mapa.getView().fit(_ext, { duration: 1000 });
+		_view.fit(_ext, { duration: 1000 });
 	}	
 	console.log('inicionado accionEditar.... con _idgeom: '+_idgeom);
 	accionEditarCrearGeometria(_idgeom);
@@ -1187,3 +1374,279 @@ function exportPNGElement() {
     });
     map.renderSync();
 }*/
+
+
+function cargarFeatures(_idreg){
+	if(_idreg==''){
+		_source_rele.clear();	
+	}
+    _haygeom='no';
+    for(var elem in _Features){
+		//console.log('elem:'+elem);
+		if(_idreg!='' && elem!=_idreg){console.log('no es este');continue;}
+		_id_geom=_Features[elem].id_p_ref_capas_registros;
+		if(_DataGeom[_id_geom] == undefined){console.log('sin geom');continue;}
+		//console.log('idgeom:'+_id_geom);
+		_datgeom=_DataGeom[_id_geom];
+		_Features[elem]['geotx']=_datgeom.geotx;
+		if(_Features[elem].geotx==''){console.log('sin geotx');continue;}
+		
+		_feat_vieja=_source_rele.getFeatureById(_id_geom);
+		//console.log(_feat_vieja);
+		_source_rele.removeFeature(_feat_vieja);
+		//console.log('o');
+		console.log(_Features[elem].geotx);
+        var format = new ol.format.WKT();	
+        _haygeom='si';        
+        var _feat = format.readFeature(_Features[elem].geotx, {
+            dataProjection: 'EPSG:3857',
+            featureProjection: 'EPSG:3857'
+        });
+        
+        if(_idreg!=''){
+			_geom=_feat.getGeometry();
+			_gex=_geom.getExtent();
+			console.log(_gex);
+		}
+		
+        _feat.setId(_Features[elem].id_p_ref_capas_registros);
+
+        _feat.setProperties({
+            'id':_Features[elem].id
+        });
+        
+        
+        
+	    if(_datgeom.t1!=''){
+			_feat.set('name',_datgeom.t1);
+		}else{
+			_feat.set('name','s/n');
+		}
+		
+		_feat.set('estado',_datgeom.estado);
+	   	
+	   	
+        _c= hexToRgb(document.getElementById('inputcolorrelleno').value);
+        _n=(1 - (document.getElementById('inputtransparenciarellenoNumber').value) * 1.0 / 100);
+        _rgba='rgba('+_c.r+', '+_c.g+', '+_c.b+', '+_n+')';
+
+        _st= new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: _rgba
+
+          }),
+          stroke: new ol.style.Stroke({
+            color: document.getElementById('inputcolortrazo').value,
+            width: document.getElementById('inputanchotrazoNumber').value
+            
+          })
+        });
+        
+        //_feat.setStyle (_st);
+        //labelStyle.getText().setText('hola');	 
+        //console.log('o');
+        //labelStyle.getText().setText(feature.get('name'));	 
+        _feat.setStyle (labelStyle);
+        
+        
+		_feat.getStyle().getText().setText(_feat.get('name'));	 
+		console.log(_feat.get('estado'));
+		if(_feat.get('estado')==='0'){
+	   		_feat.getStyle().getFill().setColor("rgba(255,0,0,0.2)");	   		
+	   		_feat.getStyle().setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: "rgba(255,0,0,0.2)"}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   		
+	   	}else if(_feat.get('estado')==='1'){
+	   		_feat.getStyle().getFill().setColor("rgba(0,255,100,0.2)");
+	   		_feat.getStyle().setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: "rgba(0,255,100,0.2)"}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   		
+	   		
+	   	}else{
+	   		_feat.getStyle().getFill().setColor(_color);
+	   		_feat.getStyle().setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: _color}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   	}
+	   	
+	   	
+		_source_rele.addFeature(_feat);
+		//resetLabelStyle();
+       // _lyrElemSrc.addFeature(_feat);
+
+        _MapaCargado='si';
+    }
+	console.log(_haygeom);
+	if(_haygeom=='si'){
+		
+		
+		if(_idreg!=''){
+			_ext=_gex;
+		}else{
+			_ext= _lyrElemSrc.getExtent();	
+		}
+		setTimeout(function(){
+			mapa.getView().fit(_ext, { duration: 500 });
+		}, 50);
+		
+	}else{
+		_ext= _sMarco.getExtent();
+		setTimeout(function(){
+			mapa.getView().fit(_ext, { duration: 500 });
+		}, 50);
+	}
+}
+
+
+
+function reiniciarSimbologia(){
+	
+	
+   for(var elem in _Features){
+		console.log('elem:'+elem);
+		
+		_id_geom=_Features[elem].id_p_ref_capas_registros;
+		if(_DataGeom[_id_geom] == undefined){console.log('sin geom');continue;}
+		
+		_datgeom=_DataGeom[_id_geom];
+		_Features[elem]['geotx']=_datgeom.geotx;
+		if(_Features[elem].geotx==''){console.log('sin geotx');continue;}
+		
+		_feat=_source_rele.getFeatureById(_id_geom);
+		_feat.set('estado',_datgeom.n1);
+	   	
+        _c= hexToRgb(document.getElementById('inputcolorrelleno').value);
+        _n=(1 - (document.getElementById('inputtransparenciarellenoNumber').value) * 1.0 / 100);
+        _rgba='rgba('+_c.r+', '+_c.g+', '+_c.b+', '+_n+')';
+
+        _st= new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: _rgba
+
+          }),
+          stroke: new ol.style.Stroke({
+            color: document.getElementById('inputcolortrazo').value,
+            width: document.getElementById('inputanchotrazoNumber').value
+            
+          })
+        });
+        _feat.setStyle (labelStyle);
+        
+        
+		_feat.getStyle().getText().setText(_feat.get('name'));	 
+		console.log(_feat.get('estado'));
+		if(_feat.get('estado')==='0'){
+	   		_feat.getStyle().getFill().setColor("rgba(255,0,0,0.2)");	   		
+	   		_feat.getStyle().setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: "rgba(255,0,0,0.2)"}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   		
+	   	}else if(_feat.get('estado')==='1'){
+	   		_feat.getStyle().getFill().setColor("rgba(0,255,100,0.2)");
+	   		_feat.getStyle().setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: "rgba(0,255,100,0.2)"}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   		
+	   		
+	   	}else{
+	   		_feat.getStyle().getFill().setColor(_color);
+	   		_feat.getStyle().setImage(
+				new ol.style.Circle({
+					   fill: new ol.style.Fill({color: _color}),
+					   stroke: new ol.style.Stroke({color: _colorb,width: 0.8}),
+					   radius: 12,
+					   zIndex:1000,
+				})
+	   		);
+	   	}
+    }	
+}
+
+var _Mod ={};
+function activarModificarGeometria(){
+	
+	document.querySelector('#FormularioRegistro').setAttribute('editango_geom','si');
+	
+	_mapaEstado='dibujando';
+	_Mod = new ol.interaction.Modify({source: _source_rel_sel});
+	mapa.addInteraction(_Mod);	
+	mostrarVerticesSelecta();
+	
+	_source_rel_sel.on('change', function(evt){
+		//mapa.removeInteraction(_mod);
+		
+		
+		console.log('mapaestado'+_mapaEstado);
+		mostrarVerticesSelecta();
+		if(_mapaEstado!='dibujando'){return;}
+		if(_mapaEstado=='terminado'){_mapaEstado.estado='nuevaGeom';return;}
+		
+		
+		
+		if(_mapaEstado.estado=='error'){
+			_mapaEstado.estado='terminado';
+			_source_rel_sel.clear();
+			return;
+		}	
+		
+		_features=_source_rel_sel.getFeatures();
+		var _format = new ol.format.WKT();
+		_geometriatx=_format.writeGeometry(_features[0].getGeometry());
+		document.querySelector('#FormularioRegistro #nuevageometria').value=_geometriatx;
+		
+		_idgeom=document.querySelector('#FormularioRegistro [name="idgeom"]').value;
+		console.log('actualizando atributo de nuevageom.... con _idgeom: '+_idgeom);
+		document.querySelector('#FormularioRegistro #nuevageometria').setAttribute('idgeom',_idgeom);
+		/*
+		console.log('removiendo dibujante');
+		_nnelem++;		
+		
+		_mapaEstado='terminado';	
+		_clon=_features[0].clone();
+		
+		_source_rele.addFeature(_clon);
+		_clon.setId(_idgeom);
+		
+		_source_rel_sel.clear();
+		*/
+		//_mapaEstado='';	
+	});	
+		
+}
+
+
+
+function desactivarModificarGeometria(){
+	document.querySelector('#FormularioRegistro').setAttribute('editango_geom','no');
+	mapa.removeInteraction(_Mod);	
+	ocultarVerticesSelecta();
+	_mapaEstado='';
+	
+}

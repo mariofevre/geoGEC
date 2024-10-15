@@ -44,31 +44,35 @@ function editarCampa(){
 	
 	document.querySelector('#edicionCampa.formCargaCampaCuerpo [name="unidadanalisis"]').value=_DataRele.unidadanalisis;
 	
+	if(_DataRele.zz_carga_publica=='1'){
+		document.querySelector('#edicionCampa.formCargaCampaCuerpo #campaZz_carga_publica').checked=true;
+	}else{
+		document.querySelector('#edicionCampa.formCargaCampaCuerpo #campaZz_carga_publica').checked=false;
+	}
+	
 	_tipo='';
 	if(_DataCapa!=undefined){_tipo=_DataCapa.tipogeometria;}
 	
 	document.querySelector('#edicionCampa.formCargaCampaCuerpo [name="tipogeometria"]').value=_tipo;
-	
 	document.querySelector('#cuadrovalores #contenido').setAttribute('releeditando','si');
-	
-	
-	//document.querySelector('#carga.formCargaCampaCuerpo').style.display='block';
 }
 
 function cancelarEditarCampa(){
+	
+	_idCampa = '';	
+    actualizarUrl();// en app_rele_pagina.js
 	
 	document.querySelector('#cuadrovalores #contenido').setAttribute('releeditando','no');	
 	document.querySelector('#cuadrovalores #contenido').setAttribute('relecargado','no');	
 	document.querySelector('#cuadrovalores #contenido').setAttribute('geometriaeditando','no');	
 	document.querySelector('#cuadrovalores #contenido').setAttribute('camposeditando','no');	
-	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no');	
+	document.querySelector('#cuadrovalores #contenido').setAttribute('FormularioRegistro','no');	
 	document.querySelector('#cuadrovalores #contenido').setAttribute('nuevaUAhabilitado','no');					
 	cargarListadoCampa();	
 	_encuadrado='no';
 }
 
 function accionCreaEliminar(_this){
-    //console.log('eliminarCandidatoIndicador()');
 
     if(confirm("¿Confirma que quiere eliminar este candidato a versión? \n Si lo hace se guardará registro en la papelera de los datos cargados en el formulario.")){
         //console.log('o');
@@ -77,11 +81,17 @@ function accionCreaEliminar(_this){
 }
 
 
-function activacargarGeometrias(){
+
+function gestionarForms(_idform,_estado){
+	document.querySelector('#cuadrovalores #contenido').setAttribute(_idform,_estado);
 	
-	//document.querySelector('#cargarGeometrias').style.display='block';
 	
+	if(_idform=='#FormularioSubirPlanilla'){
+		document.querySelector('#FormularioSubirPlanilla #asignacampos').innerHTML='';	
+		
+	}
 }
+
 
 
 function accionCreaGuardar(){
@@ -321,60 +331,6 @@ function cambiarModoSoloLectura(readonly){
     document.getElementById('inputFechaHasta').setAttribute('disabled', readonly);
 }
 
-
-function cargarFeatures(){
-    _lyrElemSrc.clear();
-    _haygeom='no';
-    for(var elem in _Features){
-		if(_Features[elem].geotx!=''){continue;}
-        var format = new ol.format.WKT();	
-        _haygeom='si';        
-        var _feat = format.readFeature(_Features[elem].geotx, {
-            dataProjection: 'EPSG:3857',
-            featureProjection: 'EPSG:3857'
-        });
-
-        _feat.setId(_Features[elem].id);
-
-        _feat.setProperties({
-            'id':_Features[elem].id
-        });
-        _c= hexToRgb(document.getElementById('inputcolorrelleno').value);
-        _n=(1 - (document.getElementById('inputtransparenciarellenoNumber').value) * 1.0 / 100);
-        _rgba='rgba('+_c.r+', '+_c.g+', '+_c.b+', '+_n+')';
-
-        _st= new ol.style.Style({
-          fill: new ol.style.Fill({
-            color: _rgba
-
-          }),
-          stroke: new ol.style.Stroke({
-            color: document.getElementById('inputcolortrazo').value,
-            width: document.getElementById('inputanchotrazoNumber').value
-          })
-        });
-        _feat.setStyle (_st);
-		
-		
-        _lyrElemSrc.addFeature(_feat);
-
-        _MapaCargado='si';
-    }
-	console.log(_haygeom);
-	if(_haygeom=='si'){
-		_ext= _lyrElemSrc.getExtent();
-		setTimeout(function(){
-			mapa.getView().fit(_ext, { duration: 1000 });
-		}, 50);
-	}else{
-		_ext= _sMarco.getExtent();
-		setTimeout(function(){
-			mapa.getView().fit(_ext, { duration: 1000 });
-		}, 50);
-	}
-}
-
-
 function cargarRegistroHistorico(_id_reg_hist){
 	if(document.querySelector("#selectorarchivo [selecto='si']")!=null){
 		document.querySelector("#selectorarchivo [selecto='si']").setAttribute('selecto','no');
@@ -404,8 +360,13 @@ function cargarDefinicionRegistro(_registro){
 	
 	document.querySelector('#FormularioRegistro [name="id_registro"]').value=_registro.id;
 	
+	console.log(_registro);
+	document.querySelector('#FormularioRegistro #superficie span').innerHTML=_registro.area_sphe_ha;
+	
+	
 	document.querySelector('#FormularioRegistro #autoria #usu').innerHTML='';
 	document.querySelector('#FormularioRegistro #autoria #fecha').innerHTML='';
+	
 	_idusu= _registro.zz_auto_crea_usu;
 	if(_DataUsuaries.usu[_idusu]!=undefined){
 		_du=_DataUsuaries.usu[_idusu];
@@ -450,9 +411,54 @@ function cargarValoresRegistro(_campos){
 		document.querySelector('#campospersonalizados [name="'+_idcampo+'"]').value=_valor;
 		$('#campospersonalizados [name="'+_idcampo+'"]').trigger('change');//esto genera el efeco onchange que de otra forma no ocurre por cambiar dinamicametne el valor de un input.
 	}	
-	
-	
 }
+
+
+function cargaDeFoto(_nombre,_con,_idcampo,_iddoc,_ruta){
+	
+	_lista=document.querySelector('#listadoDocumentos[idcampo="'+_idcampo+'"]');
+	
+    _ppp=document.createElement('p');
+    _ppp.innerHTML='<span id="nombre">'+_nombre+'</span>';
+    _ppp.setAttribute('ncont',_con);
+    _ppp.setAttribute('class','carga');
+    _ppp.setAttribute('nombre',_nombre);
+    _ppp.setAttribute('iddoc',_iddoc);
+    _ppp.setAttribute('onclick','mostrarFoto('+_idcampo+','+_iddoc+')');
+    
+    _e=_nombre.split('.');
+    _ppp.setAttribute('extension',_e[(_e.length)-1]);
+    
+    
+    if(_ruta!=''){
+    	_img=document.createElement('img');
+    	_img.setAttribute('src',_ruta);
+    	_ppp.appendChild(_img);
+    }
+	
+	_lista.appendChild(_ppp);
+	
+}	
+
+function mostrarFoto(_idcampo,_iddoc){
+	
+	_jsondocs=_DataRegistro.campos[_idcampo].data_documento
+	_docs=$.parseJSON(_jsondocs);
+	_doc=_docs[_iddoc];
+	
+	document.querySelector('#muestradocumento').setAttribute('estado','activo');
+	document.querySelector('#muestradocumento #contenido img').setAttribute('src',_doc.ruta);
+	document.querySelector('#muestradocumento #b_descarga').setAttribute('download',_doc.nombre);
+	document.querySelector('#muestradocumento #b_descarga').setAttribute('href',_doc.ruta)
+}
+
+function cerrarMostrarFoto(){
+	document.querySelector('#muestradocumento').setAttribute('estado','inactivo');
+	document.querySelector('#muestradocumento #contenido img').setAttribute('src','');
+	document.querySelector('#muestradocumento #b_descarga').setAttribute('download','');
+	document.querySelector('#muestradocumento #b_descarga').setAttribute('href','')
+}
+
 
 function limpiarCampos(){
 	
@@ -533,6 +539,18 @@ function cargarCamposFormulario(){
 	for(_sn in _sels){
 		if(typeof _sels[_sn] != 'object'){continue;}
 		_sels[_sn].innerHTML='<option value="">- elegir -</option>';
+	}
+		
+		
+	//crear opción de selección en el formulario de exportación a CAPA
+	_sels=document.querySelectorAll('#divReleACapa #campos select');
+	_sels.innerHTML='';
+	for(_sn in _sels){
+		if(typeof _sels[_sn] != 'object'){continue;}
+		_op=document.createElement('option');
+		_op.setAttribute('value','nomUA');
+		_op.innerHTML='nombre UA';
+		_sels[_sn].appendChild(_op);
 	}
 		
 	for(_cn in _DataRele.camposOrden){
@@ -2032,8 +2050,6 @@ function cargarFormularioValoresMultiple(_res){
 
 
 
-
-
 function limpiarValorIndicador(){
     document.getElementById('indCargaTexto1Dato').value = null;
     document.getElementById('indCargaTexto2Dato').value = null;
@@ -2075,21 +2091,36 @@ function seleccionarGeomDefault(_res){
 
 function accionGeomSeleccionada(_idgeom){
     //document.getElementById('divPeriodoSeleccionado').setAttribute('idgeom', idgeom);
-   
+	//console.log(_idgeom);
    	if(_DataGeom[_idgeom]==undefined){alert('faltan los datos de esa geometría, por favor reingrese aeste mapa');return;}
-   	   
-   	//document.querySelector('#divCargaCampa .accionesCampa').style.display='none';
-   	
-   	
-   	
-   	
-    //document.querySelector('#FormularioRegistro').style.display='block';
-    document.querySelector('#FormularioRegistro [name="idgeom"]').value=_idgeom;
-    //document.querySelector('#FormularioRegistro #sect1').style.display="block";
-    
+
+	reiniciarSimbologia();
+	generarFeatureSelecta(_idgeom);
+	
+    document.querySelector('#FormularioRegistro [name="idgeom"]').value=_idgeom;    
     document.querySelector('#FormularioRegistro [name="t1"]').value=_DataGeom[_idgeom].t1;
     
     
+    _ft=_source_rele.getFeatureById(_idgeom);
+    if(_ft==null){
+		console.log('¡No se encontró el feature con id:'+_idgeom);
+	}else{
+				
+		_geom=_ft.getGeometry();    
+		if(	//es un punto
+			_geom.extent_[2]-_geom.extent_[0]<0.5
+			&&
+			_geom.extent_[3]-_geom.extent_[1]<0.5
+		){
+			_view.setCenter(_geom.extent_);
+			_view.setZoom(17);
+		}else{
+			// es más grande que un punto
+			_view.fit(_ft.getGeometry(),{padding:[20,20,20,20],duration:1000});	
+		}
+		
+    
+	}
     
     _val=_DataGeom[_idgeom].n1;
     if(_DataGeom[_idgeom].n1==null){
@@ -2098,12 +2129,14 @@ function accionGeomSeleccionada(_idgeom){
     document.querySelector('#FormularioRegistro [name="n1"]').value=_val;
     $('#FormularioRegistro [name="n1"]').trigger('change');
     
-    
     document.querySelector('#FormularioRegistro #autoria #usu').innerHTML='';
 	document.querySelector('#FormularioRegistro #autoria #fecha').innerHTML=''; 
+	
+	//reiniciarSimbologia();
 		    
     consultarRegistroGeom(_idgeom);
     //alert(_DataGeom[_idgeom].t1);
+    
     
      	
 }
@@ -2238,7 +2271,7 @@ function toogleCheck(_this){
 
 function editarCampos(){
 	document.querySelector('#cuadrovalores #contenido').setAttribute('camposeditando','si');
-	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no');
+	document.querySelector('#cuadrovalores #contenido').setAttribute('FormularioRegistro','no');
 	
 	document.querySelector('#cuadrovalores #contenido #campos #listadecampos').innerHTML='';
 	for(_nc in _DataRele.camposOrden){
@@ -2300,9 +2333,129 @@ function editarCampos(){
 		}else{
 			_clon.querySelector('input[name="matriz"]').value="0";
 			_clon.querySelector('input[para="matriz"]').checked=false;
-			
 		}
-		
-	}
-		
+	}	
 }
+
+
+
+function cambioModo(){ // del #FormularioSubirPlanilla 
+	_val = document.querySelector("#FormularioSubirPlanilla #modo [name='modo_importacion']").value;
+	document.querySelector("#FormularioSubirPlanilla #modo").setAttribute('modo_selecto',_val);				
+	
+	
+	if(_val=='geo_capa'){
+		_sel=document.querySelector("#FormularioSubirPlanilla [name='capa_fuente']");
+		_sel.innerHTML='<option value="-1">- elegir capa -</option>';
+		for(_idcapa in _Listado_Capas){			
+			_op=document.createElement('option');
+			_op.innerHTML=_Listado_Capas[_idcapa].nombre;
+			_op.value=_idcapa;
+			_op.title=_Listado_Capas[_idcapa].nombre+"\n"+_Listado_Capas[_idcapa].descripcion;
+			_sel.appendChild(_op);	
+		}
+	}
+	
+
+}
+
+function cambioImportarCapaGeom(){ // del #FormularioSubirPlanilla 
+	_val = document.querySelector("#FormularioSubirPlanilla #modo [name='capa_fuente']").value;
+	document.querySelector("#FormularioSubirPlanilla #modo").setAttribute('capa_selecta',_val);				
+	
+	_dat_capa=_Listado_Capas[_val];
+	
+	
+	_sel=document.querySelector("#FormularioSubirPlanilla [name='campo_link_en_capa']");
+	_sel.innerHTML='<option value="-1">- elegir campo -</option>';
+	
+	
+	_cps=Array(
+		'nom_col_text1',
+		'nom_col_text2',
+		'nom_col_text3',
+		'nom_col_text4',
+		'nom_col_text5',
+		'nom_col_num1',
+		'nom_col_num2',
+		'nom_col_num3',
+		'nom_col_num4',
+		'nom_col_num5'
+	);
+	
+	for(_cpn in _cps){
+		_campo=_cps[_cpn];
+		if(_dat_capa[_campo]==""){continue;}
+		_ref_cpo=_campo.slice(4);
+		_ref_cpo=_ref_cpo.replace('col_num','numero');
+		_ref_cpo=_ref_cpo.replace('col_text','texto');
+		_op=document.createElement('option');
+		_op.innerHTML=_dat_capa[_campo];
+		_op.value=_ref_cpo;
+		_sel.appendChild(_op);	
+	}
+	
+}
+
+function cambiaModoCampos(){ // del #FormularioSubirPlanilla 
+	
+	_chck = document.querySelector("#FormularioSubirPlanilla #modo [name='check_crear_campos']").checked;
+	
+	if(_chck){
+		document.querySelector("#FormularioSubirPlanilla").setAttribute('crearcampos','si');
+	}else{
+		document.querySelector("#FormularioSubirPlanilla").setAttribute('crearcampos','no');
+	}
+	
+}
+
+function actualizarUrl(){
+	
+	_center=_view.getCenter();
+	_z=_view.getZoom();
+	_url = new URL(window.location);
+	_url.searchParams.set('idr', _idCampa);
+
+	window.history.pushState(null, '', _url.toString());
+
+	
+}
+
+
+function mostrarListadoUA_total(){
+	_li=document.querySelector('#listadoUA_total #listadito');	
+	_li.innerHTML='';
+	
+	//creamos indice/orden
+	for(_on in _FeaturesOrden){
+		_fn=_FeaturesOrden[_on];
+		_f=document.createElement('a');
+		_f.setAttribute('idgeom',_Features[_fn].id_p_ref_capas_registros);
+		_f.setAttribute('onclick','accionGeomSeleccionada(this.getAttribute("idgeom"))');
+		_f.innerHTML=_Features[_fn].col_texto1_dato;
+		_li.appendChild(_f);
+	}
+
+}
+
+function mostrarListadoUA_reg(_idreg){	
+	_li=document.querySelector('#listadoUA_total #listadito');	
+	_f=_li.querySelector('#listadoUA_total #listadito [idgeom="'+_idgeom+'"]');	
+	if(_f==null){
+		_f=document.createElement('a');
+		_li.appendChild(_f);		
+		_f.setAttribute('idgeom',_Features[_idreg].id_p_ref_capas_registros);
+		_f.setAttribute('onclick','accionGeomSeleccionada(this.getAttribute("idgeom"))');
+	}
+	_f.innerHTML=_Features[_idreg].col_texto1_dato;		
+}
+
+
+function activabotones(_iddiv){
+	_act=document.querySelector('#'+_iddiv).getAttribute('activo');
+	_act=parseInt(_act);
+	_act=_act*-1;
+	document.querySelector('#'+_iddiv).setAttribute('activo',_act);
+}
+
+

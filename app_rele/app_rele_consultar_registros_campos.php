@@ -69,19 +69,30 @@ if(!isset($_POST['idregistrocapa'])){
 
 
 
-$query="SELECT  *
+$query="SELECT  
+
+		r.*,
+		ROUND(ST_Area(g.geom)/100)/100 as area_ha,
+		ROUND(ST_Area(ST_Transform(g.geom,4326),true)/100)/100 as area_sphe_ha
     FROM    
-    	geogec.ref_rele_registros
+    
+			geogec.ref_rele_registros as r
+    	
+    	LEFT JOIN
+    	
+			geogec.ref_capasgeo_registros as g
+			ON g.id = r.id_p_ref_capas_registros
+    	
     WHERE 
-            zz_borrado = '0'
+            r.zz_borrado = '0'
     AND
-            zz_superado = '0'
+            r.zz_superado = '0'
     AND
-            id_p_ref_rele_campa = '".$_POST['idcampa']."'
+            r.id_p_ref_rele_campa = '".$_POST['idcampa']."'
     AND
-    		id_p_ref_capas_registros='".$_POST['idregistrocapa']."'
+    		r.id_p_ref_capas_registros='".$_POST['idregistrocapa']."'
  	ORDER BY 
-			zz_archivada_fecha ASC   
+			r.zz_archivada_fecha ASC   
  ";
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){

@@ -89,7 +89,7 @@ $query="SELECT
         WHERE 
             zz_borrada = '0'
         AND
-    		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+    		ref_rele_campa.ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
  ";
 
 $Consulta = pg_query($ConecSIG, $query);
@@ -102,15 +102,50 @@ if(pg_errormessage($ConecSIG)!=''){
 }
 
 if (pg_num_rows($Consulta) <= 0){
-    $Log['tx'][]= "No se encontraron indicadores existentes.";
+    $Log['tx'][]= "No se encontraron relevamientos existentes.";
     $Log['tx'][]= "Query: ".$query;
     $Log['data']=null;
 } else {
     $Log['tx'][]= "Consulta de indicadores existentes";
     while ($fila=pg_fetch_assoc($Consulta)){	
-	$Log['data'][$fila['id']]=$fila;
+		$Log['data'][$fila['id']]=$fila;
+		$Log['data'][$fila['id']]['campos']=array();
     }
 }
+
+
+$query="
+	SELECT 
+		id, id_p_ref_rele_campa, nombre, ayuda, inputattributes, opciones, unidaddemedida, tipo, ic_p_est_02_marcoacademico, orden, zz_borrada
+	FROM 
+		geogec.ref_rele_campos
+	
+	WHERE 
+            zz_borrada = '0'
+        AND
+    		ic_p_est_02_marcoacademico = '".$_POST['codMarco']."'
+ ";
+
+$Consulta = pg_query($ConecSIG, $query);
+if(pg_errormessage($ConecSIG)!=''){
+    $Log['tx'][]='error: '.pg_errormessage($ConecSIG);
+    $Log['tx'][]='query: '.$query;
+    $Log['mg'][]='error interno';
+    $Log['res']='err';
+    terminar($Log);	
+}
+
+while ($fila=pg_fetch_assoc($Consulta)){	
+	if(!isset($Log['data'][$fila['id_p_ref_rele_campa']])){
+		continue;
+    }
+	$Log['data'][$fila['id_p_ref_rele_campa']]['campos'][$fila['id']]=$fila;
+}
+
+
+
+
+
 
 $Log['res']="exito";
 terminar($Log);

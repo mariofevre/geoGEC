@@ -159,21 +159,50 @@ while ($fila=pg_fetch_assoc($Consulta)){
 	
 	foreach($_POST['fuentes'] as $f){
 		
-		if($campos[$f['fue']]['tipo']=='texto' || $campos[$f['fue']]['tipo']=='fecha'){
+		if($f['fue']='nombreUA'){
+			
+			$Log['tx'][]='nombre de UA como campo';
+			$arr_input=array();
+			
+			
+				//el checbox con valor si se exporta ocmo numérico de valor 1
+				$countt++;
+				
+				$instertcampo.='nom_col_text'.$countt.', ';
+				$insertval.="'".$f['nom']."', ";
+				$insertregcampos.='texto'.$countt.', ';
+				
+				
+				$COLS.="
+				datotexto".$countt.".dato as datotexto".$countt.",";	
+				$JOINS.="
+				
+					LEFT JOIN
+						(SELECT id, texto1 as dato FROM geogec.ref_capasgeo_registros WHERE zz_borrada='0' )
+						as datotexto".$countt." 
+						ON datotexto".$countt.".id = ref_rele_registros.id_p_ref_capas_registros
+       	
+    	
+				";
+			
+				$Log['tx'][]=$COLS;
+				$Log['tx'][]=$JOINS;
+			
+			
+		}elseif($campos[$f['fue']]['tipo']=='texto' || $campos[$f['fue']]['tipo']=='fecha'){
 			
 			$Log['tx'][]=$campos[$f['fue']]['inputattributes'];
 			$arr_input=json_decode($campos[$f['fue']]['inputattributes'], true);
 			
 			$Log['tx'][]=$arr_input;;
 			if($arr_input['type']=='checkbox'){			
-				//el checbox con valor si se exporta ocmo numérico de valor 1
+				//el checkbox con valor si se exporta ocmo numérico de valor 1
 				$countn++;
 				
 				$instertcampo.='nom_col_num'.$countn.', ';
 				$insertval.="'".$f['nom']."', ";
 				$insertregcampos.='numero'.$countn.', ';
 				
-			
 				$COLS.="
 				datotexto".$countt.".dato as datotexto".$countt.",";	
 				$JOINS.="
@@ -201,7 +230,6 @@ while ($fila=pg_fetch_assoc($Consulta)){
 				$instertcampo.='nom_col_text'.$countt.', ';
 				$insertval.="'".$f['nom']."', ";
 				$insertregcampos.='texto'.$countt.', ';
-				
 				
 				$COLS.="
 				datotexto".$countt.".dato as datotexto".$countt.",";	

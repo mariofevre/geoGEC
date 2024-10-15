@@ -29,18 +29,35 @@
 
 	
 function consultarPermisos(){
+	
+	
 	_parametros = {
 		'codMarco':_CodMarco,	
 		'accion':'app_rele'
 	}
+	
+    _cn = consultasPHP_nueva('./sistema/sis_consulta_permisos.php');
 	$.ajax({
         url:   './sistema/sis_consulta_permisos.php',
         type:  'post',
         data: _parametros,
-        error:  function (response){alert('error al consultar el servidor');},
-        success:  function (response){
-            var _res = $.parseJSON(response);
-            for(_nm in _res.mg){alert(_res.mg[_nm]);}
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+            
             if(_res.res!='exito'){
             	alert('error al consultar la base de datos');
             }
@@ -48,26 +65,6 @@ function consultarPermisos(){
  	});	
 }
 
-function consultarUsuaries(){
-	_parametros = {
-		'codMarco':_CodMarco,	
-		'accion':'app_rele'
-	}
-	$.ajax({
-        url:   './usuarios/acc_consulta_compas.php',
-        type:  'post',
-        data: _parametros,
-        error:  function (response){alert('error al consultar el servidor');},
-        success:  function (response){
-            var _res = $.parseJSON(response);
-            for(_nm in _res.mg){alert(_res.mg[_nm]);}
-            if(_res.res!='exito'){
-            	alert('error al consultar la base de datos');
-            }
-            _DataUsuaries=_res.data;
-        }
- 	});	
-}
 
 
 
@@ -84,20 +81,35 @@ function cargarListadoCampa(){
         'idMarco': idMarco
     };
     
+    _cn = consultasPHP_nueva('./app_rele/app_rele_consultar_listado.php');
     $.ajax({
             url:   './app_rele/app_rele_consultar_listado.php',
             type:  'post',
             data: parametros,
-            success:  function (response)
-            {   
-                _res = $.parseJSON(response);
-                //console.log(_res);
-                if(_res.res=='exito'){
-                    cargarListadoCampas(_res);
-                }else{
-                    alert('error asf0jg434ff0gh');
-                }
-            }
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+            
+			if(_res.res=='exito'){
+				cargarListadoCampas(_res);
+				if(_idCampa > 0){
+					cargarDatosCampa(_idCampa);
+				}
+			}
+        }
     });
 }
 
@@ -111,18 +123,30 @@ function generarNuevaCampa(){
         'idMarco': idMarco
     };
     
+    _cn = consultasPHP_nueva('./app_rele/app_rele_ed_guardar_relevamiento.php');
     $.ajax({
         url:   './app_rele/app_rele_ed_guardar_relevamiento.php',
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+            
             if(_res.res=='exito'){
             	cargarDatosCampa(_res.data.nid)
-            }else{
-                alert('error asf0jg3444ffgh');
             }
         }
     });
@@ -131,29 +155,50 @@ function generarNuevaCampa(){
 function guardarCampa(){
     var idMarco = getParameterByName('id');
     var codMarco = getParameterByName('cod');
-    
+
+	if(document.querySelector('.formCargaCampaCuerpo #campaZz_carga_publica').checked==true){
+		_cp=1;
+	}else{
+		_cp=0;
+	}
+	
+	
     var parametros = {
     	'idRele':_DataRele.id,
     	'descripcion':document.querySelector('.formCargaCampaCuerpo #campaDescripcion').value,
     	'nombre':document.querySelector('.formCargaCampaCuerpo #campaNombre').value,
+    	'zz_carga_publica':_cp,
         'codMarco': codMarco,
         'idMarco': idMarco,
         'tipogeometria':document.querySelector('.formCargaCampaCuerpo [name="tipogeometria"]').value,
         'unidadanalisis':document.querySelector('.formCargaCampaCuerpo [name="unidadanalisis"]').value
     };
     
+    _cn = consultasPHP_nueva('./app_rele/app_rele_ed_guardar_relevamiento.php');
     $.ajax({
         url:   './app_rele/app_rele_ed_guardar_relevamiento.php',
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
             //console.log(_res);
+            
             if(_res.res=='exito'){
             	cargarDatosCampa(_res.data.id)
-            }else{
-                alert('error asf0jg3444ffgh');
             }
         }
     });
@@ -174,16 +219,29 @@ function eliminarCampa(){
         'idMarco': getParameterByName('id')
     };
     
+    _cn = consultasPHP_nueva( './app_rele/app_rele_ed_borrar_relevamiento.php');
     $.ajax({
         url:   './app_rele/app_rele_ed_borrar_relevamiento.php',
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
             
-            if(_res.res!='exito'){alert('error al procesar el pedido');return;}
+            if(_res.res!='exito'){return;}
             document.querySelector('#contenido').setAttribute('relecargado','no');
             document.querySelector('#divReleACapa').setAttribute('idcampa', '');            
             
@@ -207,16 +265,29 @@ function eliminarCampo(_this){
         'idcampo':_this.parentNode.parentNode.getAttribute('idcampo')
     };
     
+    _cn = consultasPHP_nueva('./app_rele/app_rele_ed_borrar_campo.php');
     $.ajax({
         url:   './app_rele/app_rele_ed_borrar_campo.php',
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
             
-            if(_res.res!='exito'){alert('error al procesar el pedido');return;}
+            if(_res.res!='exito'){return;}
 			_form=document.querySelector('#listadecampos #editacampo[idcampo="'+_res.data.idcampo+'"]'),
 			_form.parentNode.removeChild(_form);
             
@@ -229,6 +300,8 @@ function eliminarCampo(_this){
 function cargarDatosCampa(_idcampa){
     var idMarco = getParameterByName('id');
     var codMarco = getParameterByName('cod');
+    _idCampa = _idcampa;
+    actualizarUrl();
   
     var parametros = {
         'codMarco': codMarco,
@@ -236,17 +309,32 @@ function cargarDatosCampa(_idcampa){
         'idcampa': _idcampa
     };
     
+    _cn = consultasPHP_nueva('./app_rele/app_rele_consultar.php');
     $.ajax({
         url:   './app_rele/app_rele_consultar.php',
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            _res = $.parseJSON(response);
-            if(_res.res!='exito'){alert('error asf0jg44f9ytfgh');return;}
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+            
+            if(_res.res!='exito'){return;}
             
             _DataRele=_res.data;
-            
+            resetLabelStyle();
 
             cargarCamposFormulario();
             cargarRegistrosCampa(_res.data.id);
@@ -266,7 +354,7 @@ function cargarDatosCampa(_idcampa){
 				document.querySelector('#cuadrovalores #contenido').setAttribute('releeditando','no');
 				document.querySelector('#cuadrovalores #contenido').setAttribute('geometriaeditando','no');
 				//document.querySelector('#cuadrovalores #contenido').setAttribute('camposeditando','no');
-				document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no');					
+				document.querySelector('#cuadrovalores #contenido').setAttribute('FormularioRegistro','no');					
 				
 				if(_DataRele.tipogeometria!=null){
 					document.querySelector('#cuadrovalores #contenido').setAttribute('nuevaUAhabilitado','si');					
@@ -293,21 +381,32 @@ function consultarCampaDefinicion(idcampa){
         'id': idcampa
     };
     
+    _cn = consultasPHP_nueva( './app_rele/app_rele_consultar.php');
     $.ajax({
         url:   './app_rele/app_rele_consultar.php',
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
-            if(_res.res!='exito'){
-            	alert('error asf0jg44f9ytfgh');
-            	return;
-            }
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+            if(_res.res!='exito'){return;}
             
             if (_res.data != null){
             	_DataRele=_res.data;
+            	resetLabelStyle();// en app_rele_mapa.js
                 //TODO
                 cargarUnidadesdeAnalisis(_res.data.id);   
             }   
@@ -316,30 +415,52 @@ function consultarCampaDefinicion(idcampa){
 }
 
 
-function cargarRegistrosCampa(_idcampa){
+function cargarRegistrosCampa(_idcampa,_idgeom){
     var _CodMarco = getParameterByName('cod');
     _parametros = {
             'codMarco':_CodMarco,
             'idcampa': _idcampa,
+            'idgeom': _idgeom,
             'zz_superado':'0'
     };
+    _url='./app_rele/app_rele_consultar_registros.php';
+    _cn = consultasPHP_nueva(_url);
     $.ajax({
-        url:   './app_rele/app_rele_consultar_registros.php',
+        url:   _url,
         type:  'post',
         data: _parametros,
-        success:  function (response){
-            var _res = $.parseJSON(response);
-            for(var _nm in _res.mg){
-				alert(_res.mg[_nm]);
-			}
+        beforeSend: function(request, settings) { 
+			request._data = {'cn':_cn};
+		},
+        error:  function (request, status, errorThrown){	
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            //console.log(_res);
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
 			
 			//document.querySelector('#divCargaCampa').style.display='block';
 			//document.querySelector('#divCargaCampa .accionesCampa').style.display='none';
-			_Features=_res.data;
+			if(_res.res != 'exito'){return;}
+			//console.log(_res.data.idreg);
 			
-            if(_res.res == 'exito'){
+			if(_res.data.idreg==undefined){
+				_Features=_res.data.registros;
+				_FeaturesOrden=_res.data.registrosOrden;
+				mostrarListadoUA_total();
             	cargarFeatures();
-            }
+			}else{			
+				_Features[_res.data.idreg]=_res.data.registros[_res.data.idreg];
+				_FeaturesOrden.push(_res.data.idreg);
+				mostrarListadoUA_reg(_res.data.idreg);
+				console.log('consulta uno solo');
+            	cargarFeatures(_res.data.idreg);
+			}
+		
         }
     });
 }
@@ -369,15 +490,27 @@ function archivarRegistro(_val){
 		'fecha_archivo':_val_fecha,
 		'zz_archivada':_val
     };
+    _cn = consultasPHP_nueva('./app_rele/app_rele_archivar_registro.php');
     $.ajax({
         url:   './app_rele/app_rele_archivar_registro.php',
         type:  'post',
         data: _parametros,
-        success:  function (response){
-            var _res = $.parseJSON(response);
-            for(var _nm in _res.mg){
-				alert(_res.mg[_nm]);
-			}
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
 			
 			consultarRegistroGeom(_res.data.id_p_ref_capas_registros);
 			
@@ -388,41 +521,39 @@ function archivarRegistro(_val){
 	
 	
 function consultarRegistroGeom(_idregcapa){
-	var _CodMarco = getParameterByName('cod');
 	
-	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no'); 
+	document.querySelector('#cuadrovalores #contenido').setAttribute('FormularioRegistro','no'); 
 	
     _parametros = {
             'codMarco':_CodMarco,
             'idcampa': _DataRele.id,
             'idregistrocapa':_idregcapa
     };
+    _url ='./app_rele/app_rele_consultar_registros_campos.php';
+    _cn = consultasPHP_nueva(_url);
     $.ajax({
-        url:   './app_rele/app_rele_consultar_registros_campos.php',
+        url:   _url,
         type:  'post',
         data: _parametros,
-        success:  function (response){
-        	try {
-		        JSON.parse(response);
-		    }catch(_err){
-		        console.log(_err);
-		        alert('el servidor entregó un texto de formato inesperado');
-		        document.querySelector('body').innerHTML+=response;
-		        return;
-		    }
-            var _res = $.parseJSON(response);
-            for(var _nm in _res.mg){
-				alert(_res.mg[_nm]);
-			}
-			if(_res.res!='exito'){
-				alert('error al intentar consultar la UA');
-			}
+        beforeSend: function(request, settings) { 
+			request._data = {'cn':_cn};
+		},
+        error:  function (request, status, errorThrown){	
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+		},
+		success:  function (response, status, request){
+			_res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+			if(_res.res!='exito'){return;}
+			
 			document.querySelector("#FormularioRegistro").setAttribute('modo','actual');
 			
 			document.querySelector('#selectorarchivo [id_reg_hist="actual"]').setAttribute('selecto','si');
 			
 			_DataRegistro=_res.data;
-			document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','si');
+			document.querySelector('#cuadrovalores #contenido').setAttribute('FormularioRegistro','si');
 			
 			if(_res.data==null){
 				cargarCamposFormulario();//limpia el formulario
@@ -452,7 +583,7 @@ function consultarRegistroGeom(_idregcapa){
 				_elim.setAttribute('onclick','event.stopPropagation();eliminarArchivado(this.parentNode.getAttribute("id_reg_hist"))');
 
 			}
-			console.log(_res.data.registro.id);
+			//console.log(_res.data.registro.id);
 			cargarDefinicionRegistro(_res.data.registro);
 			
 			cargarValoresRegistro(_res.data.campos);
@@ -467,56 +598,45 @@ function consultarRegistroGeom(_idregcapa){
 
 function eliminarArchivado(_id_reg_hist){
 	
-	document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','no'); 
+	document.querySelector('#cuadrovalores #contenido').setAttribute('FormularioRegistro','no'); 
 	
     _parametros = {
 		'codMarco':_CodMarco,
 		'idcampa': _DataRele.id,
 		'id_registro_rele':_id_reg_hist
     };
+    _cn = consultasPHP_nueva('./app_rele/app_rele_borrar_registro_historico.php');
     $.ajax({
         url:   './app_rele/app_rele_borrar_registro_historico.php',
         type:  'post',
-        data: _parametros
-    })
-	.done(function (_data, _textStatus, _jqXHR){
-		_res = preprocesarRespuestaAjax(_data, _textStatus, _jqXHR);
-		if(_res===false){return;}
-		
-		_div=document.querySelector('#selectorarchivo .historico[id_reg_hist="'+_res.data.id_registro_rele+'"]');
-		_div.parentNode.removeChild(_div);
-		
-		cargarRegistroHistorico('actual');
+        data: _parametros,
+        beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+        error:  function (request, status, errorThrown){	
 
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+            _cn = request._data.cn;			
+            consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+        
+			if(_res.res!='exito'){return;}
+			
+			_div=document.querySelector('#selectorarchivo .historico[id_reg_hist="'+_res.data.id_registro_rele+'"]');
+			_div.parentNode.removeChild(_div);
+			
+			cargarRegistroHistorico('actual');
+		}
 	});	    
 
 }
-
-
-function cargaDeFoto(_nombre,_con,_idcampo,_iddoc,_ruta){
-	
-	_lista=document.querySelector('#listadoDocumentos[idcampo="'+_idcampo+'"]');
-	
-    _ppp=document.createElement('p');
-    _ppp.innerHTML='<span id="nombre">'+_nombre+'</span>';
-    _ppp.setAttribute('ncont',_con);
-    _ppp.setAttribute('class','carga');
-    _ppp.setAttribute('nombre',_nombre);
-    _ppp.setAttribute('iddoc','');
-    
-    _e=_nombre.split('.');
-    _ppp.setAttribute('extension',_e[(_e.length)-1]);
-    
-    
-    if(_ruta!=''){
-    	_img=document.createElement('img');
-    	_img.setAttribute('src',_ruta);
-    	_ppp.appendChild(_img);
-    }
-	
-	_lista.appendChild(_ppp);
-	
-}	
 
 
 
@@ -532,41 +652,47 @@ function cargarUnidadesdeAnalisis(_id_campa){
 		'RecorteDeTrabajo' : _RecorteDeTrabajo
     };
     
+    _url='./app_rele/app_rele_consultar_geom.php';
+    _cn = consultasPHP_nueva(_url);
     $.ajax({
-            url:   './app_rele/app_rele_consultar_geom.php',
+            url:   _url,
             type:  'post',
             data: parametros,
-            success:  function (response)
-            {   
-                var _res = $.parseJSON(response);
-                //console.log(_res);
-                
+			beforeSend: function(request, settings) { 
+				
+				request._data = {'cn':_cn};
+			  
+			},
+			error:  function (request, status, errorThrown){	
+
+				_cn = request._data.cn;
+				consultasPHP_respuesta("err",_cn);		
+				
+			},
+			success:  function (response, status, request){
+				
+				var _res = $.parseJSON(response);            
+				_cn = request._data.cn;			
+				consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+				if(_res.res!='exito'){return;}
+
                 _DataCapa=_res.data.capa;
                 _DataGeom=_res.data.geom;
-                
-               	for(var _nm in _res.mg){
-	                alert(_res.mg[_nm]);
-	            }
+                _DataGeomOrden=_res.data.geomOrden;
+
 	            
 	            for(var _na in _res.acc){
 	                procesarAcc(_res.acc[_na]);
 	            }
 	            
-	            
-                if(_res.res=='exito'){
-                	
-                    dibujarReleMapa(_res);
-                    
-                    
-                    cargarFormularioNuevasGeometrias(_res);
-                    
-                    
-                }else{
-                    alert('error asf0jg44f8f0gh');
-                }
+				dibujarReleMapa();			
+				
+				cargarFormularioNuevasGeometrias(_res);
+				
             }
     });
 }
+
 
 
            
@@ -601,21 +727,37 @@ function borrarGeometrias(_modo,_idgeom){
     if(_modo=='registro'){
 		 parametros['idgeom'] = _idgeom
 	}
-    
+
+	_url='./app_rele/app_rele_borrar_geom.php';
+    _cn = consultasPHP_nueva(_url);
     $.ajax({
-        url:   './app_rele/app_rele_borrar_geom.php',
+        url:   _url,
         type:  'post',
         data: parametros,
-        success:  function (response){   
-            var _res = $.parseJSON(response);
-           	for(var _nm in _res.mg){alert(_res.mg[_nm]);}            
-            for(var _na in _res.acc){procesarAcc(_res.acc[_na]);}
-            if(_res.res!='exito'){alert('error al procesar la base de datos');return;}
-            
-            cargarUnidadesdeAnalisis(_DataRele.id);                
-        }
-    });
-	
+		beforeSend: function(request, settings) { 
+			request._data = {'cn':_cn};
+		},
+		error:  function (request, status, errorThrown){	
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+			if(_res.res!='exito'){return;}
+			
+					 
+			for(var _na in _res.acc){procesarAcc(_res.acc[_na]);}
+	   
+			_a=document.querySelector('#listadoUA_total #listadito [idgeom="'+_res.data.idgeom+'"]');
+			_a.parentNode.removeChild(_a);
+			
+			cargarUnidadesdeAnalisis(_DataRele.id);                
+		
+		}
+	});
 }
 
 function enviarDatosRegistro(_archivar){
@@ -625,8 +767,8 @@ function enviarDatosRegistro(_archivar){
 		//return;
 	}
 	_idgeom=document.querySelector('#FormularioRegistro [name="idgeom"]').value;	
-	_t1=document.querySelector('#FormularioRegistro [name="t1"]').value;
-	_n1=document.querySelector('#FormularioRegistro [name="n1"]').value;
+	_t1=document.querySelector('#FormularioRegistro [name="t1"]').value; //nombre UA
+	_n1=document.querySelector('#FormularioRegistro [name="n1"]').value; //estado de carga completo
 	
 	_id_registro=document.querySelector('#FormularioRegistro [name="id_registro"]').value;
 	
@@ -650,14 +792,25 @@ function enviarDatosRegistro(_archivar){
 
 	_ta=document.querySelectorAll('#FormularioRegistro #campospersonalizados select');
 	for(_tan in _ta){
-		console.log(_ta[_tan]);
+		//console.log(_ta[_tan]);
 		if(typeof _ta[_tan] != 'object'){continue;}
-		console.log(_ta[_tan].value);
+		//console.log(_ta[_tan].value);
 		_name=_ta[_tan].getAttribute('name');
 		if(_name==null){continue;}
 		_personalizados[_name]=_ta[_tan].value;
 	}
-		
+	
+	//_Features[_id_registro]['geotx']='';
+	
+	_DataGeom[_idgeom]['t1']=_t1;
+	_DataGeom[_idgeom]['estado']=_n1;
+	
+	
+	document.querySelector('#FormularioRegistro .switch input').checked=false;
+	document.querySelector('#FormularioRegistro .switch input').onchange();
+	
+	
+		//cada vez que se gurada un registro de la tabla ref_rele_registros, reemplaza un registro anterior sin sobreescribirlo. nueva id
 	var parametros = {
         'codMarco': _CodMarco,
         'idMarco': '',
@@ -669,33 +822,47 @@ function enviarDatosRegistro(_archivar){
         'personalizados':_personalizados,
 		'archivar':_archivar
     };
-    
+
+    _url='./app_rele/app_rele_cargar_registro.php';
+    _cn = consultasPHP_nueva(_url);
     $.ajax({
-        url:   './app_rele/app_rele_cargar_registro.php',
+        url:   _url,
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
-            
-           	for(var _nm in _res.mg){
-                alert(_res.mg[_nm]);
-            }
-            
-            
+		beforeSend: function(request, settings) { 
+			request._data = {'cn':_cn};
+		},
+		error:  function (request, status, errorThrown){	
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+		},
+		success:  function (response, status, request){
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+			
             for(var _na in _res.acc){
                 procesarAcc(_res.acc[_na]);
-            }
-            
-            
-            if(_res.res!='exito'){
-            	alert('error al consultar la base de datos');
-            	return;
-            }
-            
-            
+            }					
+			if(_res.res!='exito'){return;}
+			
+
 			document.querySelector('#FormularioRegistro [name="id_registro"]').value=_res.data.nid;				
+			
+
+						
+			if(_res.data.registro_nuevo	=='si'){				
+				_Features[_res.data.nid]={
+					'id_p_ref_capas_registros':_res.data.idgeom,
+					'col_texto1_dato':'',
+					'id':_res.data.nid		
+				};
+			}else{
+				_Features[_res.data.nid]=_Features[_res.data.id_registro];	
+			}
+			
+			_Features[_res.data.nid]['col_texto1_dato']='nuevo';
+			cargarFeatures(_res.data.nid);
 			
             if(_res.data.archivar=='si'){
 				archivarRegistro(1);	
@@ -703,15 +870,24 @@ function enviarDatosRegistro(_archivar){
 			
 			
             //TODO remplazar la carga total por la incorporación del dato editado.    
-			cargarRegistrosCampa();
-            cargarDatosCampa(_DataRele.id);
+			//cargarRegistrosCampa(_DataRele.id,_res.data.idgeom);
+			
+            //cargarDatosCampa(_DataRele.id);
             //document.querySelector('#FormularioRegistro').style.display='none';
 			_source_rel_sel.clear();
         }
     });
 
 	_idnuevageom=document.querySelector('#FormularioRegistro #nuevageometria').getAttribute('idgeom');
+
+
+	
+
 	if(_idnuevageom==_idgeom){
+		
+		_DataGeom[_idgeom]['geotx']=document.querySelector('#FormularioRegistro #nuevageometria').value;
+			
+		
 		var parametros = {
 	        'codMarco': _CodMarco,
 	        'idMarco': '',
@@ -720,26 +896,42 @@ function enviarDatosRegistro(_archivar){
 	        'tipogeom':_DataCapa.tipogeometria,
 	        'geomtx': document.querySelector('#FormularioRegistro #nuevageometria').value
 	    };
-	     $.ajax({
-	        url:   './app_capa/app_capa_editar_registro.php',
+	
+		_url='./app_capa/app_capa_editar_registro.php';
+		_cn = consultasPHP_nueva(_url);
+		$.ajax({
+	        url:   _url,
 	        type:  'post',
 	        data: parametros,
-	        success:  function (response)
-	        {   
-	            var _res = $.parseJSON(response);
-	            //console.log(_res);
-	            
-	            if(_res.res!='exito'){
-	            	alert('error al guardar la nueva geometría');
-	            }
+			beforeSend: function(request, settings) { 
+				request._data = {'cn':_cn};
+			},
+			error:  function (request, status, errorThrown){	
+				_cn = request._data.cn;
+				consultasPHP_respuesta("err",_cn);		
+			},
+			success:  function (response, status, request){
+				
+				var _res = $.parseJSON(response);            
+				_cn = request._data.cn;			
+				consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+				
+				_feat=_source_rele.getFeatureById(_res.data.idgeom);
+				
+				for(var _na in _res.acc){
+					procesarAcc(_res.acc[_na]);
+				}					
+				if(_res.res!='exito'){return;}
 	            
 	        }
-	    });
+		});
 	}	
 }
 
 
 function enviarCreaRegistroCapa(){
+
+	document.querySelector('#FormularioRegistro [name="id_registro"]').value='';
 
 	var parametros = {
 	        'codMarco': _CodMarco,
@@ -747,19 +939,27 @@ function enviarCreaRegistroCapa(){
 	        'idcapa': _DataCapa.id,
 	        'tipogeom':_DataCapa.tipogeometria //TODO corregir este hardcoded
     };
+    _url='./app_capa/app_capa_crear_registro.php';
+    _cn = consultasPHP_nueva(_url);
      $.ajax({
-        url:   './app_capa/app_capa_crear_registro.php',
+        url:   _url,
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
-            
-            if(_res.res!='exito'){
-            	alert('error al guardar la nueva geometría');
-            	return;
-            }
+		beforeSend: function(request, settings) { 
+			request._data = {'cn':_cn};
+		},
+		error:  function (request, status, errorThrown){	
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+		},
+		success:  function (response, status, request){
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+            for(var _na in _res.acc){
+                procesarAcc(_res.acc[_na]);
+            }					
+			if(_res.res!='exito'){return;}
             
             _DataGeom[_res.data.idgeom]={
             		'id': _res.data.idgeom, 
@@ -770,10 +970,9 @@ function enviarCreaRegistroCapa(){
             };
             
             
+			
             
-            
-            console.log('hab');
-            document.querySelector('#cuadrovalores #contenido').setAttribute('registroscargando','si');
+			gestionarForms('FormularioRegistro','si');
             //console.log( document.querySelector('#cuadrovalores #contenido'));
             
             accionGeomSeleccionada(_res.data.idgeom);
@@ -836,18 +1035,33 @@ function accionEditarValorGuardar(_this){
     		parametros[_campo]=_envios[_idg][_campo];    	
     	}
 
+    _cn = consultasPHP_nueva('./app_rele/app_rele_val_editar.php');
 	    $.ajax({
             url:   './app_rele/app_rele_val_editar.php',
             type:  'post',
             data: parametros,
-            success:  function (response)
-            {   
-                var _res = $.parseJSON(response);
-                //console.log(_res);
-                if(_res.res!='exito'){
-                	alert('error al procesas rl pedido');
-                	return;
-                }
+			beforeSend: function(request, settings) { 
+				
+				request._data = {'cn':_cn};
+			  
+			},
+			error:  function (request, status, errorThrown){	
+
+				_cn = request._data.cn;
+				consultasPHP_respuesta("err",_cn);		
+				
+			},
+			success:  function (response, status, request){
+				
+				var _res = $.parseJSON(response);            
+				_cn = request._data.cn;			
+				consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+				
+				for(var _na in _res.acc){
+					procesarAcc(_res.acc[_na]);
+				}					
+				if(_res.res!='exito'){return;}
+			
                 	
             	accionPeriodoElegido(_DataPeriodo.ano, _DataPeriodo.mes, 'false');
                 
@@ -863,19 +1077,32 @@ function guardarDXFfondo(_imgs){
 	
 	var parametros = _imgs
     parametros['idcampa']=_DataRele.id;
+    _cn = consultasPHP_nueva( './app_rele/app_rele_generar_dxf_captura.php');
      $.ajax({
         url:   './app_rele/app_rele_generar_dxf_captura.php',
         type:  'post',
         data: parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
-            
-            if(_res.res!='exito'){
-            	alert('error al guardar captura de pantalla');
-            	return;
-            }
+		beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+		error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+			
+            for(var _na in _res.acc){
+                procesarAcc(_res.acc[_na]);
+            }					
+			if(_res.res!='exito'){return;}
             
             _if=document.createElement('iframe');
 			_if.style.display='none';
@@ -892,6 +1119,8 @@ function ReleACapa(){
 	_sels=document.querySelectorAll('#ReleACapa #campos select');
 	
 	_fuentes=Array();
+	
+	
 	for(_sn in _sels){
 		if(typeof _sels[_sn] !='object'){continue;}
 		if(_sels[_sn].value==''){continue}
@@ -910,19 +1139,33 @@ function ReleACapa(){
 		'codMarco':_CodMarco,
 		'fuentes':_fuentes
 	}
+    _cn = consultasPHP_nueva('./app_rele/app_rele_generar_capa.php');
  	$.ajax({
         url:   './app_rele/app_rele_generar_capa.php',
         type:  'post',
         data: _parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
-            
-            if(_res.res!='exito'){
-            	alert('error al guardar captura de pantalla');
-            	return;
-            }
+		beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+		error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+			
+            for(var _na in _res.acc){
+                procesarAcc(_res.acc[_na]);
+            }					
+			if(_res.res!='exito'){return;}
+			
             if(confirm('Nueva capa disponible en el módulo de capas. ¿Vamos ahí?')){
 					window.location.assign('./app_capa.php?cod=VECPC2022');
 			}
@@ -961,19 +1204,32 @@ function guardarCampo(_this){
 		'nombre_fila':_form.querySelector('[name="nombre_fila"]').value
 		
 	}
+    _cn = consultasPHP_nueva('./app_rele/app_rele_ed_guardar_campo.php');
  	$.ajax({
         url:   './app_rele/app_rele_ed_guardar_campo.php',
         type:  'post',
         data: _parametros,
-        success:  function (response)
-        {   
-            var _res = $.parseJSON(response);
-            //console.log(_res);
-            
-            if(_res.res!='exito'){
-            	alert('error al guardar campo');
-            	return;
-            }
+		beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+		error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+			
+            for(var _na in _res.acc){
+                procesarAcc(_res.acc[_na]);
+            }					
+			if(_res.res!='exito'){return;}
             
             cargarDatosCampa(_DataRele.id);            
             
@@ -982,3 +1238,177 @@ function guardarCampo(_this){
 	
 	
 }
+
+
+function procesarPlanillaXLSX(){
+	
+	_parametros={
+		'idcampa':_DataRele.id,
+		'codMarco':_CodMarco,		
+		'filename':document.querySelector('#FormularioSubirPlanilla input[name="filename"]').value,
+		'nombreua':document.querySelector('#FormularioSubirPlanilla select[name="nombreua"]').value,
+		'campos_rellenos':{},		
+		'modo_importacion':document.querySelector('#FormularioSubirPlanilla select[name="modo_importacion"]').value,
+		'capa_fuente':document.querySelector('#FormularioSubirPlanilla select[name="capa_fuente"]').value,
+		'campo_link_en_capa':document.querySelector('#FormularioSubirPlanilla select[name="campo_link_en_capa"]').value,
+		'columna_link_en_planillla':document.querySelector('#FormularioSubirPlanilla select[name="columna_link_en_planillla"]').value,
+		'check_crear_campos':document.querySelector('#FormularioSubirPlanilla input[name="check_crear_campos"]').value,		
+		'campos_creados':{},
+		'columna_wkt_en_planillla':document.querySelector('#FormularioSubirPlanilla #elegircamposgeom select[name="columna_wkt_en_planillla"]').value,
+		'srid_wkt':document.querySelector('#FormularioSubirPlanilla #elegircamposgeom select[name="srid_wkt"]').value
+				
+	}
+
+	
+	_sels=document.querySelectorAll('#FormularioSubirPlanilla #asignacampos select');		
+	for(_sn in _sels){
+		if(typeof(_sels[_sn])!='object'){continue;}
+		_name=_sels[_sn].getAttribute('name');
+		_val=_sels[_sn].value;
+		_parametros['campos_rellenos'][_sels[_sn].getAttribute('name')]=_val;
+	}
+	
+	
+	_filas=document.querySelectorAll('#FormularioSubirPlanilla #crear_campos .mini_form_campo');		
+	for(_fn in _filas){
+		if(typeof(_filas[_fn])!='object'){continue;}
+		if(_filas[_fn].querySelector('[name="crear"]').checked==false){continue;}
+		
+		_col=_filas[_fn].getAttribute('num_col_crea');
+		_arr={
+			nombre:_filas[_fn].querySelector('[name="nombre"]').value,
+			col:_col,
+			tipo:_filas[_fn].querySelector('[name="tipo"]').value
+		}
+		_parametros['campos_creados'][_col]=_arr;
+	}
+		
+	
+    _cn = consultasPHP_nueva('./app_rele/app_rele_procesa_xlsx.php');
+	$.ajax({
+        url:   './app_rele/app_rele_procesa_xlsx.php',
+        type:  'post',
+        data: _parametros,
+		beforeSend: function(request, settings) { 
+			
+			request._data = {'cn':_cn};
+		  
+		},
+		error:  function (request, status, errorThrown){	
+
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);		
+			
+		},
+		success:  function (response, status, request){
+			
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);
+			
+            for(var _na in _res.acc){
+                procesarAcc(_res.acc[_na]);
+            }					
+			if(_res.res!='exito'){return;}
+			
+		
+			alert('planilla procesada exitosamente');
+			
+			document.querySelector('#FormularioSubirPlanilla').setAttribute('archivocargado','no');
+			document.querySelector('#FormularioSubirPlanilla').setAttribute('estado','inactivo');
+			
+			
+			document.querySelector('#FormularioSubirPlanilla [name="nombreua"]').innerHTML='';
+			document.querySelector('#FormularioSubirPlanilla #asignacampos').innerHTML='';
+			document.querySelector('#FormularioSubirPlanilla input[name="filename"]').value='';
+		}	
+	});
+	
+}
+
+function borrarDatosGeometrias(){
+	
+	_parametros={
+		'idcampa':_DataRele.id,
+		'codMarco':_CodMarco
+	}
+	
+	
+    _cn = consultasPHP_nueva('./app_rele/app_rele_ed_borrar_registros.php');
+	$.ajax({
+        url:   './app_rele/app_rele_ed_borrar_registros.php',
+        type:  'post',
+        data: _parametros,
+		beforeSend: function(request, settings) { 			
+			request._data = {'cn':_cn};		  
+		},
+		error:  function (request, status, errorThrown){	
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);					
+		},
+		success:  function (response, status, request){			
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);			
+            for(var _na in _res.acc){
+                procesarAcc(_res.acc[_na]);
+            }					
+			if(_res.res!='exito'){return;}
+	
+		
+			cargarDatosCampa(_res.data.idcampa);
+		}
+	});
+}
+
+
+
+function duplicarCampa(){
+	
+	_parametros={
+		'idcampa':_DataRele.id,
+		'codMarco':_CodMarco
+	}	
+	
+    _cn = consultasPHP_nueva('./app_rele/app_rele_ed_duplicar_relevamiento.php');
+	$.ajax({
+        url:   './app_rele/app_rele_ed_duplicar_relevamiento.php',
+        type:  'post',
+        data: _parametros,
+		beforeSend: function(request, settings) { 			
+			request._data = {'cn':_cn};		  
+		},
+		error:  function (request, status, errorThrown){	
+			_cn = request._data.cn;
+			consultasPHP_respuesta("err",_cn);					
+		},
+		success:  function (response, status, request){			
+			var _res = $.parseJSON(response);            
+			_cn = request._data.cn;			
+			consultasPHP_respuesta("exito",_cn,_res.mg,_res.res);			
+            for(var _na in _res.acc){
+                procesarAcc(_res.acc[_na]);
+            }					
+			if(_res.res!='exito'){return;}
+		
+			_res = preprocesarRespuestaAjax(_data, _textStatus, _jqXHR);
+			if(_res===false){return;}
+			
+			cargarDatosCampa(_res.data.nidrel);
+		}
+	});
+}
+/* MODELO A RETOMAR done en lugar de succes
+$.ajax({
+        url:   './app_rele/app_rele_ed_duplicar_relevamiento.php',
+        type:  'post',
+        data: _parametros
+	})
+	.done(function (_data, _textStatus, _jqXHR){
+		
+		_res = preprocesarRespuestaAjax(_data, _textStatus, _jqXHR);
+		if(_res===false){return;}
+		
+		cargarDatosCampa(_res.data.nidrel);
+		
+	})*/

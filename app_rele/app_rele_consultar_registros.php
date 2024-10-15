@@ -53,8 +53,12 @@ if(!isset($_POST['idcampa'])){
 	$Log['res']='err';
 	terminar($Log);	
 }
-
-
+if(!isset($_POST['idgeom'])){
+	$_POST['idgeom']='';
+	$Log['tx'][]='no fue enviada la variable idgeom';
+	//$Log['res']='err';
+	//terminar($Log);	
+}
 if(!isset($_POST['codMarco'])){
 	$Log['tx'][]='no fue enviada la variable codMarco';
 	$Log['res']='err';
@@ -69,15 +73,69 @@ if(!isset($_POST['zz_superado'])){
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
-$query="SELECT  *
-    FROM    geogec.ref_rele_registros
-    WHERE 
-            zz_borrado = '0'
-    AND
-            zz_superado = '".$_POST['zz_superado']."'
-    AND
-            id_p_ref_rele_campa = '".$_POST['idcampa']."'
- ";
+if($_POST['idgeom']!=''){
+	$query="
+		SELECT  
+			
+			id, zz_auto_crea_usu, 
+			col_texto1_dato, 
+			id_p_ref_capas_registros, zz_auto_supera_id, 
+			zz_auto_crea_fechau, zz_archivada, zz_archivada_fecha
+
+			
+
+		FROM    
+			geogec.ref_rele_registros
+		
+		WHERE 
+			zz_borrado = '0'
+		AND
+			zz_superado = '".$_POST['zz_superado']."'
+		AND
+            id_p_ref_rele_campa = '".$_POST['idcampa']."'	
+        AND 
+			id_p_ref_capas_registros='".$_POST['idgeom']."'
+			";
+	
+}else{
+	
+	$query="
+		SELECT  
+			
+			a.id, a.zz_auto_crea_usu, 
+			a.col_texto1_dato, 
+			a.id_p_ref_capas_registros, 
+			a.zz_auto_supera_id, 
+			a.zz_auto_crea_fechau, 
+			a.zz_archivada, a.zz_archivada_fecha
+
+			
+
+		FROM    
+			geogec.ref_rele_registros as a
+		LEFT JOIN
+			geogec.ref_capasgeo_registros as b
+				ON
+				a.id_p_ref_capas_registros = b.id
+				
+		WHERE 
+			a.zz_borrado = '0'
+		AND
+			a.zz_superado = '".$_POST['zz_superado']."'
+		AND
+            a.id_p_ref_rele_campa = '".$_POST['idcampa']."'	
+        AND
+			b.zz_borrada='0'
+			
+		ORDER BY col_texto1_dato
+            
+	
+	";
+	
+	$wherereg="AND id_p_ref_capas_registros is not null";
+}
+$Log['data']['idgeom']=$_POST['idgeom'];
+
 
 $Consulta = pg_query($ConecSIG, $query);
 if(pg_errormessage($ConecSIG)!=''){
@@ -88,14 +146,23 @@ if(pg_errormessage($ConecSIG)!=''){
     terminar($Log);	
 }
 
+$Log['data']['registrosOrden']=array();
+$Log['data']['registros']=array();
 if (pg_num_rows($Consulta) <= 0){
     $Log['tx'][]= "No se encontraron valores existentes.";
     $Log['data']=null;
 } else {
     $Log['tx'][]= "Consulta de indicadores valor existentes";
     while ($fila=pg_fetch_assoc($Consulta)){	
-	$Log['data'][$fila['id']]=$fila;
-    }
+		$Log['data']['registrosOrden'][]=$fila['id'];
+		$Log['data']['registros'][$fila['id']]=$fila;
+		$idreg=$fila['id'];
+	}
+	
+	if($_POST['idgeom']!=''){
+		
+		$Log['data']['idreg']=$idreg;
+	}
 }
 
 $Log['res']="exito";

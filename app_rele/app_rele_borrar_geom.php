@@ -103,8 +103,7 @@ if($_POST['modo']!='todos'&&$_POST['modo']!='propios'&&$_POST['modo']!='registro
 $query="
 SELECT 
 	id, nombre, descripcion, id_p_ref_capasgeo, ic_p_est_02_marcoacademico, 
-	fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada, 
-	col_texto1_nom, col_texto2_nom, col_texto3_nom, col_texto4_nom, col_texto5_nom, col_numero1_nom, col_numero2_nom, col_numero3_nom, col_numero4_nom, col_numero5_nom, col_texto1_unidad, col_texto2_unidad, col_texto3_unidad, col_texto4_unidad, col_texto5_unidad, col_numero1_unidad, col_numero2_unidad, col_numero3_unidad, col_numero4_unidad, col_numero5_unidad, representar_campo, representar_val_max, representar_val_min, zz_borrada_usu, zz_borrada_utime, col_texto6_nom, col_texto7_nom, col_texto8_nom, col_texto9_nom, col_texto10_nom
+	fechadesde, fechahasta, usu_autor, zz_borrada, zz_publicada
 	FROM geogec.ref_rele_campa
 	WHERE
 	id = '".$_POST['idcampa']."'
@@ -135,6 +134,7 @@ if($f['id_p_ref_capasgeo']>0){
 }
 
 if($_POST['modo']=='todos'){
+	
 	$query="UPDATE
 	           geogec.ref_capasgeo_registros
 	       	SET
@@ -146,7 +146,9 @@ if($_POST['modo']=='todos'){
 	           AND
 	           zz_borrada='0'
 	";
+	
 }elseif($_POST['modo']=='propios'){
+	
 	$query="UPDATE
 	           geogec.ref_capasgeo_registros
 	       	SET
@@ -161,14 +163,16 @@ if($_POST['modo']=='todos'){
 	           AND
 	           zz_borrada='0'
 	";
+	
 }elseif($_POST['modo']=='registro'){
 	
 	if(!isset($_POST['idgeom'])){
 		$Log['res']='err';
 		$Log['tx'][]='falta el idgeom';	
-		terminar($Log);
-		
+		terminar($Log);	
 	}
+	
+	$Log['data']['idgeom']=$_POST['idgeom'];
 	
 	$query="UPDATE
 	           geogec.ref_capasgeo_registros

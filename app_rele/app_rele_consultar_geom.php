@@ -135,6 +135,7 @@ $query="
 		WHERE
             id = '".$Log['data']['campa']['id_p_ref_capasgeo']."'
 
+
      ";
 
 $Consulta = pg_query($ConecSIG, $query);
@@ -159,7 +160,11 @@ if($Capa['tipogeometria']=='Point'){
 
 $query="SELECT  
             ref_capasgeo_registros.id,
-            ST_AsText(".$campogeo.") as geotx,
+            concat(
+            ST_AsText(ST_Transform(ref_capasgeo_registros.geom, 3857)),
+            ST_AsText(ST_Transform(ref_capasgeo_registros.geom_line, 3857)),
+            ST_AsText(ST_Transform(ref_capasgeo_registros.geom_point, 3857))
+            ) as geotx,
             ref_rele_registros.col_texto1_dato   as t1,
             ref_rele_registros.col_numero1_dato  as n1
             
@@ -172,12 +177,12 @@ $query="SELECT
     			AND ref_rele_registros.zz_superado='0' 
     			AND ref_rele_registros.zz_borrado='0'
         WHERE 
-        	     	
+        	    	
             id_ref_capasgeo = '".$Log['data']['campa']['id_p_ref_capasgeo']."'
             AND
             ref_capasgeo_registros.zz_borrada='0'
-            AND
-    		ST_X(ST_centroid(".$campogeo.")) is not null
+            
+         ORDER BY ref_rele_registros.col_texto1_dato asc
     
  ";
 $Consulta = pg_query($ConecSIG, $query);
@@ -188,7 +193,7 @@ if(pg_errormessage($ConecSIG)!=''){
     $Log['res']='err';
     terminar($Log);	
 }
-
+$Log['data']['geomOrden']=array();
 $Log['data']['geom']=array();
 
 if (pg_num_rows($Consulta) <= 0){
@@ -197,9 +202,12 @@ if (pg_num_rows($Consulta) <= 0){
 } else {
     $Log['tx'][]= "Consulta de capa existente id: ".$Log['data']['campa']['id_p_ref_capasgeo'];
     while ($fila=pg_fetch_assoc($Consulta)){	
+		if($fila['geotx']==''){continue;}
         $Log['data']['geom'][$fila['id']]=$fila;
         $Log['data']['geom'][$fila['id']]['valores']=array();
         $Log['data']['geom'][$fila['id']]['estadocarga']='sin carga';
+        
+        $Log['data']['geomOrden'][]=$fila['id'];
     }
 }
 

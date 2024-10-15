@@ -229,7 +229,8 @@ if($_POST['idRele']==='0'){
 		SET 
 			nombre = '".$_POST['nombre']."',
 			descripcion = '".$_POST['descripcion']."',
-			unidadanalisis = '".$_POST['unidadanalisis']."'
+			unidadanalisis = '".$_POST['unidadanalisis']."',
+			zz_carga_publica = '".$_POST['zz_carga_publica']."'
 		WHERE 
 			id='".$_POST['idRele']."'
 		AND

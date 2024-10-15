@@ -130,6 +130,142 @@ function enviarArchivosUpload(_event,_this){
 
 
 
+function enviarArchivoXLSX(){
+	
+	 var files = document.querySelector('#uploadxlsxinput').files;	
+    
+        var parametros = new FormData();
+        parametros.append("upload",files[0]);
+	    parametros.append("idcampa",_DataRele.id);
+	    parametros.append("codmarco",_CodMarco);
+
+        
+        //Llamamos a los puntos de la actividad
+        $.ajax({
+            data:  parametros,
+            url:   './app_rele/app_rele_upload_xlsx.php',
+            type:  'post',
+            processData: false,
+            contentType: false
+         })
+		.done(function (_data, _textStatus, _jqXHR){
+			_res = preprocesarRespuestaAjax(_data, _textStatus, _jqXHR);
+			if(_res===false){return;}
+			
+			
+			document.querySelector('#FormularioSubirPlanilla').setAttribute('archivocargado','si');
+			document.querySelector('#FormularioSubirPlanilla input[name="filename"]').value=_res.data.archivo;
+			document.querySelector('#FormularioSubirPlanilla #txarchivocargado').innerHTML=_res.data.nombreorig;
+			
+			_sel=document.querySelector('#asignanombre select');
+			_sel.innerHTML='';
+			for(_nc in _res.data.columnas){
+				_nomcol=_res.data.columnas[_nc];
+				if(_nomcol==''){continue;}				
+				_op=document.createElement('option');
+				_sel.appendChild(_op);
+				_op.innerHTML=_nomcol;
+				_op.value=_nc;			
+			}
+			
+			
+			_sel=document.querySelector('#FormularioSubirPlanilla #elegircamposgeom [name="columna_wkt_en_planillla"]');
+			_sel.innerHTML='';
+			for(_nc in _res.data.columnas){
+				_nomcol=_res.data.columnas[_nc];
+				if(_nomcol==''){continue;}				
+				_op=document.createElement('option');
+				_sel.appendChild(_op);
+				_op.innerHTML=_nomcol;
+				_op.value=_nc;			
+			}
+			
+			_sel=document.querySelector('#FormularioSubirPlanilla [name="columna_link_en_planillla"]');
+			_sel.innerHTML='';
+			for(_nc in _res.data.columnas){
+				_nomcol=_res.data.columnas[_nc];
+				if(_nomcol==''){continue;}				
+				_op=document.createElement('option');
+				_sel.appendChild(_op);
+				_op.innerHTML=_nomcol;
+				_op.value=_nc;			
+			}			
+			
+			
+			
+			_cont=document.querySelector('#asignacampos');
+			_cont.innerHTML='';
+			
+			_div=document.querySelector('#FormularioSubirPlanilla #crear_campos #listado_campos');
+			_div.innerHTML='';
+			
+			for(_nc in _res.data.columnas){
+				
+				_nomcol=_res.data.columnas[_nc];
+				if(_nomcol==''){continue;}				
+				
+				_fila=document.createElement('div');
+				_fila.setAttribute('class','mini_form_campo');
+				_fila.setAttribute('num_col_crea',_nc);
+				_div.appendChild(_fila);
+				
+				_chk=document.createElement('input');
+				_chk.setAttribute('name','crear');
+				_chk.setAttribute('type','checkbox');
+				_chk.checked=true;
+				_fila.appendChild(_chk);
+				
+				_tit=document.createElement('label');
+				_tit.innerHTML=_nomcol;
+				_fila.appendChild(_tit);
+
+				_conf=document.createElement('div');
+				_conf.innerHTML="<label>Nombre:</label><input name='nombre'><label>Tipo:</label><select name='tipo' onchange=''><option>- elegir -</option><option value='texto'>texto</option><option value='checkbox'>checkbox</option><option value='select'>menu desplegable</option><option value='numero'>numero</option><option value='fecha'>fecha</option><option value='coleccion_imagenes'>imagenes</option></select>";
+				_fila.appendChild(_conf);
+				
+				_conf.querySelector('[name="nombre"]').value=_nomcol;
+			}
+			
+			_cont=document.querySelector('#asignacampos');
+			_cont.innerHTML='';
+						
+			
+			for(_con in _DataRele.camposOrden){
+				_idcampo = _DataRele.camposOrden[_con];
+				_nom=_DataRele.campos[_idcampo].nombre;
+								
+				_div=document.createElement('div');
+				_cont.appendChild(_div);
+				
+				_la=document.createElement('label');
+				_div.appendChild(_la);
+				_la.innerHTML=_nom;
+								
+				_sel=document.createElement('select');
+				_sel.setAttribute('name','campo_'+_idcampo);
+				_div.appendChild(_sel);
+				
+				_op=document.createElement('option');
+				_sel.appendChild(_op);
+				_op.innerHTML='- elegir columna -';
+				_op.value='-1';
+				
+				for(_nc in _res.data.columnas){
+					_nomcol=_res.data.columnas[_nc];
+					if(_nomcol==''){continue;}
+					
+					_op=document.createElement('option');
+					_sel.appendChild(_op);
+					_op.innerHTML=_nomcol;
+					_op.value=_nc;
+				
+				}
+			}
+		});	    
+
+}
+
+
 function cargando(_nombre,_con){
 	document.querySelector('#cargarGeometrias #txningunarchivo').style.display='none';
     _ppp=document.createElement('p');
@@ -346,6 +482,10 @@ function ValidarProcesarBotonDXF(){
 
 
 
+
+
+
+
 /////////////////////////////////
 //SUBE FOTOD DE RELEVAMIENTO
 //////////////////////////////////
@@ -429,7 +569,6 @@ function actualizarInputFotos(_idcampo){
 	 
 	_carga=_lista.querySelectorAll('.carga');
 	_cargasArr={};
-	
 	
 	
 	for(_cn in _carga){

@@ -72,13 +72,12 @@ if(isset($Usu['acc']['est_02_marcoacademico'][$_POST['codMarco']]['app_capa'])){
 	$Acc=$Usu['acc']['general']['general']['general'];
 }
 
-if($Acc<1){
-    $Log['mg'][]=utf8_encode('No cuenta con permisos (nivel  vs nivel '.$Acc.') para consultar un indicador. En el marco de investigación código '.$_POST['codMarco']);
+$min=0;
+if($Acc<$min){
+    $Log['mg'][]=utf8_encode('No cuenta con permisos (nivel '.$min.' vs nivel '.$Acc.') para consultar un indicador. En el marco de investigación código '.$_POST['codMarco']);
     $Log['res']='err';
     terminar($Log);	
 }
-
-
 
 $idUsuario = $_SESSION["geogec"]["usuario"]['id'];
 
